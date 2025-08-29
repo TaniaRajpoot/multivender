@@ -27,14 +27,12 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
       return next(new ErrorHandler("User already exists", 400));
     }
 
-
     if (!req.file) {
       return next(new ErrorHandler("Please upload an avatar", 400));
     }
 
     const filename = req.file.filename;
 
- 
     const tempUser = {
       name,
       email,
@@ -63,7 +61,6 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
       success: true,
       message: `Please check your email: ${email} to activate your account`,
     });
-
   } catch (error) {
     next(error);
   }
@@ -74,14 +71,17 @@ router.post(
   "/activation",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { activation_token } = req.body;
+      const { activationToken } = req.body;
 
-      if (!activation_token) {
+      if (!activationToken) {
         return next(new ErrorHandler("Activation token is required", 400));
       }
 
       // Decode token
-      const newUser = jwt.verify(activation_token, process.env.ACTIVATION_SECRET);
+      const newUser = jwt.verify(
+        activationToken,
+        process.env.ACTIVATION_SECRET
+      );
 
       if (!newUser) {
         return next(new ErrorHandler("Invalid token", 400));
@@ -89,37 +89,21 @@ router.post(
 
       const { name, email, password, avatar } = newUser;
 
-   
       // Check if user already exists
-      let  user = await User.findOne({ email });
+      let user = await User.findOne({ email });
       if (user) {
         return next(new ErrorHandler("User already exists", 400));
       }
 
-      User.create({
+      const createdUser = await User.create({
         name,
         email,
         avatar,
         password,
       });
-      // // Create user in DB
-      // const createdUser = await User.create({
-      //   name,
-      //   email,
-      //   password, // hashed automatically via schema pre-save hook
-      //   avatar: {
-      //     public_id: avatar.public_id,
-      //     url: avatar.url,
-      //   },
-      // });
-
-     // save to MongoDB
-      const createdUser = await user.save();
-
-      console.log("Created user:", createdUser);
+      await createdUser.save();
 
       sendToken(createdUser, 201, res);
-
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
