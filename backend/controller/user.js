@@ -148,6 +148,7 @@ router.get("/getuser",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
   try {
 
     const user = await User.findById(req.user.id);
+    console.log(user);
 
     if (!user) {
     return next(new ErrorHandler("User doesn't Exist! ", 400));
@@ -159,8 +160,6 @@ router.get("/getuser",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
       user,
     });
 
-
-    
   } catch (error) {
   return next(new ErrorHandler(error.message, 500));
   }
