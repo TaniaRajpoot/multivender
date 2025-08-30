@@ -33,12 +33,17 @@ const Signup = () => {
 
     axios
       .post(`${server}/user/create-user`, newForm, config)
-      .then(() => {
+      .then((res) => {
         // alert(res.message);
-        toast.success("Please check your email!");
+        toast.success(res.data.message);
+        setName("");
+        setEmail("");
+        setPassword("");
+        setAvatar();
+
       })
       .catch((err) => {
-        console.log(err);
+        toast.error(err.response.data.message)
       });
   };
 
