@@ -15,7 +15,10 @@ const { isAuthenticated } = require("../middlware/auth");
 router.post("/create-user", upload.single("file"), async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
-
+    console.log(req.body);
+    if (!name || !email || !password) {
+      return next(new ErrorHandler("All fields are required", 400));
+    }
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -32,16 +35,14 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
       return next(new ErrorHandler("Please upload an avatar", 400));
     }
 
-    const filename = req.file.filename;
+    
+    const fileUrl = path.join(req.file.filename);
 
     const tempUser = {
       name,
       email,
       password,
-      avatar: {
-        public_id: Date.now().toString(),
-        url: `/uploads/${filename}`,
-      },
+      avatar: fileUrl,
     };
 
     // Create activation token

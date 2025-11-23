@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import styles from "../../styles/styles";
-import { Link,   } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RxAvatar } from "react-icons/rx";
 import axios from "axios";
 import { server } from "../../server";
-import {toast} from "react-toastify"
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -13,7 +13,7 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   const [avatar, setAvatar] = useState(null);
-
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const file = e.target.files[0];
@@ -22,28 +22,28 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const config = { headers: { "Content-type": "multipart/form-data" } };
 
-    const newForm = new FormData();
-    newForm.append("file", avatar);
-    newForm.append("name", name);
-    newForm.append("email", email);
-    newForm.append("password", password);
+    const config = {
+      headers: { "Content-Type": "multipart/form-data" },
+    };
 
-    axios
-      .post(`${server}/user/create-user`, newForm, config)
+    const formData = new FormData();
+    formData.append("file", avatar);
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("password", password);
+    await axios
+      .post(`${server}/user/create-user`, formData, config)
       .then((res) => {
-        // alert(res.message);
         toast.success(res.data.message);
         setName("");
         setEmail("");
         setPassword("");
         setAvatar();
-
+        navigate("/login");
       })
-      .catch((err) => {
-        toast.error(err.response.data.message)
+      .catch((error) => {
+        toast.error(error.response?.data?.message);
       });
   };
 

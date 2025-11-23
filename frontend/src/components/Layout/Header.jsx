@@ -27,6 +27,7 @@ const Header = ({ activeHeading }) => {
   const [dropDown, setDropDown] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishList] = useState(false) ;
+console.log (user);
 
 
 
@@ -173,7 +174,7 @@ const Header = ({ activeHeading }) => {
               <div className="relative cursor-pointer mr-[15px]">
                {isAuthenticated ? (
                   <Link to = "/profile">
-                    <img src={`${backend_url}${user?.avatar?.url}`} className="w-[35px] h-[35px] rounded-full " alt="" />
+                    <img src={`${backend_url}${user?.avatar}`} className="w-[35px] h-[35px] rounded-full " alt="" />
                   </Link>
                 ) : (
                    <Link to="/login">
