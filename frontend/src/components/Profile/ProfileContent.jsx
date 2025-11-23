@@ -14,7 +14,7 @@ console.log(user);
             <img
               src={`${backend_url}${user?.avatar}`}
               alt="Profile"
-              className="rounded-full w-[50] h-[50] object-cover"
+              className="rounded-full w-30 h-30 object-cover"
             />
           </div>
         </div>
