@@ -3,9 +3,9 @@ import { backend_url } from "../../server";
 import { useSelector } from "react-redux";
 import { AiOutlineCamera } from "react-icons/ai";
 import styles from "../../styles/styles";
+import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
-import { Button } from "@mui/material";
 import { AiOutlineArrowRight } from "react-icons/ai";
 
 const ProfileContent = ({ active }) => {
@@ -218,18 +218,16 @@ const AllOrders = () => {
     });
 
   return (
-    <div className="pl-8 pt-1">
+ <div className="pl-8 pt-1">
       <DataGrid
         rows={rows}
         columns={columns}
-        disableRowSelectionOnClick
+        pageSize={10}
         autoHeight
-        pageSizeOptions={[10]}
-        initialState={{
-          pagination: { paginationModel: { pageSize: 10 } },
-        }}
+        disableRowSelectionOnClick
       />
     </div>
+
   );
 };
 
