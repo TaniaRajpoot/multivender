@@ -27,7 +27,6 @@ const Header = ({ activeHeading }) => {
   const [dropDown, setDropDown] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishList] = useState(false) ;
-console.log (user);
 
 
 

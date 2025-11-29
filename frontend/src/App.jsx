@@ -7,10 +7,10 @@ import { useEffect } from 'react';
 import Store from './redux/store.js';
 import { loadUser } from './redux/actions/user.js';
 import { useSelector } from 'react-redux';
-
+import ProtectedRoute from "./protectedRoute.js";
 
 const App = () => {
-  const {loading} = useSelector((state) => state.user)
+const { loading, isAuthenticated } = useSelector((state) => state.user);
 
 
   useEffect(()=>{
@@ -38,7 +38,16 @@ const App = () => {
     {/* <Route path = "/checkout" element={ <CheckoutPage/>} />
     <Route path = "/payment" element={ <PaymentPage/>} />
     <Route path = "/order/success/:id" element={ <OrderSuccessPage/>} /> */}
-    <Route path = "profile" element={ <ProfilePage/>} />
+    
+    <Route path = "/profile" element = {
+      <ProtectedRoute isAuthenticated={isAuthenticated}>  
+
+      <ProfilePage/>
+      </ProtectedRoute>
+      
+      } />
+     
+    
 
     </Routes>
      <ToastContainer 
