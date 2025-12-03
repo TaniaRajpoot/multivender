@@ -21,7 +21,7 @@ const ActivationPage = () => {
       };
       activationEmail();
     }
-  }, [activationToken]);
+  }, []);
 
   return (
     <div

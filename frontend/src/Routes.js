@@ -8,7 +8,9 @@ import EventsPage from "../src/pages/EventsPage"
 import FAQPage from "../src/pages/FAQPage"
 import ProductDetailsPage from "../src/pages/ProductDetailsPage"
 import ProfilePage from "../src/pages/ProfilePage"
-
+import ShopCreatePage from "./pages/ShopCreatePage"
+import SellerActivationPage from "./pages/SellerActivationPage"
+import ShopLoginPage from "./pages/ShopLoginPage"
 
 export {
     LoginPage,
@@ -20,6 +22,8 @@ export {
     EventsPage,
     FAQPage,
     ProductDetailsPage,
-    ProfilePage
-    
+    ProfilePage,
+    ShopCreatePage,
+    SellerActivationPage,
+    ShopLoginPage
 };

@@ -1,99 +1,113 @@
 import React from "react";
-import { HiOutlineShoppingBag } from "react-icons/hi";
+import { HiOutlineShoppingBag, HiOutlineReceiptRefund } from "react-icons/hi";
 import { RxPerson } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineTrackChanges } from "react-icons/md";
 import { TbAddressBook } from "react-icons/tb";
-import { AiOutlineCreditCard, AiOutlineLogin } from "react-icons/ai";
+import { AiOutlineCreditCard, AiOutlineLogin, AiOutlineMessage } from "react-icons/ai";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { server } from "../../server";
+import { useDispatch } from "react-redux";
 
 const ProfileSideBar = ({ setActive, active }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const logoutHandler = () => {
-    axios
-      .get(`${server}/user/logout`, { withCredentials: true })
-      .then((res) => {
-        toast.success("Logout Successfully!");
-        navigate("/login");
-        window.location.reload(true);
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
+  const logOutHandler = async () => {
+    try {
+      const res = await axios.get(`${server}/user/logout`, {
+        withCredentials: true,
       });
+      toast.success(res.data.message);
+      dispatch({ type: "LogoutSuccess" });
+      navigate("/login");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Logout failed");
+    }
   };
 
   return (
-    <div className="w-full bg-white shadow-sm rounded-[10px] p-4 pt-8">
+    <div className="w-full bg-white shadow-sm rounded-[10px] p-3 pt-5">
 
       <div
-        className="flex items-center cursor-pointer w-full mb-8"
+        className="flex items-center cursor-pointer w-full mb-5"
         onClick={() => setActive(1)}
       >
-        <RxPerson size={20} color={active === 1 ? "red" : ""} />
-        <span className={`pl-3 ${active === 1 ? "text-red-500" : ""}`}>
+        <RxPerson size={20} color={active === 1 ? "red" : "#555"} className="flex-shrink-0" />
+        <span className={`pl-3 ${active === 1 ? "text-red-500" : "text-[#555]"} text-[15px] lg:block md:block sm:block hidden`}>
           Profile
         </span>
       </div>
 
       <div
-        className="flex items-center cursor-pointer w-full mb-8"
+        className="flex items-center cursor-pointer w-full mb-5"
         onClick={() => setActive(2)}
       >
-        <HiOutlineShoppingBag size={20} color={active === 2 ? "red" : ""} />
-        <span className={`pl-3 ${active === 2 ? "text-red-500" : ""}`}>
+        <HiOutlineShoppingBag size={20} color={active === 2 ? "red" : "#555"} className="flex-shrink-0" />
+        <span className={`pl-3 ${active === 2 ? "text-red-500" : "text-[#555]"} text-[15px] lg:block md:block sm:block hidden`}>
           Orders
         </span>
       </div>
 
       <div
-        className="flex items-center cursor-pointer w-full mb-8"
+        className="flex items-center cursor-pointer w-full mb-5"
         onClick={() => setActive(3)}
       >
-        <HiOutlineShoppingBag size={20} color={active === 3 ? "red" : ""} />
-        <span className={`pl-3 ${active === 3 ? "text-red-500" : ""}`}>
-          Refund Orders
+        <HiOutlineReceiptRefund size={20} color={active === 3 ? "red" : "#555"} className="flex-shrink-0" />
+        <span className={`pl-3 ${active === 3 ? "text-red-500" : "text-[#555]"} text-[15px] lg:block md:block sm:block hidden`}>
+          Refunds
         </span>
       </div>
 
       <div
-        className="flex items-center cursor-pointer w-full mb-8"
+        className="flex items-center cursor-pointer w-full mb-5"
+        onClick={() => setActive(4)}
+      >
+        <AiOutlineMessage size={20} color={active === 4 ? "red" : "#555"} className="flex-shrink-0" />
+        <span className={`pl-3 ${active === 4 ? "text-red-500" : "text-[#555]"} text-[15px] lg:block md:block sm:block hidden`}>
+          Inbox
+        </span>
+      </div>
+
+      <div
+        className="flex items-center cursor-pointer w-full mb-5"
         onClick={() => setActive(5)}
       >
-        <MdOutlineTrackChanges size={20} color={active === 5 ? "red" : ""} />
-        <span className={`pl-3 ${active === 5 ? "text-red-500" : ""}`}>
+        <MdOutlineTrackChanges size={20} color={active === 5 ? "red" : "#555"} className="flex-shrink-0" />
+        <span className={`pl-3 ${active === 5 ? "text-red-500" : "text-[#555]"} text-[15px] lg:block md:block sm:block hidden`}>
           Track Order
         </span>
       </div>
 
       <div
-        className="flex items-center cursor-pointer w-full mb-8"
+        className="flex items-center cursor-pointer w-full mb-5"
         onClick={() => setActive(6)}
       >
-        <AiOutlineCreditCard size={20} color={active === 6 ? "red" : ""} />
-        <span className={`pl-3 ${active === 6 ? "text-red-500" : ""}`}>
+        <AiOutlineCreditCard size={20} color={active === 6 ? "red" : "#555"} className="flex-shrink-0" />
+        <span className={`pl-3 ${active === 6 ? "text-red-500" : "text-[#555]"} text-[15px] lg:block md:block sm:block hidden`}>
           Payment Methods
         </span>
       </div>
 
       <div
-        className="flex items-center cursor-pointer w-full mb-8"
+        className="flex items-center cursor-pointer w-full mb-5"
         onClick={() => setActive(7)}
       >
-        <TbAddressBook size={20} color={active === 7 ? "red" : ""} />
-        <span className={`pl-3 ${active === 7 ? "text-red-500" : ""}`}>
-          My Addresses
+        <TbAddressBook size={20} color={active === 7 ? "red" : "#555"} className="flex-shrink-0" />
+        <span className={`pl-3 ${active === 7 ? "text-red-500" : "text-[#555]"} text-[15px] lg:block md:block sm:block hidden`}>
+          Address
         </span>
       </div>
 
       <div
-        className="flex items-center cursor-pointer w-full mb-8"
-        onClick={logoutHandler}
+        className="flex items-center cursor-pointer w-full mb-5"
+        onClick={logOutHandler}
       >
-        <AiOutlineLogin size={20} />
-        <span className="pl-3">Log Out</span>
+        <AiOutlineLogin size={20} color={active === 8 ? "red" : "#555"} className="flex-shrink-0" />
+        <span className={`pl-3 ${active === 8 ? "text-red-500" : "text-[#555]"} text-[15px] lg:block md:block sm:block hidden`}>
+          Log out
+        </span>
       </div>
 
     </div>

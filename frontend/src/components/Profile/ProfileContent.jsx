@@ -11,12 +11,12 @@ import { MdTrackChanges } from "react-icons/md";
 const ProfileContent = ({ active }) => {
   const { user } = useSelector((state) => state.user);
 
-  const [name, setname] = useState(user?.name || "");
-  const [email, setemail] = useState(user?.email || "");
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [address1, setAddress1] = useState("");
-  const [address2, setAdress2] = useState("");
+  const [address2, setAddress2] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25,7 +25,7 @@ const ProfileContent = ({ active }) => {
   return (
     <div className="w-full">
 
-      {/* ==================== PROFILE =================== */}
+      {/* ================= PROFILE ================= */}
       {active === 1 && (
         <>
           <div className="flex justify-center w-full">
@@ -33,130 +33,121 @@ const ProfileContent = ({ active }) => {
               <img
                 src={`${backend_url}${user?.avatar}`}
                 alt="Profile"
-                className="w-[120px] h-[120px] rounded-full object-cover"
+                className="w-[150px] h-[150px] rounded-full object-cover border-4 border-[#3bc177]"
               />
-              <div className="w-[30px] h-[30px] bg-[#E3E9EE] rounded-full flex items-center justify-center cursor-pointer absolute bottom-5 right-5">
-                <AiOutlineCamera />
+
+              <div className="w-[35px] h-[35px] bg-[#E3E9EE] rounded-full flex items-center justify-center cursor-pointer absolute bottom-[5px] right-[5px]">
+                <AiOutlineCamera size={20} />
               </div>
             </div>
           </div>
 
-          <div className="w-full px-5 mt-6">
-            <form className="flex w-full flex-wrap" onSubmit={handleSubmit}>
-              <div className="w-full flex pb-3">
-                <div className="w-[50%]">
-                  <label className="block pb-2">Full Name</label>
+          <div className="w-full px-5 mt-8">
+            <form onSubmit={handleSubmit}>
+              <div className="w-full flex flex-wrap">
+                
+                {/* Full Name */}
+                <div className="w-full md:w-[50%] pb-3 md:pr-2">
+                  <label className="block pb-2 text-[#000000ba]">Full Name</label>
                   <input
                     type="text"
-                    className={`${styles.input} !w-[95%]`}
+                    className={`${styles.input} w-full mb-4 md:mb-0`}
                     value={name}
-                    onChange={(e) => setname(e.target.value)}
+                    onChange={(e) => setName(e.target.value)}
                   />
                 </div>
 
-                <div className="w-[50%] pb-3">
-                  <label className="block pb-2">Email</label>
+                {/* Email */}
+                <div className="w-full md:w-[50%] pb-3 md:pl-2">
+                  <label className="block pb-2 text-[#000000ba]">Email Address</label>
                   <input
                     type="email"
-                    className={`${styles.input} !w-[95%]`}
+                    className={`${styles.input} w-full mb-4 md:mb-0`}
                     value={email}
-                    onChange={(e) => setemail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-              </div>
 
-              <div className="w-full flex pb-3">
-                <div className="w-[50%]">
-                  <label className="block pb-2">Phone Number</label>
+                {/* Phone Number */}
+                <div className="w-full md:w-[50%] pb-3 md:pr-2">
+                  <label className="block pb-2 text-[#000000ba]">Phone Number</label>
                   <input
                     type="number"
-                    className={`${styles.input} !w-[95%]`}
+                    className={`${styles.input} w-full mb-4 md:mb-0`}
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                   />
                 </div>
 
-                <div className="w-[50%] pb-3">
-                  <label className="block pb-2">Zip Code</label>
+                {/* Zip Code */}
+                <div className="w-full md:w-[50%] pb-3 md:pl-2">
+                  <label className="block pb-2 text-[#000000ba]">Zip Code</label>
                   <input
                     type="number"
-                    className={`${styles.input} !w-[95%]`}
+                    className={`${styles.input} w-full mb-4 md:mb-0`}
                     value={zipCode}
                     onChange={(e) => setZipCode(e.target.value)}
                   />
                 </div>
-              </div>
 
-              <div className="w-full flex pb-3">
-                <div className="w-[50%]">
-                  <label className="block pb-2">Address 1</label>
+                {/* Address 1 */}
+                <div className="w-full md:w-[50%] pb-3 md:pr-2">
+                  <label className="block pb-2 text-[#000000ba]">Address 1</label>
                   <input
                     type="text"
-                    className={`${styles.input} !w-[95%]`}
+                    className={`${styles.input} w-full mb-4 md:mb-0`}
                     value={address1}
                     onChange={(e) => setAddress1(e.target.value)}
                   />
                 </div>
 
-                <div className="w-[50%] pb-3">
-                  <label className="block pb-2">Address 2</label>
+                {/* Address 2 */}
+                <div className="w-full md:w-[50%] pb-3 md:pl-2">
+                  <label className="block pb-2 text-[#000000ba]">Address 2</label>
                   <input
                     type="text"
-                    className={`${styles.input} !w-[95%]`}
+                    className={`${styles.input} w-full mb-4 md:mb-0`}
                     value={address2}
-                    onChange={(e) => setAdress2(e.target.value)}
+                    onChange={(e) => setAddress2(e.target.value)}
                   />
                 </div>
+
               </div>
 
               <input
                 type="submit"
                 value="Update"
-                className="w-[250px] h-[40px] border border-[#3a24db] text-center text-[#3a24db] rounded-[3px] mt-8 cursor-pointer"
+                className="w-[250px] h-[40px] border border-[#3a24db] text-center text-[#3a24db] rounded-[3px] mt-8 cursor-pointer hover:bg-[#3a24db] hover:text-white transition-all"
               />
             </form>
           </div>
         </>
       )}
 
-      {/* ==================== ORDERS =================== */}
-      {active === 2 &&
-      <div>
-        <AllOrders />
-      </div>
-}
+      {/* ================= ORDERS ================= */}
+      {active === 2 && <AllOrders />}
 
-      {/* ==================== REFUND ORDERS =================== */}
-      {active === 3 &&
-      <div>
-        <AllRefundOrders />
-      </div> 
-      }
-
-      {/* ==================== TRACK ORDER =================== */}
-      {active === 5 &&
-      <div>
-      <TrackOrder />
-      </div>
-       }
-
+      {/* ================= REFUND ORDERS ================= */}
+      {active === 3 && <AllRefundOrders />}
       
-      {/* ==================== Payment Method    =================== */}
-      {active === 6 && 
-      <div>
-        <PaymentMethod />
-      </div>
-      }
-      {/* ==================== User Address   =================== */}
-      {active === 7 && 
-      <div>
-        <Address/>
-      </div>
-      }
+      {/* ================= inbox ================= */}
+      {active === 4 && <Inbox />}
+
+      {/* ================= TRACK ORDER ================= */}
+      {active === 5 && <TrackOrder />}
+
+      {/* ================= PAYMENT METHOD ================= */}
+      {active === 6 && <PaymentMethod />}
+
+      {/* ================= ADDRESS ================= */}
+      {active === 7 && <Address />}
     </div>
   );
 };
 
+/* ===========================================================
+   ORDERS TABLE COMPONENTS
+=========================================================== */
 
 const AllOrders = () => {
   const orders = [
@@ -184,18 +175,8 @@ const AllOrders = () => {
       cellClassName: (params) =>
         params.value === "Delivered" ? "greenColor" : "redColor",
     },
-    {
-      field: "itemsQty",
-      headerName: "Items Qty",
-      type: "number",
-      flex: 1,
-    },
-    {
-      field: "total",
-      headerName: "Total",
-      type: "number",
-      flex: 1,
-    },
+    { field: "itemsQty", headerName: "Items Qty", type: "number", flex: 1 },
+    { field: "total", headerName: "Total", type: "number", flex: 1 },
     {
       field: "actions",
       headerName: "Action",
@@ -218,6 +199,9 @@ const AllOrders = () => {
   );
 };
 
+/* ===========================================================
+   REFUND ORDERS
+=========================================================== */
 
 const AllRefundOrders = () => {
   const orders = [
@@ -269,6 +253,22 @@ const AllRefundOrders = () => {
   );
 };
 
+/* ===========================================================
+   INBOX COMPONENT
+=========================================================== */
+
+const Inbox = () => {
+  return (
+    <div className="w-full px-5">
+      <h1 className="text-[25px] font-semibold text-[#000000ba] pb-4">Inbox</h1>
+      <p className="text-[#000000ba]">No messages yet.</p>
+    </div>
+  );
+};
+
+/* ===========================================================
+   TRACK ORDER
+=========================================================== */
 
 const TrackOrder = () => {
   const orders = [
@@ -300,7 +300,6 @@ const TrackOrder = () => {
     { field: "total", headerName: "Total", type: "number", flex: 1 },
     {
       field: "track",
-      headerName: "",
       flex: 1,
       sortable: false,
       renderCell: (params) => (
@@ -320,78 +319,85 @@ const TrackOrder = () => {
   );
 };
 
+/* ===========================================================
+   PAYMENT METHOD
+=========================================================== */
+
 const PaymentMethod = () => {
   return (
-    <div className="w-full px-5" >  
-    <div className="flex w-full items-center justify-between">
-      <h1 className="text-[25px] font-semibold text-[#000000ba]">
-        Payments Method
-      </h1>
-      <div className={`${styles.button} rounded-md` }>
-        <span className="text-white">Add New</span>
-      </div>
-    </div>
-    <br />
-    <div className="w-full bg-white h-[70px] flex items-center justify-between pr-10">
-      <div className="flex items-center">
-        <img 
-        src="https://bonik-react.vercel.app/assets/images/payment-methods/Visa.svg"
-        alt="" />
-        <h5 className="pl-5 font-semibold">Tania Ashraf</h5>
-      </div>
-      <div className="pl-8 flex items-center">
-       <h6>
-         1234***** **** ****
-        </h6>
-        <h5 className="pl-6">08/2026</h5>
-      </div>
-      <div className="min-w-[10%] flex items-center justify-between">
-        <AiOutlineDelete size={25} className="cursor-pointer" />
+    <div className="w-full px-5">
+      <div className="flex w-full items-center justify-between">
+        <h1 className="text-[25px] font-semibold text-[#000000ba]">
+          Payment Methods
+        </h1>
+
+        <div className={`${styles.button} rounded-md`}>
+          <span className="text-white">Add New</span>
+        </div>
       </div>
 
-      
+      <br />
 
-    </div>
+      <div className="w-full bg-white h-[70px] rounded-[5px] flex items-center px-3 shadow justify-between pr-10">
+        <div className="flex items-center">
+          <img
+            src="https://bonik-react.vercel.app/assets/images/payment-methods/Visa.svg"
+            alt="Visa"
+          />
+          <h5 className="pl-5 font-[600]">Tania Ashraf</h5>
+        </div>
+
+        <div className="pl-8 flex items-center">
+          <h6>1234 **** **** ****</h6>
+          <h5 className="pl-6">08/2026</h5>
+        </div>
+
+        <div className="min-w-[10%] flex justify-end pl-8">
+          <AiOutlineDelete size={25} className="cursor-pointer" />
+        </div>
+      </div>
     </div>
   );
 };
 
+/* ===========================================================
+   ADDRESS COMPONENT
+=========================================================== */
+
 const Address = () => {
   return (
-    <div className="w-full px-5" >  
-    <div className="flex w-full items-center justify-between">
-      <h1 className="text-[25px] font-semibold text-[#000000ba]">
-      My Addresses
-      </h1>
-      <div className={`${styles.button} rounded-md` }>
-        <span className="text-white">Add New</span>
-      </div>
-    </div>
-    <br />
-    <div className="w-full bg-white h-[70px] flex items-center justify-between pr-10">
-      <div className="flex items-center">
-        <h5 className="pl-5 font-semibold">Deafult </h5>
-      </div>
-      <div className="pl-8 flex items-center">
-       <h6>
-         494 Erdman Passage, New Zoile Town , IL 60622, USA
-        </h6>
-      </div>
-      <div className="pl-8 flex items-center">
-       <h6>
-        (+880) 840-9416
-        </h6>
-      </div>
-      <div className="min-w-[10%] flex items-center justify-between">
-        <AiOutlineDelete size={25} className="cursor-pointer" />
+    <div className="w-full px-5">
+      <div className="flex w-full items-center justify-between">
+        <h1 className="text-[25px] font-semibold text-[#000000ba]">
+          My Addresses
+        </h1>
+
+        <div className={`${styles.button} rounded-md`}>
+          <span className="text-white">Add New</span>
+        </div>
       </div>
 
-      
+      <br />
 
-    </div>
+      <div className="w-full bg-white h-[70px] rounded-[5px] flex items-center px-3 shadow justify-between pr-10">
+        <div className="min-w-[20%]">
+          <h5 className="pl-5 font-[600]">Default</h5>
+        </div>
+
+        <div className="min-w-[50%] pl-8">
+          <h6>494 Erdman Passage, New Zoile Town, IL 60622, USA</h6>
+        </div>
+
+        <div className="min-w-[10%] pl-8">
+          <h6>(+880) 840-9416</h6>
+        </div>
+
+        <div className="min-w-[10%] flex justify-end pl-8">
+          <AiOutlineDelete size={25} className="cursor-pointer" />
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default ProfileContent;
- 

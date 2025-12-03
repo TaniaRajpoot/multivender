@@ -14,13 +14,17 @@ export const userReducer = createReducer(initialState, (builder) => {
       state.loading = false;
       state.user = action.payload;
     })
-    .addCase("LoadUserFail", (state, action) => {
+   .addCase("LoadUserFail", (state, action) => {
       state.loading = false;
-      state.error = action.payload;
       state.isAuthenticated = false;
+      state.error = action.payload;
     })
     .addCase("clearErrors", (state) => {
       state.error = null;
+    })
+    .addCase("LogoutSuccess", (state) => {
+      state.isAuthenticated = false;
+      state.user = null;
     });
 });
 
