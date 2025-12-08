@@ -29,6 +29,7 @@ const Header = ({ activeHeading }) => {
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishList] = useState(false);
   const [open, setOpen] = useState(false);
+  const {isSeller} = useSelector((state) => state.seller);
 
   const handleSearchChange = (e) => {
     const term = e.target.value;
@@ -115,9 +116,9 @@ const Header = ({ activeHeading }) => {
           </div>
 
           <div className={`${styles.button}`}>
-            <Link to="/shop-create">
+            <Link to={`${isSeller ? "/dashboard" : "/shop-create"}`}>
               <h1 className="text-[#ffff] flex items-center">
-                Become Seller <IoIosArrowForward className="ml-1" />
+                {isSeller ? "Go to Shop" : "Become Seller"} <IoIosArrowForward className="ml-1" />
               </h1>
             </Link>
           </div>
