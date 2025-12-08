@@ -18,23 +18,18 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import Store from "./redux/store.js";
-import { loadSeller, loadUser } from "./redux/actions/user.js";
+import { loadUser } from "./redux/actions/user.js";
+import { loadSeller } from "./redux/actions/seller.js";
 import { useSelector } from "react-redux";
 import ProtectedRoute from "./ProtectedRoute.jsx";
-import {ShopHomePage} from "./ShopRoutes.js"
+import {ShopHomePage,ShopDashboardPage} from "./ShopRoutes.js"
 import SellerProtectedRoute from "./SelllerProtectedRoute.jsx";
 
 // Create a new component for routes that can use useNavigate
 const AppRoutes = () => {
   const { isAuthenticated } = useSelector((state) => state.user);
-  const {  isSeller, seller } = useSelector((state) => state.seller);
-  const navigate = useNavigate(); // ✅ Now inside BrowserRouter
+  const {  isSeller} = useSelector((state) => state.seller);
 
-  useEffect(() => {
-    if (isSeller && seller?._id) {
-      navigate(`/seller/${seller._id}`);
-    }
-  }, [isSeller, seller, navigate]);
 
   return (
     <>
@@ -73,6 +68,14 @@ const AppRoutes = () => {
             <ShopHomePage />
           </SellerProtectedRoute>
         } />
+         <Route
+            path="/dashboard"
+            element={
+              <SellerProtectedRoute>
+                <ShopDashboardPage />
+              </SellerProtectedRoute>
+            }
+          />
       </Routes>
       <ToastContainer />
     </>
@@ -92,7 +95,7 @@ const App = () => {
     <>
       {loading || isLoading ? null : (
         <BrowserRouter>
-          <AppRoutes /> {/* ✅ Routes component is now inside BrowserRouter */}
+          <AppRoutes /> 
         </BrowserRouter>
       )}
     </>
