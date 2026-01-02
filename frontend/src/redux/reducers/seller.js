@@ -1,8 +1,7 @@
 import { createReducer } from "@reduxjs/toolkit";
 
 const initialState = {
-  isSeller: false,
-  seller: null,
+  isLoading: true,
 };
 
 export const SellerReducer = createReducer(initialState, (builder) => {
@@ -20,6 +19,13 @@ export const SellerReducer = createReducer(initialState, (builder) => {
       state.error = action.payload;
       state.isSeller = false;
     })
+    .addCase("sellerLogout", (state) => {
+      state.isSeller = false;
+      state.seller = null;
+      state.isLoading = false;
+      state.error = null;
+      state.success = false;
+    });
 });
 
 export default SellerReducer;

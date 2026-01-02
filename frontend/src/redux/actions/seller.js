@@ -13,10 +13,10 @@ export const loadSeller = ( ) =>async(dispatch) =>{
             payload: data.seller,
         });
     } catch (error) {
+        console.error('LoadSeller error:', error);
         dispatch({
             type:"LoadSellerFail",
-            payload:error.response.data.message
+            payload: error?.response?.data?.message || error?.message || "Something went wrong"
         })
     }
 }
-

@@ -14,21 +14,20 @@ import {
   ShopCreatePage,
   SellerActivationPage,
   ShopLoginPage
-} from "./Routes.js";
+} from "./routes/Routes.js";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import Store from "./redux/store.js";
 import { loadUser } from "./redux/actions/user.js";
 import { loadSeller } from "./redux/actions/seller.js";
-import { useSelector } from "react-redux";
-import ProtectedRoute from "./ProtectedRoute.jsx";
-import {ShopHomePage,ShopDashboardPage} from "./ShopRoutes.js"
-import SellerProtectedRoute from "./SelllerProtectedRoute.jsx";
+import ProtectedRoute from "./routes/ProtectedRoute.jsx";
+import { ShopHomePage, ShopDashboardPage,ShopCreateProduct, ShopAllProducts,ShopCreateEvent,ShopAllEvents ,ShopAllCoupons,ShopPreviewPage} from "./routes/ShopRoutes.js";
+import SellerProtectedRoute from "./routes/SelllerProtectedRoute.jsx";
+import { Navigate } from "react-router-dom";
+
 
 // Create a new component for routes that can use useNavigate
 const AppRoutes = () => {
-  const { isAuthenticated } = useSelector((state) => state.user);
-  const {  isSeller} = useSelector((state) => state.seller);
 
 
   return (
@@ -53,38 +52,79 @@ const AppRoutes = () => {
         <Route
           path="/profile"
           element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <ProtectedRoute >
               <ProfilePage />
             </ProtectedRoute>
           }
         />
+        
 
         {/* Shop Route  */}
+        <Route path="*" element={<Navigate to="/shop-login" replace />} />
+
+        <Route path="/shop" element={<ShopHomePage />} />
         <Route path="/shop-create" element={<ShopCreatePage />} />
         <Route path="/shop-login" element={<ShopLoginPage />} />
-        <Route path="/shop/:id" element={
-          <SellerProtectedRoute
-          isSeller={isSeller}>
-            <ShopHomePage />
-          </SellerProtectedRoute>
-        } />
-         <Route
-            path="/dashboard"
-            element={
-              <SellerProtectedRoute>
-                <ShopDashboardPage />
-              </SellerProtectedRoute>
-            }
-          />
+        <Route path="/shop/:id" element={<ShopHomePage />} />
+        {/* <Route path="/shop/preview/:id" element={<ShopPreviewPage />} /> */}
+        <Route
+          path="/dashboard"
+          element={
+            <SellerProtectedRoute>
+              <ShopDashboardPage />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-create-product"
+          element={
+            <SellerProtectedRoute>
+          <ShopCreateProduct/>
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-products"
+          element={
+            <SellerProtectedRoute>
+          <ShopAllProducts/>
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-create-event"
+          element={
+            <SellerProtectedRoute>
+          <ShopCreateEvent/>
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-events"
+          element={
+            <SellerProtectedRoute>
+          <ShopAllEvents/>
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-coupons"
+          element={
+            <SellerProtectedRoute>
+          <ShopAllCoupons/>
+            </SellerProtectedRoute>
+          }
+        />
+
       </Routes>
+
       <ToastContainer />
     </>
   );
 };
 
 const App = () => {
-  const { loading } = useSelector((state) => state.user);
-  const { isLoading } = useSelector((state) => state.seller);
+
 
   useEffect(() => {
     Store.dispatch(loadUser());
@@ -93,12 +133,10 @@ const App = () => {
 
   return (
     <>
-      {loading || isLoading ? null : (
         <BrowserRouter>
-          <AppRoutes /> 
+          <AppRoutes />
         </BrowserRouter>
-      )}
-    </>
+      </>
   );
 };
 
