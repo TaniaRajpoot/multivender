@@ -63,11 +63,12 @@ const ProductCard = ({ data, isEvent }) => {
               : `/product/${data._id}`
           }`}
         >
-          <img
-            src={`${data.images && data.images[0]?.url}`}
-            alt=""
-            className="w-full h-[170px] object-cover rounded-t-lg"
-          />
+         <img
+  src={`${backend_url}/${data.images && data.images[0]?.url}`}
+  alt=""
+  className="w-full h-[170px] object-cover rounded-t-lg"
+/>
+
         </Link>
         <Link to={`/shop/preview/${data?.shop._id}`}>
           <h5 className={`${styles.shop_name}`}>{data.shop.name}</h5>

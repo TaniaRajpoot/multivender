@@ -3,10 +3,11 @@ const router = express.Router();
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const {upload} = require("../multer");
 const Event = require("../model/event");
-const ErrorHandler = require("../utils/errorHandler");
+const ErrorHandler = require("../utils/ErrorHandler");
 const Shop = require("../model/shop");
 const path = require("path");
 const fs = require("fs"); 
+
 
 // Create a new event
 router.post(

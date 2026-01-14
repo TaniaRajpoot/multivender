@@ -8,7 +8,7 @@ const ShopAllCoupons = () => {
     <div>
       <DashboardHeader />
       <div className="flex justify-between w-full">
-        <div className="800px:w-[330px] w-[80px]">
+        <div className="w-20 md:w-[100px] lg:w-[330px]">
           <DashboardSideBar active={9} />
         </div>
         <div className="w-full flex justify-center">

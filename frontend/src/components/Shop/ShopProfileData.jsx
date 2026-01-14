@@ -1,122 +1,121 @@
-
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
-import styles from "../../styles/styles";
 import ProductCard from "../Route/ProductCard/ProductCard";
-import {productData} from "../../static/data";
+import { useParams, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProductsShop } from "../../redux/actions/product";
+import { getAllEventsShop } from "../../redux/actions/event";
+import { backend_url } from "../../server";
+// import Ratings from "../Products/Ratings";
+import styles from "../../styles/styles";
 
 const ShopProfileData = ({ isOwner }) => {
-  // const { products } = useSelector((state) => state.products);
-  // const { events } = useSelector((state) => state.events);
-  // const { id } = useParams();
   const dispatch = useDispatch();
+  const { id: paramId } = useParams(); // ID from URL for public shops
+  const { seller } = useSelector((state) => state.seller); // logged-in seller
+  const { products } = useSelector((state) => state.product);
+  const { events } = useSelector((state) => state.events);
+
+  // Determine which shop ID to use
+  const shopId = paramId || seller?._id;
+
+  useEffect(() => {
+    if (shopId) {
+      dispatch(getAllProductsShop(shopId));
+      dispatch(getAllEventsShop(shopId));
+    }
+  }, [dispatch, shopId]);
+
+  const allReviews = products ? products.map((p) => p.reviews || []).flat() : [];
+
   const [active, setActive] = useState(1);
-
-  // useEffect(() => {
-  //   // if (id) {
-  //   //   dispatch(getAllProductsShop(id));
-  //   //   dispatch(getAllEventsShop(id));
-  //   // }
-  // }, [dispatch, id]);
-
-  // Flatten all reviews from products
-  // const allReviews = products?.flatMap((product) => product.reviews) || [];
 
   return (
     <div className="w-full">
-      {/* Tabs */}
-      <div className="flex w-full items-center justify-between">
-        <div className="flex space-x-5">
-          {[
-            { id: 1, label: "Shop Products" },
-            { id: 2, label: "Running Events" },
-            { id: 3, label: "Shop Reviews" },
-          ].map((tab) => (
-            <h5
-              key={tab.id}
-              onClick={() => setActive(tab.id)}
-              className={`font-[600] text-[20px] cursor-pointer ${
-                active === tab.id ? "text-red-500" : "text-[#333]"
-              }`}
-            >
-              {tab.label}
-            </h5>
-          ))}
+      {/* Toggle Part */}
+      <div className="flex w-full items-center justify-between pr-[20px]">
+        <div className="w-full flex">
+          <h5
+            onClick={() => setActive(1)}
+            className={`${active === 1 ? "text-red-500" : "text-[#333]"} font-[600] text-[20px] cursor-pointer mr-4`}
+          >
+            Shop Products
+          </h5>
+          <h5
+            onClick={() => setActive(2)}
+            className={`${active === 2 ? "text-red-500" : "text-[#333]"} font-[600] text-[20px] cursor-pointer mr-4`}
+          >
+            Running Events
+          </h5>
+          <h5
+            onClick={() => setActive(3)}
+            className={`${active === 3 ? "text-red-500" : "text-[#333]"} font-[600] text-[20px] cursor-pointer mr-4`}
+          >
+            Shop Reviews
+          </h5>
         </div>
 
-        {/* Dashboard Link */}
-        {isOwner && (
-          <Link to="/dashboard">
-            <div className={`${styles.button} !rounded-[4px] h-[42px]`}>
-              <span className="text-white">Go Dashboard</span>
-            </div>
-          </Link>
-        )}
+   
+          <div>
+            <Link to="/dashboard">
+              <div className={`${styles.button} !rounded-[4px] h-[42px]`}>
+                <span className="text-[#fff] capitalize">Go to Dashboard</span>
+              </div>
+            </Link>
+          </div>
+        
       </div>
 
       <br />
 
-      {/* Active Tab Content */}
+      {/* Toggle Content Part */}
+
+      {/* Products */}
       {active === 1 && (
         <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-12">
-          {/* {products?.map((product, index) => (
-            <ProductCard key={index} data={product} isShop />
-          ))} */}
-          {
-            productData && productData.map((product, index) => (
-              <ProductCard key={index} data={product} isShop />
-            ))
-          }
-        </div>
-      )}
-
-      {active === 2 && (
-        <div className="w-full">
-          {events?.length > 0 ? (
-            <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-12">
-              {events.map((event, index) => (
-                <ProductCard key={index} data={event} isShop isEvent />
-              ))}
-            </div>
+          {products?.length > 0 ? (
+            products.map((p) => <ProductCard key={p._id} data={p} isShop />)
           ) : (
-            <h5 className="w-full text-center py-5 text-[18px]">
-              No Events for this shop!
-            </h5>
+            <h5 className="text-center py-5 text-[18px]">No products for this shop!</h5>
           )}
         </div>
       )}
 
+      {/* Events */}
+      {active === 2 && (
+        <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-12">
+          {events?.length > 0 ? (
+            events.map((e) => <ProductCard key={e._id} data={e} isShop isEvent />)
+          ) : (
+            <h5 className="text-center py-5 text-[18px]">No events for this shop!</h5>
+          )}
+        </div>
+      )}
+
+      {/* Reviews */}
       {active === 3 && (
         <div className="w-full">
           {allReviews?.length > 0 ? (
-            allReviews.map((review, index) => (
-              <div key={index} className="w-full flex my-4">
+            allReviews.map((r) => (
+              <div className="flex my-4" key={r._id}>
                 <img
-                  src={review.user.avatar?.url}
+                  src={`${backend_url}/${r.user.avatar}`}
                   className="w-[50px] h-[50px] rounded-full"
-                  alt={review.user.name}
+                  alt={r.user.name}
                 />
-                <div className="pl-2 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h1 className="font-[600]">
-                      {/* {review.user.name} */}
-
-                      </h1>
-                    {/* <Ratings rating={review.rating} /> */}
+                <div className="pl-2">
+                  <div className="flex items-center">
+                    <h1 className="font-[600] pr-2">{r.user.name}</h1>
+                    <Ratings rating={r.rating} />
                   </div>
-                  <p className="text-[#000000a7]">
-                    {/* {review.comment} */}
-                    Great products and excellent customer service!
+                  <p className="text-[#000000a7]">{r.comment}</p>
+                  <p className="text-[#000000a7] text-[14px]">
+                    {new Date(r.createdAt).toLocaleString()}
                   </p>
-                  <p className="text-[#000000a7] text-[14px]">2 days ago</p>
                 </div>
               </div>
             ))
           ) : (
-            <h5 className="w-full text-center py-5 text-[18px]">
-              No Reviews for this shop!
-            </h5>
+            <h5 className="text-center py-5 text-[18px]">No reviews for this shop!</h5>
           )}
         </div>
       )}

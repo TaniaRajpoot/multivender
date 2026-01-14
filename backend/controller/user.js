@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const { upload } = require("../multer");
-const ErrorHandler = require("../utils/errorHandler");
+const ErrorHandler = require("../utils/ErrorHandler");
 const router = express.Router();
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const User = require("../model/user");

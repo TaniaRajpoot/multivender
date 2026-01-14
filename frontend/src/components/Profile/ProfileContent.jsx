@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { backend_url } from "../../server";
 import { useSelector } from "react-redux";
-import { AiOutlineCamera, AiOutlineArrowRight, AiOutlineDelete } from "react-icons/ai";
+import {
+  AiOutlineCamera,
+  AiOutlineArrowRight,
+  AiOutlineDelete,
+} from "react-icons/ai";
 import styles from "../../styles/styles";
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
@@ -24,14 +28,13 @@ const ProfileContent = ({ active }) => {
 
   return (
     <div className="w-full">
-
       {/* ================= PROFILE ================= */}
       {active === 1 && (
         <>
           <div className="flex justify-center w-full">
             <div className="relative">
               <img
-                src={`${backend_url}${user?.avatar}`}
+                src={`${backend_url}/${user?.avatar}`}
                 alt="Profile"
                 className="w-[150px] h-[150px] rounded-full object-cover border-4 border-[#3bc177]"
               />
@@ -45,10 +48,11 @@ const ProfileContent = ({ active }) => {
           <div className="w-full px-5 mt-8">
             <form onSubmit={handleSubmit}>
               <div className="w-full flex flex-wrap">
-                
                 {/* Full Name */}
                 <div className="w-full md:w-[50%] pb-3 md:pr-2">
-                  <label className="block pb-2 text-[#000000ba]">Full Name</label>
+                  <label className="block pb-2 text-[#000000ba]">
+                    Full Name
+                  </label>
                   <input
                     type="text"
                     className={`${styles.input} w-full mb-4 md:mb-0`}
@@ -59,7 +63,9 @@ const ProfileContent = ({ active }) => {
 
                 {/* Email */}
                 <div className="w-full md:w-[50%] pb-3 md:pl-2">
-                  <label className="block pb-2 text-[#000000ba]">Email Address</label>
+                  <label className="block pb-2 text-[#000000ba]">
+                    Email Address
+                  </label>
                   <input
                     type="email"
                     className={`${styles.input} w-full mb-4 md:mb-0`}
@@ -70,7 +76,9 @@ const ProfileContent = ({ active }) => {
 
                 {/* Phone Number */}
                 <div className="w-full md:w-[50%] pb-3 md:pr-2">
-                  <label className="block pb-2 text-[#000000ba]">Phone Number</label>
+                  <label className="block pb-2 text-[#000000ba]">
+                    Phone Number
+                  </label>
                   <input
                     type="number"
                     className={`${styles.input} w-full mb-4 md:mb-0`}
@@ -81,7 +89,9 @@ const ProfileContent = ({ active }) => {
 
                 {/* Zip Code */}
                 <div className="w-full md:w-[50%] pb-3 md:pl-2">
-                  <label className="block pb-2 text-[#000000ba]">Zip Code</label>
+                  <label className="block pb-2 text-[#000000ba]">
+                    Zip Code
+                  </label>
                   <input
                     type="number"
                     className={`${styles.input} w-full mb-4 md:mb-0`}
@@ -92,7 +102,9 @@ const ProfileContent = ({ active }) => {
 
                 {/* Address 1 */}
                 <div className="w-full md:w-[50%] pb-3 md:pr-2">
-                  <label className="block pb-2 text-[#000000ba]">Address 1</label>
+                  <label className="block pb-2 text-[#000000ba]">
+                    Address 1
+                  </label>
                   <input
                     type="text"
                     className={`${styles.input} w-full mb-4 md:mb-0`}
@@ -103,7 +115,9 @@ const ProfileContent = ({ active }) => {
 
                 {/* Address 2 */}
                 <div className="w-full md:w-[50%] pb-3 md:pl-2">
-                  <label className="block pb-2 text-[#000000ba]">Address 2</label>
+                  <label className="block pb-2 text-[#000000ba]">
+                    Address 2
+                  </label>
                   <input
                     type="text"
                     className={`${styles.input} w-full mb-4 md:mb-0`}
@@ -111,7 +125,6 @@ const ProfileContent = ({ active }) => {
                     onChange={(e) => setAddress2(e.target.value)}
                   />
                 </div>
-
               </div>
 
               <input
@@ -129,7 +142,7 @@ const ProfileContent = ({ active }) => {
 
       {/* ================= REFUND ORDERS ================= */}
       {active === 3 && <AllRefundOrders />}
-      
+
       {/* ================= inbox ================= */}
       {active === 4 && <Inbox />}
 

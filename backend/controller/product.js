@@ -3,10 +3,13 @@ const router = express.Router();
 const Product = require('../model/product');
 const {upload} = require('../multer');
 const Shop = require('../model/shop');
-const ErrorHandler = require('../utils/errorHandler');
+const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const path = require('path');
 const fs = require('fs');
+const { isSeller } = require("../middleware/auth");
+
+
 
 // Create a new product
 router.post('/create-product', upload.array('images'), catchAsyncErrors(async (req, res, next) => { 

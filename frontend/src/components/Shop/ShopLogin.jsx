@@ -27,8 +27,13 @@ const ShopLogin = () => {
         window.location.reload(true);
       })
       .catch((err) => {
-        toast.error(err.response.data?.message);
-      });
+  if (err.response && err.response.data && err.response.data.message) {
+    toast.error(err.response.data.message);
+  } else {
+    toast.error("Server not responding. Please try again later.");
+  }
+});
+
   };
 
   return (

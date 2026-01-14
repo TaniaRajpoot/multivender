@@ -7,10 +7,10 @@ const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const ErrorHandler = require("../utils/errorHandler");
-
+const ErrorHandler = require("../utils/ErrorHandler");
+const multer = require("../multer");
+const {isSeller} = require("../middleware/auth"); 
 const { upload } = require("../multer");
-const { isAuthenticated, isSeller } = require("../middleware/auth");
 
 
 // ---------------- UTILITY: Send Shop Token ----------------
@@ -61,7 +61,7 @@ router.post(
       return next(new ErrorHandler("Please upload a shop avatar", 400));
     }
 
-    const fileUrl = path.join(req.file.filename);
+const fileUrl = `/uploads/${req.file.filename}`;
 
     const seller = { name, email, password, avatar: fileUrl, address, phoneNumber, zipCode };
 
@@ -146,6 +146,25 @@ router.get(
   })
 );
 
+router.get(
+  "/get-shop-info/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      //this will return an object
+      const shop = await Shop.findById(req.params.id);
+      if (!shop) {
+        return next(new ErrorHandler("Seller does'nt exist!", 400));
+      }
+      res.status(200).json({
+        success: true,
+        shop,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 
 // LogOut Shop
 router.get(
@@ -165,6 +184,8 @@ router.get(
     }
   })
 );
+
+
 
 
 module.exports = router;

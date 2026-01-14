@@ -1,15 +1,14 @@
-
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { RxCross1 } from "react-icons/rx";
-import { useSelector } from "react-redux";
-import styles from "../../styles/styles";
+import { useSelector, useDispatch } from "react-redux";
 import Loader from "../Layout/Loader";
 import { server } from "../../server";
 import { toast } from "react-toastify";
+import { getAllProductsShop } from "../../redux/actions/product";
 
 const AllCoupons = () => {
   const [open, setOpen] = useState(false);
@@ -20,19 +19,33 @@ const AllCoupons = () => {
   const [maxAmount, setMaxAmount] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("");
   const [value, setValue] = useState("");
+  
+  const dispatch = useDispatch();
   const { seller } = useSelector((state) => state.seller);
-  const { products } = useSelector((state) => state.products);
+  const products = useSelector((state) => state.products?.products || []);
+
+  useEffect(() => {
+    if (seller?._id) {
+      dispatch(getAllProductsShop(seller._id));
+    }
+  }, [dispatch, seller]);
 
   useEffect(() => {
     const fetchCoupons = async () => {
+      if (!seller?._id) return;
+      
       setIsLoading(true);
       try {
-        const res = await axios.get(`${server}/coupon/get-coupon/${seller._id}`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          `${server}/coupon/get-coupon/${seller._id}`,
+          {
+            withCredentials: true,
+          }
+        );
         setCoupons(res.data.couponCodes);
       } catch (err) {
         console.error(err);
+        toast.error("Failed to fetch coupons");
       } finally {
         setIsLoading(false);
       }
@@ -41,6 +54,8 @@ const AllCoupons = () => {
   }, [seller]);
 
   const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this coupon?")) return;
+    
     try {
       await axios.delete(`${server}/coupon/delete-coupon/${id}`, {
         withCredentials: true,
@@ -54,19 +69,38 @@ const AllCoupons = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate fields
+    if (!name || !value) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     try {
+      console.log("Creating coupon with data:", {
+        name,
+        minAmount,
+        maxAmount,
+        selectedProducts: selectedProduct,
+        value,
+        shopId: seller._id,
+      });
+
       const res = await axios.post(
         `${server}/coupon/create-coupon-code`,
         {
           name,
-          minAmount,
-          maxAmount,
-          selectedProducts: selectedProduct,
-          value,
+          minAmount: minAmount || null,
+          maxAmount: maxAmount || null,
+          selectedProducts: selectedProduct || null,
+          value: Number(value),
           shopId: seller._id,
         },
         { withCredentials: true }
       );
+      
+    
+      
       toast.success("Coupon created successfully!");
       setCoupons((prev) => [...prev, res.data.coupon]);
       setOpen(false);
@@ -76,7 +110,13 @@ const AllCoupons = () => {
       setSelectedProduct("");
       setValue("");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Error creating coupon");
+      console.error("Coupon creation error:", err);
+      console.error("Error response:", err.response);
+      
+      const errorMessage = err.response?.data?.message || 
+                          err.message || 
+                          "Error creating coupon";
+      toast.error(errorMessage);
     }
   };
 
@@ -131,7 +171,7 @@ const AllCoupons = () => {
           </div>
 
           {open && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 z-[20000] flex items-center justify-center">
+            <div className="fixed inset-0 bg-[#00000080] z-[20000] flex items-center justify-center">
               <div className="w-[90%] sm:w-[500px] bg-white rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto">
                 <button
                   onClick={() => setOpen(false)}
@@ -164,7 +204,8 @@ const AllCoupons = () => {
 
                   <div>
                     <label className="block mb-1 font-medium">
-                      Discount Percentage <span className="text-red-500">*</span>
+                      Discount Percentage{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="number"
@@ -178,7 +219,9 @@ const AllCoupons = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block mb-1 font-medium">Min Amount</label>
+                      <label className="block mb-1 font-medium">
+                        Min Amount
+                      </label>
                       <input
                         type="number"
                         value={minAmount}
@@ -188,7 +231,9 @@ const AllCoupons = () => {
                       />
                     </div>
                     <div>
-                      <label className="block mb-1 font-medium">Max Amount</label>
+                      <label className="block mb-1 font-medium">
+                        Max Amount
+                      </label>
                       <input
                         type="number"
                         value={maxAmount}
@@ -209,11 +254,15 @@ const AllCoupons = () => {
                       className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-teal-500 outline-none"
                     >
                       <option value="">Choose product</option>
-                      {products?.map((i) => (
-                        <option value={i.name} key={i._id}>
-                          {i.name}
-                        </option>
-                      ))}
+                      {products && products.length > 0 ? (
+                        products.map((i) => (
+                          <option value={i.name} key={i._id}>
+                            {i.name}
+                          </option>
+                        ))
+                      ) : (
+                        <option disabled>No products available</option>
+                      )}
                     </select>
                   </div>
 
