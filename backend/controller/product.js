@@ -34,6 +34,7 @@ router.post('/create-product', upload.array('images'), catchAsyncErrors(async (r
     
     const productData = req.body;
     productData.images = imageUrls;
+    productData.shopId = shopId; 
     productData.shop = shop;
 
     console.log('Product Data before save:', productData);

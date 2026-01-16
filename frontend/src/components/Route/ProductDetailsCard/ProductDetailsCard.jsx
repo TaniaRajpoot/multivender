@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { RxCross1 } from "react-icons/rx";
-import styles from "../../../styles/style";
+import styles from "../../../styles/styles";
 import {
   AiFillHeart,
   AiOutlineHeart,
   AiOutlineMessage,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { addToCart } from "../../../redux/actions/cart";
+
 import { useDispatch, useSelector } from "react-redux";
 import { backend_url } from "../../../server";
 import { toast } from "react-toastify";
@@ -105,7 +105,7 @@ const ProductCardDetails = ({ setOpen, data }) => {
                 </div>
                 <div
                   className={`${styles.button}  bg-[#000000] mt-4 rounded-[4px] h-11`}
-                  onClick={handleMessageSubmit}
+                  // onClick={handleMessageSubmit}
                 >
                   <span className="text-[#fff]  flex items-center ">
                     Send Message <AiOutlineMessage className="ml-1" />
@@ -134,7 +134,7 @@ const ProductCardDetails = ({ setOpen, data }) => {
                   <div>
                     <button
                       className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-md px-4 py-2 shadow-lg hover:opacity-95 transition duration-300 ease-in-out"
-                      onClick={decrementCount}
+                      // onClick={decrementCount}
                     >
                       -
                     </button>
@@ -143,7 +143,7 @@ const ProductCardDetails = ({ setOpen, data }) => {
                     </span>
                     <button
                       className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-md px-4 py-2 shadow-lg hover:opacity-95 transition duration-300 ease-in-out"
-                      onClick={incrementCount}
+                      // onClick={incrementCount}
                     >
                       +
                     </button>
@@ -154,7 +154,7 @@ const ProductCardDetails = ({ setOpen, data }) => {
                       <AiFillHeart
                         size={20}
                         className="cursor-pointer "
-                        onClick={() => removeFromWishlistHandler(data)}
+                        // onClick={() => removeFromWishlistHandler(data)}
                         color={click ? "red" : "#333"}
                         title="Remove from wishlist"
                       />
@@ -162,7 +162,7 @@ const ProductCardDetails = ({ setOpen, data }) => {
                       <AiOutlineHeart
                         size={20}
                         className="cursor-pointer "
-                        onClick={() => addToWishlistHandler(data)}
+                        // onClick={() => addToWishlistHandler(data)}
                         title="Add to wishlist"
                       />
                     )}
@@ -170,7 +170,7 @@ const ProductCardDetails = ({ setOpen, data }) => {
                 </div>
                 <div
                   className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center`}
-                  onClick={() => AddToCartHandler(data._id)}
+                  // onClick={() => AddToCartHandler(data._id)}
                 >
                   <span className="text-[#fff]  flex items-center ">
                     Add to Cart <AiOutlineShoppingCart className="ml-1" />

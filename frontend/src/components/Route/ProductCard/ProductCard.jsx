@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import styles from "../../../styles/styles";
 
 import { backend_url } from "../../../server";
-import ProductDetails from "../../Products/ProductDetails";
+import ProductCardDetails from "../ProductDetailsCard/ProductDetailsCard";
 // import {
 //   addToWishList,
 //   removeFromWishList,

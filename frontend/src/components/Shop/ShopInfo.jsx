@@ -78,23 +78,23 @@ useEffect(() => {
             </p>
           </div>
           <div className="p-3">
-            <h5 className="font-[600]">Address</h5>
+            <h5 className="font-semibold">Address</h5>
             <h4 className="text-[#000000a6]">{data.address}</h4>
           </div>
           <div className="p-3">
-            <h5 className="font-[600]">Phone Number</h5>
+            <h5 className="font-semibold">Phone Number</h5>
             <h4 className="text-[#000000a6]">{data.phoneNumber}</h4>
           </div>
           <div className="p-3">
-            <h5 className="font-[600]">Total Products</h5>
+            <h5 className="font-semibold">Total Products</h5>
             <h4 className="text-[#000000a6]">{products && products.length}</h4>
           </div>
           <div className="p-3">
-            <h5 className="font-[600]">Shop Ratings</h5>
+            <h5 className="font-semibold">Shop Ratings</h5>
             <h4 className="text-[#000000b0]">{averageRating}/5</h4>
           </div>
           <div className="p-3">
-            <h5 className="font-[600]">Joined On</h5>
+            <h5 className="font-semibold">Joined On</h5>
             <h4 className="text-[#000000b0]">
               {data?.createdAt?.slice(0, 10)}
             </h4>
