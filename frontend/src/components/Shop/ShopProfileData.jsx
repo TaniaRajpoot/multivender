@@ -4,19 +4,35 @@ import { useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
 import { getAllEventsShop } from "../../redux/actions/event";
-import { backend_url } from "../../server";
-// import Ratings from "../Products/Ratings";
+import Ratings from "../Products/Ratings";
 import styles from "../../styles/styles";
 
 const ShopProfileData = ({ isOwner }) => {
   const dispatch = useDispatch();
-  const { id: paramId } = useParams(); // ID from URL for public shops
-  const { seller } = useSelector((state) => state.seller); // logged-in seller
+  const { id: paramId } = useParams();
+  const { seller } = useSelector((state) => state.seller);
   const { products } = useSelector((state) => state.product);
   const { events } = useSelector((state) => state.events);
 
-  // Determine which shop ID to use
   const shopId = paramId || seller?._id;
+
+  // Helper function to get image URL
+  const getImageUrl = (image) => {
+    if (!image) return "/placeholder.png";
+    
+    // If it's an object with url property (Cloudinary format)
+    if (typeof image === "object" && image.url) {
+      return image.url;
+    }
+    
+    // If it's already a URL string (starts with http)
+    if (typeof image === "string" && image.startsWith("http")) {
+      return image;
+    }
+    
+    // Fallback for old backend format or relative paths
+    return image;
+  };
 
   useEffect(() => {
     if (shopId) {
@@ -54,20 +70,16 @@ const ShopProfileData = ({ isOwner }) => {
           </h5>
         </div>
 
-   
-          <div>
-            <Link to="/dashboard">
-              <div className={`${styles.button} !rounded-[4px] h-[42px]`}>
-                <span className="text-[#fff] capitalize">Go to Dashboard</span>
-              </div>
-            </Link>
-          </div>
-        
+        <div>
+          <Link to="/dashboard">
+            <div className={`${styles.button} !rounded-[4px] h-[42px]`}>
+              <span className="text-[#fff] capitalize">Go to Dashboard</span>
+            </div>
+          </Link>
+        </div>
       </div>
 
       <br />
-
-      {/* Toggle Content Part */}
 
       {/* Products */}
       {active === 1 && (
@@ -95,12 +107,15 @@ const ShopProfileData = ({ isOwner }) => {
       {active === 3 && (
         <div className="w-full">
           {allReviews?.length > 0 ? (
-            allReviews.map((r) => (
-              <div className="flex my-4" key={r._id}>
+            allReviews.map((r, index) => (
+              <div className="flex my-4" key={index}>
                 <img
-                  src={`${backend_url}/${r.user.avatar}`}
-                  className="w-[50px] h-[50px] rounded-full"
+                  src={getImageUrl(r.user.avatar)}
+                  className="w-[50px] h-[50px] rounded-full object-cover"
                   alt={r.user.name}
+                  onError={(e) => {
+                    e.target.src = "/placeholder.png";
+                  }}
                 />
                 <div className="pl-2">
                   <div className="flex items-center">

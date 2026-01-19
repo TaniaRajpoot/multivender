@@ -229,6 +229,8 @@
 // };
 
 // export default CreateProduct;
+
+
 import React, { useEffect, useState } from "react";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
@@ -239,13 +241,12 @@ import { toast } from "react-toastify";
 
 const CreateProduct = () => {
   const { seller } = useSelector((state) => state.seller);
- 
   const { isLoading, success, error } = useSelector((state) => state.product);
   
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState([]); // Now stores base64 strings
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -253,8 +254,6 @@ const CreateProduct = () => {
   const [originalPrice, setOriginalPrice] = useState("");
   const [discountPrice, setDiscountPrice] = useState("");
   const [stock, setStock] = useState("");
-
-  
 
   useEffect(() => {
     if (error) {
@@ -270,53 +269,57 @@ const CreateProduct = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    // setImages([]);
-    // files.forEach((file) => {
-    //   const reader = new FileReader();
-    //   reader.onload = () => {
-    //     if (reader.readyState === 2) setImages((old) => [...old, reader.result]);
-    //   };
-    //   reader.readAsDataURL(file);
-    // });
-    setImages((prevImages) => [...prevImages, ...files]);
+
+    // Convert files to base64
+    const imagePromises = files.map((file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(imagePromises)
+      .then((base64Images) => {
+        setImages((prevImages) => [...prevImages, ...base64Images]);
+      })
+      .catch((error) => {
+        toast.error("Error reading images");
+        console.error(error);
+      });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    const newForm = new FormData();
-    images.forEach((image) => {
-      newForm.append("images", image);
+
+    if (!name || !description || !category || !discountPrice || !stock) {
+      toast.error("Please fill all required fields!");
+      return;
     }
-    );
-    newForm.append("name", name);
-    newForm.append("description", description);
-    newForm.append("category", category);
-    newForm.append("tags", tags);
-    newForm.append("originalPrice", originalPrice);
-    newForm.append("discountPrice", discountPrice);
-    newForm.append("stock", stock);
-    newForm.append("shopId", seller._id);
 
-    dispatch(createProduct(newForm));
+    if (images.length === 0) {
+      toast.error("Please upload at least one image!");
+      return;
+    }
 
-    // dispatch(
-    //   createProduct({
-    //     name,
-    //     description,
-    //     category,
-    //     tags,
-    //     originalPrice,
-    //     discountPrice,
-    //     stock,
-    //     shopId: seller._id,
-    //     images,
-    //   })
-    // );
+    const productData = {
+      name,
+      description,
+      category,
+      tags,
+      originalPrice: originalPrice || 0,
+      discountPrice,
+      stock,
+      shopId: seller._id,
+      images: images, // Array of base64 strings
+    };
+
+    dispatch(createProduct(productData));
   };
 
   return (
-     <div className="w-[95%] sm:w-[80%] md:w-[60%] lg:w-[50%] mx-auto my-8 bg-white rounded-xl shadow-md p-5">
+    <div className="w-[95%] sm:w-[80%] md:w-[60%] lg:w-[50%] mx-auto my-8 bg-white rounded-xl shadow-md p-5">
       <h2 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-6">
         Create Product
       </h2>
@@ -383,7 +386,6 @@ const CreateProduct = () => {
             placeholder="Enter product tags..."
             className="mt-2 w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
-        
         </div>
 
         {/* Prices & Stock */}
@@ -440,10 +442,11 @@ const CreateProduct = () => {
             type="file"
             id="upload"
             multiple
+            accept="image/*"
             className="hidden"
             onChange={handleImageChange}
           />
-          {/* <div className="flex flex-wrap gap-3 items-center">
+          <div className="flex flex-wrap gap-3 items-center">
             <label htmlFor="upload" className="cursor-pointer">
               <AiOutlinePlusCircle size={30} color="#555" />
             </label>
@@ -455,30 +458,10 @@ const CreateProduct = () => {
                 className="w-24 h-24 object-cover rounded-md border border-gray-200"
               />
             ))}
-          </div> */}
-          <div className="flex flex-wrap gap-3 items-center">
-           <label htmlFor="upload" className="cursor-pointer">
-              <AiOutlinePlusCircle size={30} color="#555" />
-            </label>
-          {images && 
-          images.map((i, idx) => (
-            <img
-              key={idx}
-              src={URL.createObjectURL(i)}
-              alt="Preview"
-              className="w-24 h-24 object-cover rounded-md border border-gray-200"
-            />
-          ))}
           </div>
         </div>
 
-        {/* Submit Button
-        <button
-          type="submit"
-          className="w-full mt-4 bg-blue-600 text-white font-medium py-2 rounded-md hover:bg-blue-700 transition-all duration-200"
-        >
-          Create Product
-        </button> */}
+        {/* Submit Button */}
         <div>
           <input 
             type="submit" 

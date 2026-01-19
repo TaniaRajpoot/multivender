@@ -1,6 +1,4 @@
 const express = require("express");
-const path = require("path");
-const { upload } = require("../multer");
 const ErrorHandler = require("../utils/ErrorHandler");
 const router = express.Router();
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
@@ -8,41 +6,45 @@ const User = require("../model/user");
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
 const sendToken = require("../utils/jwtToken");
-const fs = require("fs");
 const { isAuthenticated } = require("../middleware/auth");
+const cloudinary = require("../config/cloudinary");
 
 // ---------------- CREATE USER ----------------
-router.post("/create-user", upload.single("file"), async (req, res, next) => {
+router.post("/create-user", async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, avatar } = req.body;
     console.log(req.body);
+    
     if (!name || !email || !password) {
       return next(new ErrorHandler("All fields are required", 400));
     }
+
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      if (req.file) {
-        const filePath = path.join("uploads", req.file.filename);
-        fs.unlink(filePath, (err) => {
-          if (err) console.log("Error deleting file:", err);
-        });
-      }
       return next(new ErrorHandler("User already exists", 400));
     }
 
-    if (!req.file) {
+    if (!avatar) {
       return next(new ErrorHandler("Please upload an avatar", 400));
     }
 
-    
-    const fileUrl = path.join(req.file.filename);
+    // Upload avatar to Cloudinary
+    const uploadedAvatar = await cloudinary.uploader.upload(avatar, {
+      folder: "avatars",
+      resource_type: "auto",
+    });
+
+    const avatarData = {
+      public_id: uploadedAvatar.public_id,
+      url: uploadedAvatar.secure_url,
+    };
 
     const tempUser = {
       name,
       email,
       password,
-      avatar: fileUrl,
+      avatar: avatarData,
     };
 
     // Create activation token
@@ -143,44 +145,47 @@ router.post(
   })
 );
 
-
 //load user
-router.get("/getuser",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
-  try {
+router.get(
+  "/getuser",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user.id);
+      console.log(user);
 
-    const user = await User.findById(req.user.id);
-    console.log(user);
+      if (!user) {
+        return next(new ErrorHandler("User doesn't Exist! ", 400));
+      }
 
-    if (!user) {
-    return next(new ErrorHandler("User doesn't Exist! ", 400));
-
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
     }
+  })
+);
 
-    res.status(200).json({
-      success:true,
-      user,
-    });
-
-  } catch (error) {
-  return next(new ErrorHandler(error.message, 500));
-  }
-}))
-
-// logout user 
-router.get("/logout", isAuthenticated, catchAsyncErrors(async (req, res, next) => {
-  try {
-    res.cookie("token", null, {
-      expires: new Date(Date.now()),
-      httpOnly: true,
-    }); 
-    res.status(200).json({
-      success: true,
-      message: "Logged out successfully",
-    });
-  } catch (error) {
-    return next(new ErrorHandler(error.message, 500));
-  }   
-}));
-
+// logout user
+router.get(
+  "/logout",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      res.cookie("token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+      });
+      res.status(200).json({
+        success: true,
+        message: "Logged out successfully",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
 module.exports = router;

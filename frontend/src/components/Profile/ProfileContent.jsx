@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { backend_url } from "../../server";
 import { useSelector } from "react-redux";
 import {
   AiOutlineCamera,
@@ -26,6 +25,16 @@ const ProfileContent = ({ active }) => {
     e.preventDefault();
   };
 
+  // Helper function to get avatar URL
+  const getAvatarUrl = () => {
+    if (user?.avatar?.url) {
+      return user.avatar.url; // Cloudinary format
+    } else if (user?.avatar) {
+      return user.avatar; // Fallback for old format or default URL
+    }
+    return 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'; // Default avatar
+  };
+
   return (
     <div className="w-full">
       {/* ================= PROFILE ================= */}
@@ -34,7 +43,7 @@ const ProfileContent = ({ active }) => {
           <div className="flex justify-center w-full">
             <div className="relative">
               <img
-                src={`${backend_url}/${user?.avatar}`}
+                src={getAvatarUrl()}
                 alt="Profile"
                 className="w-[150px] h-[150px] rounded-full object-cover border-4 border-[#3bc177]"
               />

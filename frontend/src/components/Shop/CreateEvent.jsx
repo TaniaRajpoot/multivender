@@ -13,8 +13,7 @@ const CreateEvent = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [images, setImages] = useState([]);
-  const [imagePreviews, setImagePreviews] = useState([]); // Separate state for previews
+  const [images, setImages] = useState([]); // Now stores base64 strings
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -50,36 +49,34 @@ const CreateEvent = () => {
     }
     if (success) {
       toast.success("Event created successfully!");
-      // dispatch({ type: "clearSuccess" });
       navigate("/dashboard-events");
-      // window.location.reload();
     }
   }, [dispatch, error, success, navigate]);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    
-    // Store the actual File objects
-    setImages(files);
-    
-    // Create preview URLs
-    const previews = [];
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          previews.push(reader.result);
-          // Update previews when all files are read
-          if (previews.length === files.length) {
-            setImagePreviews([...previews]);
-          }
-        }
-      };
-      reader.readAsDataURL(file);
+
+    // Convert files to base64
+    const imagePromises = files.map((file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
     });
+
+    Promise.all(imagePromises)
+      .then((base64Images) => {
+        setImages(base64Images); // Store base64 strings
+      })
+      .catch((error) => {
+        toast.error("Error reading images");
+        console.error(error);
+      });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name || !description || !category || !discountPrice || !stock) {
@@ -97,25 +94,21 @@ const CreateEvent = () => {
       return;
     }
 
-    const formData = new FormData();
+    const eventData = {
+      name,
+      description,
+      category,
+      tags,
+      originalPrice: originalPrice || 0,
+      discountPrice,
+      stock,
+      shopId: seller._id,
+      start_Date: startDate.toISOString(),
+      Finish_Date: endDate.toISOString(),
+      images: images, // Array of base64 strings
+    };
 
-    formData.append("name", name);
-    formData.append("description", description);
-    formData.append("category", category);
-    formData.append("tags", tags);
-    formData.append("originalPrice", originalPrice || 0);
-    formData.append("discountPrice", discountPrice);
-    formData.append("stock", stock);
-    formData.append("shopId", seller._id);
-    formData.append("start_Date", startDate.toISOString());
-    formData.append("Finish_Date", endDate.toISOString());
-
-    // Append the actual File objects, not previews
-    images.forEach((image) => {
-      formData.append("images", image);
-    });
-
-    dispatch(createEvent(formData));
+    dispatch(createEvent(eventData));
   };
 
   return (
@@ -271,10 +264,10 @@ const CreateEvent = () => {
             <label htmlFor="upload" className="cursor-pointer">
               <AiOutlinePlusCircle size={32} color="#555" />
             </label>
-            {imagePreviews.map((preview, index) => (
+            {images.map((image, index) => (
               <img
                 key={index}
-                src={preview}
+                src={image}
                 alt={`Event ${index + 1}`}
                 className="w-24 h-24 object-cover rounded border"
               />

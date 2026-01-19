@@ -13,38 +13,56 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const file = e.target.files[0];
-    setAvatar(file);
+    
+    if (file) {
+      // Create preview
+      setAvatarPreview(URL.createObjectURL(file));
+      
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatar(reader.result); // base64 string
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!avatar) {
+      toast.error("Please upload a profile picture");
+      return;
+    }
+
     const config = {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: { "Content-Type": "application/json" },
     };
 
-    const formData = new FormData();
-    formData.append("file", avatar);
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("password", password);
-    await axios
-      .post(`${server}/user/create-user`, formData, config)
-      .then((res) => {
-        toast.success(res.data.message);
-        setName("");
-        setEmail("");
-        setPassword("");
-        setAvatar();
-        navigate("/login");
-      })
-      .catch((error) => {
-        toast.error(error.response?.data?.message);
-      });
+    const userData = {
+      name,
+      email,
+      password,
+      avatar, // base64 string
+    };
+
+    try {
+      const res = await axios.post(`${server}/user/create-user`, userData, config);
+      toast.success(res.data.message);
+      setName("");
+      setEmail("");
+      setPassword("");
+      setAvatar(null);
+      setAvatarPreview(null);
+      navigate("/login");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Registration failed");
+    }
   };
 
   return (
@@ -144,9 +162,9 @@ const Signup = () => {
               </label>
               <div className="mt-2 flex items-center">
                 <span className="inline-block h-8 w-8 rounded-full overflow-hidden">
-                  {avatar ? (
+                  {avatarPreview ? (
                     <img
-                      src={URL.createObjectURL(avatar)}
+                      src={avatarPreview}
                       alt="avatar"
                       className="h-full w-full object-cover rounded-full"
                     />
@@ -167,6 +185,7 @@ const Signup = () => {
                   accept=".jpg,.jpeg,.png"
                   onChange={handleInputChange}
                   className="sr-only"
+                  required
                 />
               </div>
             </div>

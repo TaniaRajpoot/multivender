@@ -1,19 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../model/product');
-const {upload} = require('../multer');
 const Shop = require('../model/shop');
 const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
-const path = require('path');
-const fs = require('fs');
+const cloudinary = require('../config/cloudinary');
 const { isSeller } = require("../middleware/auth");
 
-
-
 // Create a new product
-router.post('/create-product', upload.array('images'), catchAsyncErrors(async (req, res, next) => { 
-    const shopId = req.body.shopId;
+router.post('/create-product', catchAsyncErrors(async (req, res, next) => { 
+    const { shopId, images } = req.body;
     const shop = await Shop.findById(shopId);
     
     console.log('Shop found:', shop);
@@ -22,24 +18,37 @@ router.post('/create-product', upload.array('images'), catchAsyncErrors(async (r
         return next(new ErrorHandler("Shop Id is Invalid", 400));
     }
 
-    const files = req.files;
-    
-    if (!files || files.length === 0) {
+    if (!images || images.length === 0) {
         return next(new ErrorHandler("Please upload at least one image", 400));
     }
-    
-    const imageUrls = files.map((file) => `${file.filename}`);  
-    
-    console.log('Image URLs:', imageUrls);
-    
-    const productData = req.body;
-    productData.images = imageUrls;
-    productData.shopId = shopId; 
-    productData.shop = shop;
+
+    // Upload images to Cloudinary
+    const uploadPromises = images.map((image) =>
+        cloudinary.uploader.upload(image, {
+            folder: "products",
+            resource_type: "auto",
+        })
+    );
+
+    const uploadedImages = await Promise.all(uploadPromises);
+
+    const imageData = uploadedImages.map((result) => ({
+        public_id: result.public_id,
+        url: result.secure_url,
+    }));
+
+    console.log('Uploaded images to Cloudinary:', imageData);
+
+    const productData = {
+        ...req.body,
+        images: imageData,
+        shopId: shopId,
+        shop: shop,
+    };
 
     console.log('Product Data before save:', productData);
 
-    const product = await Product.create(productData); 
+    const product = await Product.create(productData);
     
     console.log('Product created:', product);
     
@@ -66,7 +75,6 @@ router.get('/get-all-products-shop/:id', catchAsyncErrors(async (req, res, next)
 
 // Delete product
 router.delete('/delete-shop-product/:id', catchAsyncErrors(async (req, res, next) => {
-  try {
     const productId = req.params.id;
     const product = await Product.findById(productId);
     
@@ -74,13 +82,19 @@ router.delete('/delete-shop-product/:id', catchAsyncErrors(async (req, res, next
         return next(new ErrorHandler("Product not found", 404));
     }
 
-    // Delete associated image files
-    product.images.forEach((filename) => {
-        const filePath = path.join("uploads", filename);
-        fs.unlink(filePath, (err) => {
-          if (err) console.log("Error deleting file:", err);
-        }); 
-    });
+    // Delete images from Cloudinary
+    if (product.images && product.images.length > 0) {
+        const deletePromises = product.images.map((image) => {
+            // Check if it's the new format (object with public_id)
+            if (image.public_id) {
+                return cloudinary.uploader.destroy(image.public_id);
+            }
+            // Skip if it's old format (just a string filename)
+            return Promise.resolve();
+        });
+
+        await Promise.all(deletePromises);
+    }
 
     await Product.findByIdAndDelete(productId);
 
@@ -88,9 +102,16 @@ router.delete('/delete-shop-product/:id', catchAsyncErrors(async (req, res, next
         success: true,
         message: "Product deleted successfully",
     });
-  } catch (error) {
-    return next(new ErrorHandler(error.message, 500));
-  }
+}));
+
+// Get all products (for homepage, search, etc.)
+router.get('/get-all-products', catchAsyncErrors(async (req, res, next) => {
+    const products = await Product.find().sort({ createdAt: -1 });
+    
+    res.status(200).json({
+        success: true,
+        products,
+    });
 }));
 
 module.exports = router;

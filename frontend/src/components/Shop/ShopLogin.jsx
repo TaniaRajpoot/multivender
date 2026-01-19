@@ -5,11 +5,31 @@ import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+
 const ShopLogin = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
+
+  // Helper function to get image URL (for future use with shop logos)
+  const getImageUrl = (image) => {
+    if (!image) return "/placeholder.png";
+    
+    // If it's an object with url property (Cloudinary format)
+    if (typeof image === "object" && image.url) {
+      return image.url;
+    }
+    
+    // If it's already a URL string
+    if (typeof image === "string" && image.startsWith("http")) {
+      return image;
+    }
+    
+    // Fallback for relative paths
+    return image;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     await axios
@@ -27,13 +47,12 @@ const ShopLogin = () => {
         window.location.reload(true);
       })
       .catch((err) => {
-  if (err.response && err.response.data && err.response.data.message) {
-    toast.error(err.response.data.message);
-  } else {
-    toast.error("Server not responding. Please try again later.");
-  }
-});
-
+        if (err.response && err.response.data && err.response.data.message) {
+          toast.error(err.response.data.message);
+        } else {
+          toast.error("Server not responding. Please try again later.");
+        }
+      });
   };
 
   return (

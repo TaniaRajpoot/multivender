@@ -40,11 +40,16 @@ const eventSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Please enter event stock"],
     },
-    // FIXED: Changed from embedded schema to simple array of strings
     images: [
       {
-        type: String,
-        required: true,
+        public_id: {
+          type: String,
+          required: true,
+        },
+        url: {
+          type: String,
+          required: true,
+        },
       },
     ],
     shopId: {

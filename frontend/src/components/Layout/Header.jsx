@@ -29,7 +29,7 @@ const Header = ({ activeHeading }) => {
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishList] = useState(false);
   const [open, setOpen] = useState(false);
-  const {isSeller} = useSelector((state) => state.seller);
+  const { isSeller } = useSelector((state) => state.seller);
 
   const handleSearchChange = (e) => {
     const term = e.target.value;
@@ -38,7 +38,7 @@ const Header = ({ activeHeading }) => {
     const filteredProducts =
       productData &&
       productData.filter((product) =>
-        product.name.toLowerCase().includes(term.toLowerCase())
+        product.name.toLowerCase().includes(term.toLowerCase()),
       );
 
     setSearchData(filteredProducts);
@@ -51,7 +51,7 @@ const Header = ({ activeHeading }) => {
     const filteredProducts =
       productData &&
       productData.filter((product) =>
-        product.name.toLowerCase().includes(term.toLowerCase())
+        product.name.toLowerCase().includes(term.toLowerCase()),
       );
 
     setMobileSearchData(filteredProducts);
@@ -118,7 +118,8 @@ const Header = ({ activeHeading }) => {
           <div className={`${styles.button}`}>
             <Link to={`${isSeller ? "/dashboard" : "/shop-create"}`}>
               <h1 className="text-[#ffff] flex items-center">
-                {isSeller ? "Go to Shop" : "Become Seller"} <IoIosArrowForward className="ml-1" />
+                {isSeller ? "Go to Shop" : "Become Seller"}{" "}
+                <IoIosArrowForward className="ml-1" />
               </h1>
             </Link>
           </div>
@@ -193,9 +194,9 @@ const Header = ({ activeHeading }) => {
                 {isAuthenticated ? (
                   <Link to="/profile">
                     <img
-                      src={`${backend_url}${user?.avatar}`}
-                      className="w-[35px] h-[35px] rounded-full"
-                      alt=""
+                      src={user?.avatar?.url || user?.avatar}
+                      className="w-[35px] h-[35px] rounded-full object-cover"
+                      alt={user?.name}
                     />
                   </Link>
                 ) : (
@@ -306,7 +307,7 @@ const Header = ({ activeHeading }) => {
               <div className="w-full px-3">
                 <Navbar active={activeHeading} />
               </div>
-              
+
               <div className="flex justify-center w-full my-6">
                 <div className={`${styles.button} rounded-sm`}>
                   <Link to="/shop-create">
@@ -316,15 +317,15 @@ const Header = ({ activeHeading }) => {
                   </Link>
                 </div>
               </div>
-              
+
               <div className="flex w-full justify-center pb-6">
                 {isAuthenticated ? (
                   <div>
                     <Link to="/profile" className="flex items-center">
                       <img
-                        src={`${backend_url}${user?.avatar}`}
-                        className="w-[50px] h-[50px] rounded-full border-[3px] border-[#36bb53ee]"
-                        alt=""
+                        src={user?.avatar?.url || user?.avatar}
+                        className="w-[50px] h-[50px] rounded-full border-[3px] border-[#36bb53ee] object-cover"
+                        alt={user?.name}
                       />
                     </Link>
                   </div>

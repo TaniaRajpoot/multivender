@@ -10,6 +10,24 @@ import { backend_url } from "../../../server";
 const DashboardHeader = () => {
   const { seller } = useSelector((state) => state.seller);
 
+  // Helper function to get image URL
+  const getImageUrl = (image) => {
+    if (!image) return "/placeholder.png";
+    
+    // If it's an object with url property (Cloudinary format)
+    if (typeof image === "object" && image.url) {
+      return image.url;
+    }
+    
+    // If it's already a URL string (starts with http)
+    if (typeof image === "string" && image.startsWith("http")) {
+      return image;
+    }
+    
+    // Fallback for old backend format
+    return `${backend_url}${image}`;
+  };
+
   if (!seller) {
     return null; // or a loading indicator
   }
@@ -52,9 +70,12 @@ const DashboardHeader = () => {
         {/* Seller Avatar */}
         <Link to={`/shop/${seller._id}`}>
           <img
-            src={`${backend_url}${seller.avatar}`}
+            src={getImageUrl(seller.avatar)}
             alt="Seller Avatar"
             className="w-[50px] h-[50px] rounded-full object-cover border-2 border-gray-200"
+            onError={(e) => {
+              e.target.src = "/placeholder.png"; // Fallback if image fails to load
+            }}
           />
         </Link>
       </div>

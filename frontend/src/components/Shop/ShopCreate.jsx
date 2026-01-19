@@ -12,54 +12,67 @@ const ShopCreate = () => {
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
-  const [zipCode, setZipCode] = useState();
+  const [zipCode, setZipCode] = useState("");
   const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async(e)=>{
-  e.preventDefault();
-
-    const config = {
-      headers: { "Content-Type": "multipart/form-data" },
-    };
-
-    const formData = new FormData();
-    formData.append("file", avatar);
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("password", password);
-    formData.append("phoneNumber", phoneNumber);
-    formData.append("address", address);
-    formData.append("zipCode", zipCode);
-
-     axios
-      .post(`${server}/shop/create-shop`, formData, config)
-      .then((res) => {
-        toast.success(res.data.message);
-        setName("");
-        setEmail("");
-        setPassword("");
-        setAvatar();
-        setPhoneNumber("");
-        setAddress("");
-        setZipCode();
-
-
-        navigate("/login");
-      })
-      .catch((error) => {
-        toast.error(error.response?.data?.message)});
-
-  };
-
   const handleInputChange = (e) => {
     const file = e.target.files[0];
-    setAvatar(file);
+    
+    if (file) {
+      // Create preview
+      setAvatarPreview(URL.createObjectURL(file));
+      
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatar(reader.result); // base64 string
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
+  const handleSubmit = async(e) => {
+    e.preventDefault();
 
+    if (!avatar) {
+      toast.error("Please upload a profile picture");
+      return;
+    }
+
+    const config = {
+      headers: { "Content-Type": "application/json" },
+    };
+
+    const shopData = {
+      name,
+      email,
+      password,
+      phoneNumber,
+      address,
+      zipCode,
+      avatar, // base64 string
+    };
+
+    try {
+      const res = await axios.post(`${server}/shop/create-shop`, shopData, config);
+      toast.success(res.data.message);
+      setName("");
+      setEmail("");
+      setPassword("");
+      setAvatar(null);
+      setAvatarPreview(null);
+      setPhoneNumber("");
+      setAddress("");
+      setZipCode("");
+      navigate("/shop-login");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Registration failed");
+    }
+  };
 
   return (
     <div className='min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8'>
@@ -72,13 +85,14 @@ const ShopCreate = () => {
           <div className='bg-white py-8 px-4 shadow sm:rounded sm:px-10'>
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className='block text-sm font-medium text-gray-700'>
+                <label htmlFor="name" className='block text-sm font-medium text-gray-700'>
                   Shop Name
                 </label>
                 <div className='mt-1'>
                    <input 
-                     type="name" 
-                     name="name"  
+                     type="text" 
+                     name="name"
+                     id="name"
                      required 
                      value={name} 
                      onChange={(e) => setName(e.target.value)}
@@ -87,14 +101,15 @@ const ShopCreate = () => {
                 </div>
               </div>
 
-                 <div>
-                <label htmlFor="email" className='block text-sm font-medium text-gray-700'>
+              <div>
+                <label htmlFor="phoneNumber" className='block text-sm font-medium text-gray-700'>
                   Phone Number
                 </label>
                 <div className='mt-1'>
                    <input 
                      type="number" 
-                     name="phone-number"  
+                     name="phone-number"
+                     id="phoneNumber"
                      required 
                      value={phoneNumber} 
                      onChange={(e) => setPhoneNumber(e.target.value)}
@@ -102,6 +117,7 @@ const ShopCreate = () => {
                    />
                 </div>
               </div>
+
               <div>
                 <label htmlFor="email" className='block text-sm font-medium text-gray-700'>
                   Email Address
@@ -109,7 +125,8 @@ const ShopCreate = () => {
                 <div className='mt-1'>
                    <input 
                      type="email" 
-                     name="email" 
+                     name="email"
+                     id="email"
                      autoComplete='email' 
                      required 
                      value={email} 
@@ -120,13 +137,14 @@ const ShopCreate = () => {
               </div>
 
               <div>
-                <label htmlFor="email" className='block text-sm font-medium text-gray-700'>
+                <label htmlFor="address" className='block text-sm font-medium text-gray-700'>
                    Address
                 </label>
                 <div className='mt-1'>
                    <input 
                      type="text" 
-                     name="address" 
+                     name="address"
+                     id="address"
                      required 
                      value={address} 
                      onChange={(e) => setAddress(e.target.value)}
@@ -136,13 +154,14 @@ const ShopCreate = () => {
               </div>
 
               <div>
-                <label htmlFor="email" className='block text-sm font-medium text-gray-700'>
+                <label htmlFor="zipCode" className='block text-sm font-medium text-gray-700'>
                     Zip Code
                 </label>
                 <div className='mt-1'>
                    <input 
                      type="number" 
-                     name="zip-code" 
+                     name="zip-code"
+                     id="zipCode"
                      required 
                      value={zipCode} 
                      onChange={(e) => setZipCode(e.target.value)}
@@ -151,7 +170,6 @@ const ShopCreate = () => {
                 </div>
               </div>
              
-             
               <div>
                 <label htmlFor="password" className='block text-sm font-medium text-gray-700'>
                   Password
@@ -159,7 +177,8 @@ const ShopCreate = () => {
                 <div className='mt-1 relative'>
                    <input 
                      type={visible ? "text" : "password"} 
-                     name="password" 
+                     name="password"
+                     id="password"
                      autoComplete='current-password' 
                      required 
                      value={password} 
@@ -184,42 +203,42 @@ const ShopCreate = () => {
                 </div>
               </div>
               
-                <div>
-                            <label
-                              htmlFor="avatar"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Profile Picture
-                            </label>
-                            <div className="mt-2 flex items-center">
-                              <span className="inline-block h-8 w-8 rounded-full overflow-hidden">
-                                {avatar ? (
-                                  <img
-                                    src={URL.createObjectURL(avatar)}
-                                    alt="avatar"
-                                    className="h-full w-full object-cover rounded-full"
-                                  />
-                                ) : (
-                                  <RxAvatar className="h-8 w-8" />
-                                )}
-                              </span>
-                              <label
-                                htmlFor="file-input"
-                                className="ml-5 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
-                              >
-                                <span>Upload a file</span>
-                              </label>
-                              <input
-                                type="file"
-                                name="avatar"
-                                id="file-input"
-                                accept=".jpg,.jpeg,.png"
-                                onChange={handleInputChange}
-                                className="sr-only"
-                              />
-                            </div>
-                          </div>
-              
+              <div>
+                <label
+                  htmlFor="avatar"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Profile Picture
+                </label>
+                <div className="mt-2 flex items-center">
+                  <span className="inline-block h-8 w-8 rounded-full overflow-hidden">
+                    {avatarPreview ? (
+                      <img
+                        src={avatarPreview}
+                        alt="avatar"
+                        className="h-full w-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <RxAvatar className="h-8 w-8" />
+                    )}
+                  </span>
+                  <label
+                    htmlFor="file-input"
+                    className="ml-5 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+                  >
+                    <span>Upload a file</span>
+                  </label>
+                  <input
+                    type="file"
+                    name="avatar"
+                    id="file-input"
+                    accept=".jpg,.jpeg,.png"
+                    onChange={handleInputChange}
+                    className="sr-only"
+                    required
+                  />
+                </div>
+              </div>
           
               <div>
                 <button

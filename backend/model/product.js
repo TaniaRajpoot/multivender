@@ -14,38 +14,67 @@ const ProductSchema = new Schema({
         type: String,
         required: [true, "Please enter product category"]
     },
-    tags:{
+    tags: {
         type: [String],
-
-
     },
-     originalPrice:{
+    originalPrice: {
         type: Number,
         required: [true, "Please enter product price"]
     },
     discountPrice: {
         type: Number,
         required: [true, "Please enter product discount price"],
-        
     },
     stock: {
         type: Number,
         required: [true, "Please enter product stock"], 
         min: [0, "Stock cannot be negative"]
     },
-    images: [{
-        type: String,
-       
-    }], 
+    images: [
+        {
+            public_id: {
+                type: String,
+                required: true,
+            },
+            url: {
+                type: String,
+                required: true,
+            },
+        }
+    ],
     shopId: {
         type: mongoose.Schema.Types.ObjectId,
         required: [true, "Please provide shop id"]
     },
-    shop:{
-        type:Object,
-        required:true
+    shop: {
+        type: Object,
+        required: true
     },
     soldOut: {
+        type: Number,
+        default: 0
+    },
+    reviews: [
+        {
+            user: {
+                type: Object,
+            },
+            rating: {
+                type: Number,
+            },
+            comment: {
+                type: String,
+            },
+            productId: {
+                type: String,
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now,
+            }
+        }
+    ],
+    ratings: {
         type: Number,
         default: 0
     },
@@ -53,11 +82,6 @@ const ProductSchema = new Schema({
         type: Date,
         default: Date.now
     }
-
-    
 }, { timestamps: true });
 
 module.exports = mongoose.model('Product', ProductSchema);
-
-
-

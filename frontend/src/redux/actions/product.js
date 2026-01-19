@@ -2,20 +2,20 @@ import axios from "axios";
 import { server } from "../../server";
 
 //create product 
-export const createProduct = (newForm) => async (dispatch) => {
+export const createProduct = (productData) => async (dispatch) => {
     try {
-        dispatch({type: "productCreateRequest"});
+        dispatch({ type: "productCreateRequest" });
         
         const config = {
             headers: {
-                "Content-Type": "multipart/form-data",
+                "Content-Type": "application/json",
             },
             withCredentials: true,
         };
         
-        const {data} = await axios.post(
+        const { data } = await axios.post(
             `${server}/product/create-product`,
-            newForm,
+            productData,
             config
         );
         
@@ -57,20 +57,22 @@ export const getAllProductsShop = (id) => async (dispatch) => {
         });
     }
 };
+
 //delete product
 export const deleteProduct = (id) => async (dispatch) => {
     try {
         dispatch({ type: "deleteProductRequest" });
+        
         const { data } = await axios.delete(
             `${server}/product/delete-shop-product/${id}`,
             { withCredentials: true }
         );
+        
         dispatch({
             type: "deleteProductSuccess",
             payload: data.message,
         });
-    }
-    catch (error) {
+    } catch (error) {
         dispatch({
             type: "deleteProductFail",
             payload: error.response?.data?.message || "Failed to delete product",
@@ -78,6 +80,24 @@ export const deleteProduct = (id) => async (dispatch) => {
     }
 };
 
+//get all products
+export const getAllProducts = () => async (dispatch) => {
+    try {
+        dispatch({ type: "getAllProductsRequest" });
+        
+        const { data } = await axios.get(`${server}/product/get-all-products`);
+        
+        dispatch({
+            type: "getAllProductsSuccess",
+            payload: data.products,
+        });
+    } catch (error) {
+        dispatch({
+            type: "getAllProductsFailed",
+            payload: error.response?.data?.message || "Failed to fetch products",
+        });
+    }
+};
 
 //clear errors
 export const clearErrors = () => async (dispatch) => {
