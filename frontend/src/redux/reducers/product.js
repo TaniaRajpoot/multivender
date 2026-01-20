@@ -33,12 +33,12 @@ export const productReducer = createReducer(initialState, (builder) => {
       state.isLoading = true;
     })
     .addCase("getAllProductsShopSuccess", (state, action) => {
-      state.isLoading = false;
       state.products = action.payload;
+      state.isLoading = false;
     })
     .addCase("getAllProductsShopFail", (state, action) => {
-      state.isLoading = false;
       state.error = action.payload;
+      state.isLoading = false;
     })
 
     // Get all products (for featured products, best deals, etc.)

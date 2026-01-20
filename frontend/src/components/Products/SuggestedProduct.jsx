@@ -1,33 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { productData } from '../../static/data';
-import styles from '../../styles/styles';
-import ProductCard from "../Route/ProductCard/ProductCard"
-
+import React, { useEffect, useState } from "react";
+import styles from "../../styles/styles.js";  
+import ProductCard from "../Route/ProductCard/ProductCard";
+import { useSelector } from "react-redux";
 const SuggestedProduct = ({ data }) => {
-  const [products, setProducts] = useState([]);
-
+  const [ProductData, setProductData] = useState(null);
+  const {allProducts}=useSelector((state)=>state.product)
   useEffect(() => {
-    if (data) {
-      const d = productData.filter((item) => item.category === data.category);
-      setProducts(d);
-    }
+    const d =
+    allProducts && allProducts.filter((i) => i.category === data.category);
+    setProductData(d);
   }, []);
-
   return (
     <div>
-      {data && (
+      {data ? (
         <div className={`${styles.section} p-4`}>
-          <h2 className={`${styles.heading} text-[25px] font-[500] border-b border-gray-200 mb-5`}>
+          <h2
+            className={`${styles.heading} text-[25px] font-[500] border-b mb-5 capitalize`}
+          >
             Related Products
           </h2>
-
-          <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 sm:gap-[30px] mb-12">
-            {products.map((item, index) => (
-              <ProductCard data={item} key={index} />
-            ))}
+          <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-4 lg:gap-[25px] xl:grid-cols-5 xl:gap-[30px] mb-12">
+            {ProductData &&
+              ProductData.map((i, index) => (
+                <ProductCard data={i} key={index} />
+              ))}
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

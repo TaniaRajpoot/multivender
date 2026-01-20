@@ -1,48 +1,17 @@
-import React from "react";
 import { brandingData, categoriesData } from "../../../static/data";
 import styles from "../../../styles/styles";
 import { useNavigate } from "react-router-dom";
 
 const Categories = () => {
   const navigate = useNavigate();
-  const { allProducts } = useSelector((state) => state.product);
-  
-useEffect(() => {
-  if (allProducts && allProducts.length > 0) {
-    console.log("=== CATEGORY FILTER DEBUG ===");
-    console.log("Category from URL:", categoryData);
-    console.log("Category type:", typeof categoryData);
-    console.log("All products categories:", allProducts.map(p => p.category));
-    
-    if (categoryData === null) {
-    
-    } else {
-      const filtered = allProducts.filter((i) => {
-        console.log(`Comparing: "${i.category}" === "${categoryData}" = ${i.category === categoryData}`);
-        return i.category === categoryData;
-      });
-      console.log("Filtered products:", filtered);
-      setData(filtered);
-    }
-  } else {
-    setData([]);
-  }
-}, [allProducts, categoryData]);
-  // Helper function to get image URL (Cloudinary support)
   const getImageUrl = (image) => {
     if (!image) return "/placeholder.png";
-    
-    // If it's an object with url property (Cloudinary format)
     if (typeof image === "object" && image.url) {
       return image.url;
     }
-    
-    // If it's already a URL string
     if (typeof image === "string" && image.startsWith("http")) {
       return image;
     }
-    
-    // Fallback for old format
     return image;
   };
 
@@ -74,7 +43,7 @@ useEffect(() => {
                 navigate(`/products?category=${i.title}`);
               };
 
-              // Get the image URL - handles both image_Url and imageUrl
+             
               const categoryImage = i.image_Url || i.imageUrl;
 
               return (

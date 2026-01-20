@@ -31,7 +31,6 @@ const ProductDetails = ({ data }) => {
   const dispatch = useDispatch();
   const shopIdRef = React.useRef(null);
 
-  // Helper function to get image URL (Cloudinary support)
   const getImageUrl = (image) => {
     if (!image) return "/placeholder.png";
     
@@ -45,21 +44,15 @@ const ProductDetails = ({ data }) => {
     
     return image;
   };
-
-  useEffect(() => {
-    const shopId = data?.shop?._id;
-    if (shopId && shopId !== shopIdRef.current) {
-      shopIdRef.current = shopId;
-      dispatch(getAllProductsShop(shopId));
+useEffect(() => {
+    dispatch(getAllProductsShop(data && data?.shop._id));
+    if (wishlist && wishlist.find((i) => i._id === data?._id)) {
+      setClick(true);
+    } else {
+      setClick(false);
     }
-  }, [data?.shop?._id, dispatch]);
+  }, [dispatch, wishlist, data]);
 
-  useEffect(() => {
-    if (wishlist && data?._id) {
-      const isInWishlist = wishlist.find((i) => i._id === data._id);
-      setClick(!!isInWishlist);
-    }
-  }, [wishlist, data?._id]);
 
   const incrementCount = () => {
     setCount(count + 1);
