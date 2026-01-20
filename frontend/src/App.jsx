@@ -46,7 +46,7 @@ const AppRoutes = () => {
         <Route path="/activation/:activationToken" element={<ActivationPage />} />
         <Route path="/seller/activation/:activationToken" element={<SellerActivationPage />} />
         <Route path="/products" element={<ProductPage />} />
-        <Route path="/product/:name" element={<ProductDetailsPage />} />
+        <Route path="/product/:id" element={<ProductDetailsPage />} />
         <Route path="/best-selling" element={<BestSellingPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/faq" element={<FAQPage />} />

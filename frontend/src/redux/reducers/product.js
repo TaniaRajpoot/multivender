@@ -2,6 +2,7 @@ import { createReducer } from "@reduxjs/toolkit";
 
 const initialState = {
   products: [],  
+  allProducts: [], // Add this for all products
   isLoading: false,
   error: null,
   product: null,
@@ -26,6 +27,7 @@ export const productReducer = createReducer(initialState, (builder) => {
       state.error = action.payload;
       state.success = false;
     })
+    
     // Get all products of a shop
     .addCase("getAllProductsShopRequest", (state) => {
       state.isLoading = true;
@@ -39,28 +41,37 @@ export const productReducer = createReducer(initialState, (builder) => {
       state.error = action.payload;
     })
 
+    // Get all products (for featured products, best deals, etc.)
+    .addCase("getAllProductsRequest", (state) => {
+      state.isLoading = true;
+    })
+    .addCase("getAllProductsSuccess", (state, action) => {
+      state.isLoading = false;
+      state.allProducts = action.payload;
+    })
+    .addCase("getAllProductsFailed", (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
+
     // Delete product
     .addCase("deleteProductRequest", (state) => {
       state.isLoading = true;
       state.error = null;
       state.success = false;
-    }
-    )
+    })
     .addCase("deleteProductSuccess", (state, action) => {
       state.isLoading = false;
       state.success = true;
       state.products = state.products.filter(
         (product) => product._id !== action.payload._id
       );
-    }
-    )
+    })
     .addCase("deleteProductFail", (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
       state.success = false;
     })
-
-    
 
     // Clear errors
     .addCase("clearErrors", (state) => {
