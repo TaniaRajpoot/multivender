@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter your password"],
     minLength: [4, "Password should be greater than 4 characters"],
-    select: true,
+    select: false, // MUST be false
   },
   phoneNumber: {
     type: Number,
@@ -64,12 +64,11 @@ const userSchema = new mongoose.Schema({
   resetPasswordTime: Date,
 });
 
-//  Hash password
+// Hash password ONLY if modified
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
-    next();
+    return next();
   }
-
   this.password = await bcrypt.hash(this.password, 10);
 });
 

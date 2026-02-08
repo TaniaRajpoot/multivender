@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -39,6 +38,19 @@ const DashboardMessages = () => {
     });
   }, []);
 
+  // Listen for last message updates
+  useEffect(() => {
+    socket.on("getLastMessage", ({ lastMessage, lastMessageId }) => {
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv.members.includes(lastMessageId)
+            ? { ...conv, lastMessage, lastMessageId }
+            : conv
+        )
+      );
+    });
+  }, []);
+
   // Append arrival message if belongs to current chat
   useEffect(() => {
     if (arrivalMessage && currentChat?.members.includes(arrivalMessage.sender)) {
@@ -61,13 +73,15 @@ const DashboardMessages = () => {
       }
     };
     getConversations();
-  }, [seller, messages]);
+  }, [seller]);
 
   // Setup socket online users
   useEffect(() => {
     if (!seller?._id) return;
     socket.emit("addUser", seller._id);
-    socket.on("getUsers", (data) => setOnlineUsers(data));
+    socket.on("getUsers", (data) => {
+      setOnlineUsers(data);
+    });
   }, [seller]);
 
   const onlineCheck = (chat) => {
@@ -80,7 +94,7 @@ const DashboardMessages = () => {
     const getMessages = async () => {
       if (!currentChat?._id) return;
       try {
-        const res = await axios.get(`${server}/message/get-all-messages/${currentChat._id}`);
+        const res = await axios.get(`${server}/messages/get-all-messages/${currentChat._id}`);
         setMessages(res.data.messages);
       } catch (error) {
         console.error(error);
@@ -112,16 +126,34 @@ const DashboardMessages = () => {
     });
 
     try {
-      const res = await axios.post(`${server}/message/create-new-message`, message);
+      const res = await axios.post(`${server}/messages/create-new-message`, message);
       setMessages([...messages, res.data.message]);
+      
+      // Clear input fields immediately after sending
       setNewMessage("");
       setImages(null);
 
       // Update last message in conversation
+      const lastMsg = images ? "Photo" : newMessage;
       await axios.put(`${server}/conversation/update-last-message/${currentChat._id}`, {
-        lastMessage: images ? "Photo" : newMessage,
+        lastMessage: lastMsg,
         lastMessageId: seller._id,
       });
+
+      // Emit socket event to update conversations in real-time
+      socket.emit("updateLastMessage", {
+        lastMessage: lastMsg,
+        lastMessageId: seller._id,
+      });
+
+      // Update local conversation state
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv._id === currentChat._id
+            ? { ...conv, lastMessage: lastMsg, lastMessageId: seller._id }
+            : conv
+        )
+      );
     } catch (error) {
       console.error(error);
     }
@@ -221,7 +253,9 @@ const MessageList = ({ data, setOpen, setCurrentChat, me, setUserData, online, s
       <div className="pl-3">
         <h1 className="text-[18px]">{user?.name}</h1>
         <p className="text-[16px] text-[#000c]">
-          {!isLoading && data?.lastMessageId !== user?._id ? "You: " : `${user?.name.split(" ")[0]}: `}
+          {!isLoading && data?.lastMessageId === me
+            ? "You: "
+            : `${user?.name ? user.name.split(" ")[0] : ""}: `}
           {data?.lastMessage}
         </p>
       </div>
@@ -281,7 +315,6 @@ const SellerInbox = ({ scrollRef, setOpen, newMessage, setNewMessage, sendMessag
         <div className="w-full relative">
           <input
             type="text"
-            required
             placeholder="Enter your message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}

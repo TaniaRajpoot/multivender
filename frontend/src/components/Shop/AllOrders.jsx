@@ -1,4 +1,3 @@
-
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import React, { useEffect } from "react";
@@ -17,7 +16,7 @@ const AllOrders = () => {
     if (seller?._id) {
       dispatch(getAllOrdersOfShop(seller._id));
     }
-  }, [dispatch, seller]);
+  }, [dispatch, seller?._id]);
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.8 },
@@ -27,7 +26,8 @@ const AllOrders = () => {
       minWidth: 130,
       flex: 0.8,
       cellClassName: (params) => {
-        return params.getValue(params.id, "status") === "Delivered"
+        // ✅ FIXED: Use params.row.status instead of params.getValue
+        return params.row.status === "Delivered"
           ? "text-green-600 font-medium"
           : "text-red-600 font-medium";
       },

@@ -166,7 +166,7 @@ router.get(
     });
   })
 );
-
+//get shop info
 router.get(
   "/get-shop-info/:id",
   catchAsyncErrors(async (req, res, next) => {
@@ -185,7 +185,7 @@ router.get(
   })
 );
 
-// LogOut Shop
+// logut Shop
 router.get(
   "/logout",
   catchAsyncErrors(async (req, res, next) => {
@@ -197,6 +197,64 @@ router.get(
       res.status(201).json({
         success: true,
         message: "Logout Successfully!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+//Update Shop Info
+router.put(
+  "/update-shop-avatar",
+  isSeller,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const existSeller = await Shop.findById(req.seller._id);
+      const imageId = existSeller.avatar.public_id;
+      await cloudinary.uploader.destroy(imageId);
+
+      const myCloud = await cloudinary.uploader.upload(req.body.avatar, {
+        folder: "avatars",
+        width: 150,
+      });
+      existSeller.avatar = {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      };
+
+      await existSeller.save();
+      res.status(200).json({
+        success: true,
+        seller: existSeller,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+//Update Seller Info
+router.put(
+  "/update-seller-info",
+  isSeller,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { name, description, address, phoneNumber, zipCode } = req.body;
+      const seller = await Shop.findOne(req.seller._id);
+
+      if (!seller) {
+        return next(new ErrorHandler("Seller not found!", 400));
+      }
+
+      seller.name = name;
+      seller.description = description;
+      seller.address = address;
+      seller.phoneNumber = phoneNumber;
+      seller.zipCode = zipCode;
+      await seller.save();
+      res.status(201).json({
+        success: true,
+        seller,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));

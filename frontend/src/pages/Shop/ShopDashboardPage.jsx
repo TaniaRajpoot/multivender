@@ -2,7 +2,7 @@
 import React from "react";
 import DashboardHeader from "../../components/Shop/Layout/DashboardHeader";
 import DashboardSideBar from "../../components/Shop/Layout/DashboardSideBar";
-
+import DashboardHero from "../../components/Shop/DashboardHero";
 
 const ShopDashboardPage = () => {
   return (
@@ -18,7 +18,7 @@ const ShopDashboardPage = () => {
 
         {/* Dashboard Main Content */}
         <div className="flex-1 p-3 800px:p-6 overflow-x-hidden">
-          {/* <DashboardHero /> */}
+          <DashboardHero />
         </div>
 
       </div>

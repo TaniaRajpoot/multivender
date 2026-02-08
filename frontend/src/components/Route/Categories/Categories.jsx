@@ -1,22 +1,46 @@
+import { useState } from 'react';
 import { brandingData, categoriesData } from "../../../static/data";
 import styles from "../../../styles/styles";
 import { useNavigate } from "react-router-dom";
 
 const Categories = () => {
   const navigate = useNavigate();
+  const [imageErrors, setImageErrors] = useState({});
+
   const getImageUrl = (image) => {
+    // Handle null/undefined
     if (!image) return "/placeholder.png";
+    
+    // Handle Cloudinary object format: { public_id: "...", url: "..." }
     if (typeof image === "object" && image.url) {
       return image.url;
     }
+    
+    // Handle array of images (take first one)
+    if (Array.isArray(image) && image.length > 0) {
+      return image[0].url || image[0];
+    }
+    
+    // Handle direct URL string
     if (typeof image === "string" && image.startsWith("http")) {
       return image;
     }
-    return image;
+    
+    // Fallback
+    return "/placeholder.png";
+  };
+
+  const handleImageError = (categoryId, e) => {
+    // Prevent infinite loop by only setting error once per image
+    if (!imageErrors[categoryId]) {
+      setImageErrors(prev => ({ ...prev, [categoryId]: true }));
+      e.target.src = "/placeholder.png";
+    }
   };
 
   return (
     <>
+      {/* Branding Section */}
       <div className={`${styles.section} hidden sm:block`}>
         <div className="branding my-12 flex justify-between w-full shadow-sm bg-white p-5 rounded-md">
           {brandingData &&
@@ -32,6 +56,7 @@ const Categories = () => {
         </div>
       </div>
 
+      {/* Categories Section */}
       <div
         id="categories"
         className={`${styles.section} bg-white p-6 rounded-lg mb-12`}
@@ -43,23 +68,24 @@ const Categories = () => {
                 navigate(`/products?category=${i.title}`);
               };
 
-             
-              const categoryImage = i.image_Url || i.imageUrl;
+              // Support multiple possible field names from API
+              const categoryImage = i.images || i.image_Url || i.imageUrl || i.image;
+              const imageUrl = imageErrors[i._id || i.id] 
+                ? "/placeholder.png" 
+                : getImageUrl(categoryImage);
 
               return (
                 <div
                   className="w-full h-[100px] flex items-center justify-between cursor-pointer overflow-hidden"
-                  key={i.id}
+                  key={i._id || i.id}
                   onClick={handleSubmit}
                 >
-                  <h5 className="text-[18px] leading-[1.3]">{i.title}</h5>
+                  <h5 className="text-[18px] leading-[1.3]">{i.title || i.name}</h5>
                   <img
-                    src={getImageUrl(categoryImage)}
+                    src={imageUrl}
                     className="w-[120px] object-cover"
-                    alt={i.title}
-                    onError={(e) => {
-                      e.target.src = "/placeholder.png";
-                    }}
+                    alt={i.title || i.name}
+                    onError={(e) => handleImageError(i._id || i.id, e)}
                   />
                 </div>
               );

@@ -13,7 +13,10 @@ import {
   ProfilePage,
   ShopCreatePage,
   SellerActivationPage,
-  ShopLoginPage
+  ShopLoginPage,
+  OrderDetailsPage,
+  TrackOrderPage,
+  UserInbox,
 } from "./routes/Routes.js";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -21,7 +24,10 @@ import { ToastContainer } from "react-toastify";
 import Store from "./redux/store.js";
 import { loadUser } from "./redux/actions/user.js";
 import { loadSeller } from "./redux/actions/seller.js";
-
+import { getAllProducts } from "./redux/actions/product.js";
+import CheckoutPage from "./pages/CheckoutPage.jsx";
+import PaymentPage from "./pages/PaymentPage.jsx"; 
+import OrderSuccessPage from "./pages/OrderSuccessPage.jsx"; 
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import SellerProtectedRoute from "./routes/SelllerProtectedRoute.jsx";
 
@@ -33,13 +39,25 @@ import {
   ShopCreateEvent,
   ShopAllEvents,
   ShopAllCoupons,
-  ShopPreviewPage
+  ShopPreviewPage,
+  ShopAllOrders,
+  OrderDetails,
+  ShopAllRefunds,
+  ShopSettingsPage,
+  ShopWithdrawMoneyPage,
+  ShopInboxPage
+
 } from "./routes/ShopRoutes.js";
+
+import { AdminDashboardPage } from "./routes/AdminRoute.js";
+import { useSelector } from "react-redux";
+import { BsShopWindow } from "react-icons/bs";
 
 const AppRoutes = () => {
   return (
     <>
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/sign-up" element={<SignupPage />} />
@@ -50,33 +68,197 @@ const AppRoutes = () => {
         <Route path="/best-selling" element={<BestSellingPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+        
+        {/* Protected User Routes */}
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/payment"
+          element={
+            <ProtectedRoute>
+              <PaymentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/inbox"
+          element={
+            <ProtectedRoute>
+              <UserInbox />
+            </ProtectedRoute>
+          }
+        />
+          <Route 
+          path="/user/order/:id" 
+          element={
+            <ProtectedRoute>
+              <OrderDetailsPage />
+            </ProtectedRoute>
+          } 
+        />
+          <Route 
+          path="/user/track/order/:id" 
+          element={
+            <ProtectedRoute>
+              <TrackOrderPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/order/success"
+          element={
+            <ProtectedRoute>
+              <OrderSuccessPage />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* SHOP ROUTES */}
+        {/* Shop Routes */}
         <Route path="/shop-login" element={<ShopLoginPage />} />
         <Route path="/shop-create" element={<ShopCreatePage />} />
-
-        {/* Logged-in seller's own shop */}
         <Route path="/shop" element={<ShopHomePage isOwner={true} />} />
-
-        {/* Public shop profile */}
         <Route path="/shop/:id" element={<ShopHomePage isOwner={false} />} />
-
         <Route path="/shop/preview/:id" element={<ShopPreviewPage />} />
 
-        {/* Seller dashboard */}
-        <Route path="/dashboard" element={<SellerProtectedRoute><ShopDashboardPage /></SellerProtectedRoute>} />
-        <Route path="/dashboard-create-product" element={<SellerProtectedRoute><ShopCreateProduct /></SellerProtectedRoute>} />
-        <Route path="/dashboard-products" element={<SellerProtectedRoute><ShopAllProducts /></SellerProtectedRoute>} />
-        <Route path="/dashboard-create-event" element={<SellerProtectedRoute><ShopCreateEvent /></SellerProtectedRoute>} />
-        <Route path="/dashboard-events" element={<SellerProtectedRoute><ShopAllEvents /></SellerProtectedRoute>} />
-        <Route path="/dashboard-coupons" element={<SellerProtectedRoute><ShopAllCoupons /></SellerProtectedRoute>} />
+        {/* Protected Seller Routes */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <SellerProtectedRoute>
+              <ShopDashboardPage />
+            </SellerProtectedRoute>
+          } 
+        />
+         <Route 
+          path="/settings" 
+          element={
+            <SellerProtectedRoute>
+              <ShopSettingsPage />
+            </SellerProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/dashboard-create-product" 
+          element={
+            <SellerProtectedRoute>
+              <ShopCreateProduct />
+            </SellerProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/dashboard-products" 
+          element={
+            <SellerProtectedRoute>
+              <ShopAllProducts />
+            </SellerProtectedRoute>
+          } 
+        />
+        <Route
+          path="/dashboard-orders"
+          element={
+            <SellerProtectedRoute>
+              <ShopAllOrders />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/order/:id"
+          element={
+            <SellerProtectedRoute>
+              <OrderDetails />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route 
+          path="/dashboard-create-event" 
+          element={
+            <SellerProtectedRoute>
+              <ShopCreateEvent />
+            </SellerProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/dashboard-events" 
+          element={
+            <SellerProtectedRoute>
+              <ShopAllEvents />
+            </SellerProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/dashboard-refunds" 
+          element={
+            <SellerProtectedRoute>
+              <ShopAllRefunds />
+            </SellerProtectedRoute>
+          } 
+        />
+          <Route 
+            path="/dashboard-coupons" 
+            element={
+              <SellerProtectedRoute>
+                <ShopAllCoupons />
+              </SellerProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard-withdraw-money" 
+            element={
+              <SellerProtectedRoute>
+                <ShopWithdrawMoneyPage />
+              </SellerProtectedRoute>
+            } 
+          />
+
+           <Route 
+            path="/dashboard-messages" 
+            element={
+              <SellerProtectedRoute>
+                <ShopInboxPage />
+              </SellerProtectedRoute>
+            } 
+          />
+
+          {/* Admin Routes */}
+          <Route
+            path="/admin/dashboard"
+            element={
+                <AdminDashboardPage />
+            }
+
+/>
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/shop-login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      <ToastContainer />
+
+      <ToastContainer 
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </>
   );
 };
@@ -85,6 +267,7 @@ const App = () => {
   useEffect(() => {
     Store.dispatch(loadUser());
     Store.dispatch(loadSeller());
+    Store.dispatch(getAllProducts());
   }, []);
 
   return (

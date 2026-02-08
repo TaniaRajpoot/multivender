@@ -7,32 +7,70 @@ import {
 } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
+import { addToCart } from "../../../redux/actions/cart";
+import { toast } from "react-toastify";
 import styles from "../../../styles/styles";
 import ProductCardDetails from "../ProductDetailsCard/ProductDetailsCard";
+import { removeFromWishList ,addToWishList} from "../../../redux/actions/wishlist";
 
 const ProductCard = ({ data, isEvent }) => {
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
+  const [count, setCount] = useState(1);
   const dispatch = useDispatch();
+  const { cart } = useSelector((state) => state.cart);
+  const { wishlist } = useSelector((state) => state.wishlist);  
 
-  // Helper function to get image URL
+  useEffect(() => {
+    if (wishlist && wishlist.find((item) => item._id === data._id)) {
+      setClick(true);
+    } else {
+      setClick(false);
+    }
+  }, [wishlist]);
+
   const getImageUrl = (image) => {
     if (!image) return "/placeholder.png";
-    
-    // If it's an object with url property (Cloudinary format)
-    if (typeof image === "object" && image.url) {
+        if (typeof image === "object" && image.url) {
       return image.url;
     }
-    
-    // If it's already a URL string
     if (typeof image === "string" && image.startsWith("http")) {
       return image;
     }
-    
-    // Fallback for old format
     return image;
   };
+
+  const removeFromWishListHandler = (data) => {
+    setClick(false);
+    dispatch(removeFromWishList(data));
+  }
+
+  const addtoWishListHandler = (data) => {  
+    setClick(true);
+    dispatch(addToWishList(data));
+    // Dispatch add to wishlist action here if needed
+  }
+
+
+    const addToCartHandler = (id) => {
+      const isItemExist = cart.find((i) => i._id === data._id);
+      if (isItemExist) {
+        toast.error("Item already in cart");
+      } else {
+        if (data.stock < count) {
+          toast.error("Not enough stock available");
+        } else {
+          const cartItem = {
+            ...data,
+            qty: count,
+          };
+          dispatch(addToCart(cartItem));
+          toast.success("Item added to cart successfully");
+        }
+      }
+    };
+  
+
 
   return (
     <>
@@ -69,7 +107,7 @@ const ProductCard = ({ data, isEvent }) => {
               : `/product/${data._id}`
           }`}
         >
-          <h4 className="pb-3 font-[500]">
+          <h4 className="pb-3 font-medium">
             {data.name.length > 40 ? data.name.slice(0, 40) + "..." : data.name}
           </h4>
 
@@ -84,7 +122,7 @@ const ProductCard = ({ data, isEvent }) => {
                 </h4>
               )}
             </div>
-            <span className="font-[400] text-[17px] text-[#68d284]">
+            <span className="font-normal text-[17px] text-[#68d284]">
               {data?.soldOut !== undefined ? `(${data.soldOut} sold)` : "(0 sold)"}
             </span>
           </div>
@@ -96,7 +134,7 @@ const ProductCard = ({ data, isEvent }) => {
             <AiFillHeart
               size={22}
               className="cursor-pointer absolute right-2 top-5"
-              onClick={() => setClick(false)}
+              onClick={() => removeFromWishListHandler(data) }
               color="red"
               title="Remove from wishlist"
             />
@@ -104,7 +142,7 @@ const ProductCard = ({ data, isEvent }) => {
             <AiOutlineHeart
               size={22}
               className="cursor-pointer absolute right-2 top-5"
-              onClick={() => setClick(true)}
+              onClick={() => addtoWishListHandler(data)}
               color="#333"
               title="Add to wishlist"
             />
@@ -119,7 +157,7 @@ const ProductCard = ({ data, isEvent }) => {
           <AiOutlineShoppingCart
             size={25}
             className="cursor-pointer absolute right-2 top-24"
-            onClick={() => console.log("Add to cart:", data._id)}
+            onClick={() => addToCartHandler(data._id)}
             color="#444"
             title="Add to cart"
           />

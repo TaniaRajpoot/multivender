@@ -6,20 +6,22 @@ import {
   AiOutlineSearch,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { categoriesData, productData } from "../../static/data";
+import { categoriesData } from "../../static/data";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { BiMenuAltLeft } from "react-icons/bi";
 import DropDown from "./DropDown";
 import Navbar from "./Navbar";
 import { CgProfile } from "react-icons/cg";
 import { useSelector } from "react-redux";
-import { backend_url } from "../../server";
 import Cart from "./cart/Cart";
 import Wishlist from "../Wishlist/Wishlist";
 import { RxCross1 } from "react-icons/rx";
 
 const Header = ({ activeHeading }) => {
   const { isAuthenticated, user } = useSelector((state) => state.user);
+  const { cart } = useSelector((state) => state.cart);
+  const { wishlist } = useSelector((state) => state.wishlist);
+  const { allProducts } = useSelector((state) => state.product);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
   const [mobileSearchTerm, setMobileSearchTerm] = useState("");
@@ -36,8 +38,8 @@ const Header = ({ activeHeading }) => {
     setSearchTerm(term);
 
     const filteredProducts =
-      productData &&
-      productData.filter((product) =>
+      allProducts &&
+      allProducts.filter((product) =>
         product.name.toLowerCase().includes(term.toLowerCase()),
       );
 
@@ -49,8 +51,8 @@ const Header = ({ activeHeading }) => {
     setMobileSearchTerm(term);
 
     const filteredProducts =
-      productData &&
-      productData.filter((product) =>
+      allProducts &&
+      allProducts.filter((product) =>
         product.name.toLowerCase().includes(term.toLowerCase()),
       );
 
@@ -96,15 +98,13 @@ const Header = ({ activeHeading }) => {
               <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
                 {searchData &&
                   searchData.map((i, index) => {
-                    const d = i.name;
-                    const Product_name = d.replace(/\s+/g, "-");
                     return (
-                      <Link key={index} to={`/product/${Product_name}`}>
+                      <Link key={index} to={`/product/${i._id}`}>
                         <div className="flex items-center">
                           <img
-                            src={i.image_Url && i.image_Url[0]?.url}
+                            src={i.images && i.images[0]?.url}
                             alt=""
-                            className="w-10 h-10 mr-2.5"
+                            className="w-10 h-10 mr-2.5 object-cover"
                           />
                           <h1>{i.name}</h1>
                         </div>
@@ -169,7 +169,7 @@ const Header = ({ activeHeading }) => {
               >
                 <AiOutlineHeart size={30} color="rgb(255 255 255 / 83%)" />
                 <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
-                  0
+                  {wishlist && wishlist.length ? wishlist.length : 0}
                 </span>
               </div>
             </div>
@@ -184,7 +184,7 @@ const Header = ({ activeHeading }) => {
                   color="rgb(255 255 255 / 83%)"
                 />
                 <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
-                  1
+                  {cart && cart.length ? cart.length : 0}
                 </span>
               </div>
             </div>
@@ -248,11 +248,17 @@ const Header = ({ activeHeading }) => {
             >
               <AiOutlineShoppingCart size={30} className="mt-3" />
               <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
-                1
+                {cart && cart.length ? cart.length : 0}
               </span>
             </div>
           </div>
         </div>
+
+        {/* cart pop up */}
+        {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+
+        {/* wishlist pop up */}
+        {openWishlist ? <Wishlist setOpenWishList={setOpenWishList} /> : null}
 
         {/* Header sidebar */}
         {open && (
@@ -260,10 +266,13 @@ const Header = ({ activeHeading }) => {
             <div className="fixed w-[60%] bg-white h-screen top-0 left-0 z-[201] overflow-y-auto">
               <div className="w-full justify-between flex pr-3">
                 <div>
-                  <div className="relative mr-[15px]">
+                  <div 
+                    className="relative mr-[15px] cursor-pointer"
+                    onClick={() => setOpenWishList(true)}
+                  >
                     <AiOutlineHeart size={30} className="mt-5 ml-3" />
                     <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
-                      0
+                      {wishlist && wishlist.length ? wishlist.length : 0}
                     </span>
                   </div>
                 </div>
@@ -285,15 +294,21 @@ const Header = ({ activeHeading }) => {
                 {mobileSearchData && mobileSearchData.length !== 0 ? (
                   <div className="absolute bg-white z-10 shadow w-full left-0 p-3">
                     {mobileSearchData.map((i, index) => {
-                      const d = i.name;
-                      const Product_name = d.replace(/\s+/g, "-");
                       return (
-                        <Link key={index} to={`/product/${Product_name}`}>
-                          <div className="flex items-center">
+                        <Link 
+                          key={index} 
+                          to={`/product/${i._id}`}
+                          onClick={() => {
+                            setOpen(false);
+                            setMobileSearchTerm("");
+                            setMobileSearchData(null);
+                          }}
+                        >
+                          <div className="flex items-center py-2">
                             <img
-                              src={i.image_Url && i.image_Url[0]?.url}
+                              src={i.images && i.images[0]?.url}
                               alt=""
-                              className="w-[50px] mr-2"
+                              className="w-[50px] h-[50px] mr-2 object-cover"
                             />
                             <h5>{i.name}</h5>
                           </div>
@@ -310,9 +325,9 @@ const Header = ({ activeHeading }) => {
 
               <div className="flex justify-center w-full my-6">
                 <div className={`${styles.button} rounded-sm`}>
-                  <Link to="/shop-create">
+                  <Link to={`${isSeller ? "/dashboard" : "/shop-create"}`}>
                     <h1 className="text-[#ffff] flex items-center">
-                      Become Seller <IoIosArrowForward className="ml-1" />
+                      {isSeller ? "Go to Shop" : "Become Seller"} <IoIosArrowForward className="ml-1" />
                     </h1>
                   </Link>
                 </div>

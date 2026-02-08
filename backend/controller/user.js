@@ -188,4 +188,185 @@ router.get(
   })
 );
 
+//update User Info
+router.put(
+  "/update-user-info",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { name, email, password, phoneNumber } = req.body;
+      const user = await User.findById(req.user.id).select("+password");
+      
+      if (!user) {
+        return next(new ErrorHandler("User not found", 400));
+      }
+
+      // Verify the current password
+      const isPasswordValid = await user.comparePassword(password);
+      
+      if (!isPasswordValid) {
+        return next(
+          new ErrorHandler("Please provide the correct password!", 400)
+        );
+      }
+
+      // Check if email is being changed and if new email already exists
+      if (email !== user.email) {
+        const emailExists = await User.findOne({ email });
+        if (emailExists) {
+          return next(new ErrorHandler("Email already in use", 400));
+        }
+      }
+
+      // Update user information
+      user.name = name;
+      user.email = email;
+      user.phoneNumber = phoneNumber;
+      
+      await user.save();
+      
+      // ✅ CRITICAL FIX: Fetch user again WITHOUT password
+      const updatedUser = await User.findById(req.user.id);
+      
+      res.status(200).json({
+        success: true,
+        user: updatedUser, // Now password is excluded
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+//update user Avatar
+router.put(
+  "/update-avatar",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      let existsUser = await User.findById(req.user.id);
+      if (req.body.avatar !== "") {
+        const imageId = existsUser.avatar.public_id;
+
+        await cloudinary.uploader.destroy(imageId);
+
+        const myCloud = await cloudinary.uploader.upload(req.body.avatar, {
+          folder: "avatars",
+          width: 150,
+        });
+        existsUser.avatar = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
+      }
+
+      await existsUser.save();
+
+      res.status(200).json({
+        success: true,
+        existsUser,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+//update User Addresses
+router.put(
+  "/update-user-addresses",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user.id);
+      const sameTypeAdress = user.addresses.find(
+        (address) => address.addressType === req.body.addressType
+      );
+      if (sameTypeAdress) {
+        return next(
+          new ErrorHandler(
+            `${req.body.addressType} address is already exists`,
+            400
+          )
+        );
+      }
+      const existAddress = user.addresses.find(
+        (address) => address._id === req.body._id
+      );
+      if (existAddress) {
+        Object.assign(existAddress, req.body);
+      } else {
+        user.addresses.push(req.body);
+      }
+      await user.save();
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+//delete user address
+router.delete(
+  `/delete-user-address/:id`,
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const userId = req.user._id;
+      const addressId = req.params.id;
+      //“Find a user by their ID , then (pull/remove) one address from their list of addresses.
+      await User.updateOne(
+        { _id: userId },
+        { $pull: { addresses: { _id: addressId } } }
+      );
+      const user = await User.findById(userId);
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+//update password
+router.put(`/update-user-password`, isAuthenticated, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select("+password");
+    const comparePassword = await user.comparePassword(req.body.oldPassword);
+    if (!comparePassword) {
+      return next(new ErrorHandler("Wrong Password", 400));
+    }
+    if (req.body.newPassword !== req.body.confirmPassword) {
+      return next(new ErrorHandler("Password dosn't match ", 400));
+    }
+    user.password = req.body.newPassword;
+    await user.save();
+    res.status(200).json({
+      success: true,
+      message: "Password Updated Successfully!",
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
+
+//find user infromation with the userId
+router.get(
+  "/user-info/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.params.id);
+      res.status(201).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 module.exports = router;

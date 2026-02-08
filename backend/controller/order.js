@@ -117,12 +117,12 @@ router.put(
         success: true,
         order,
       });
-      // Update seller-Info for the Balance
-      async function upDateSellerInfo(amount) {
-        const seller = await Shop.findById(req.seller.id);
-        seller.availableBalance = amount;
-        await seller.save();
-      }
+   
+async function upDateSellerInfo(amount) {
+  const seller = await Shop.findById(req.seller.id);
+  seller.availableBalance = (seller.availableBalance || 0) + amount;
+  await seller.save();
+}
       // Define updateOrder function
       async function updateOrder(id, qty) {
         const product = await Product.findById(id);

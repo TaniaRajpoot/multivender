@@ -34,51 +34,51 @@ const ProfileSideBar = ({ active, setActive }) => {
   };
 
   return (
-    <div className="w-ful bg-[#fff] shadow-sm rounded-[4px] p-4 pt-8">
+    <div className="w-full bg-white shadow-sm rounded-sm p-4 pt-8">
       <div
-        className="w-full flex cursor-pointer items-center mb-8 "
+        className="w-full flex cursor-pointer items-center mb-8"
         onClick={() => setActive(1)}
       >
         <RxPerson size={20} color={active === 1 ? "red" : ""} />
         <span
           className={`pl-3 ${
             active === 1 ? "text-[red]" : ""
-          } 800px:block hidden`}
+          }`}
         >
           Profile
         </span>
       </div>
 
       <div
-        className="w-full flex cursor-pointer items-center mb-8 "
+        className="w-full flex cursor-pointer items-center mb-8"
         onClick={() => setActive(2)}
       >
         <HiOutlineShoppingBag size={20} color={active === 2 ? "red" : ""} />
         <span
           className={`pl-3 ${
             active === 2 ? "text-[red]" : ""
-          } 800px:block hidden`}
+          }`}
         >
           Orders
         </span>
       </div>
 
       <div
-        className="w-full flex cursor-pointer items-center mb-8 "
+        className="w-full flex cursor-pointer items-center mb-8"
         onClick={() => setActive(3)}
       >
         <HiOutlineReceiptRefund size={20} color={active === 3 ? "red" : ""} />
         <span
           className={`pl-3 ${
             active === 3 ? "text-[red]" : ""
-          } 800px:block hidden`}
+          }`}
         >
-          ReFunds
+          Refunds
         </span>
       </div>
 
       <div
-        className="w-full flex cursor-pointer items-center mb-8 "
+        className="w-full flex cursor-pointer items-center mb-8"
         onClick={() => {
           setActive(4);
           navigate("/inbox");
@@ -88,49 +88,49 @@ const ProfileSideBar = ({ active, setActive }) => {
         <span
           className={`pl-3 ${
             active === 4 ? "text-[red]" : ""
-          } 800px:block hidden`}
+          }`}
         >
           Inbox
         </span>
       </div>
 
       <div
-        className="w-full flex cursor-pointer items-center mb-8 "
+        className="w-full flex cursor-pointer items-center mb-8"
         onClick={() => setActive(5)}
       >
         <MdOutlineTrackChanges size={20} color={active === 5 ? "red" : ""} />
         <span
           className={`pl-3 ${
             active === 5 ? "text-[red]" : ""
-          } 800px:block hidden`}
+          }`}
         >
           Track Order
         </span>
       </div>
 
       <div
-        className="w-full flex cursor-pointer items-center mb-8 "
+        className="w-full flex cursor-pointer items-center mb-8"
         onClick={() => setActive(6)}
       >
         <RiLockPasswordFill size={20} color={active === 6 ? "red" : ""} />
         <span
           className={`pl-3 ${
             active === 6 ? "text-[red]" : ""
-          } 800px:block hidden`}
+          }`}
         >
           Change Password
         </span>
       </div>
 
       <div
-        className="w-full flex cursor-pointer items-center mb-8 "
+        className="w-full flex cursor-pointer items-center mb-8"
         onClick={() => setActive(7)}
       >
         <TbAddressBook size={20} color={active === 7 ? "red" : ""} />
         <span
           className={`pl-3 ${
             active === 7 ? "text-[red]" : ""
-          } 800px:block hidden`}
+          }`}
         >
           Address
         </span>
@@ -139,7 +139,7 @@ const ProfileSideBar = ({ active, setActive }) => {
       {user && user.role === "Admin" && (
         <Link to="/admin/dashboard">
           <div
-            className="w-full flex cursor-pointer items-center mb-8 "
+            className="w-full flex cursor-pointer items-center mb-8"
             onClick={() => setActive(8)}
           >
             <MdOutlineAdminPanelSettings
@@ -149,16 +149,16 @@ const ProfileSideBar = ({ active, setActive }) => {
             <span
               className={`pl-3 ${
                 active === 8 ? "text-[red]" : ""
-              } 800px:block hidden`}
+              }`}
             >
-              Admin DashBoard
+              Admin Dashboard
             </span>
           </div>
         </Link>
       )}
 
       <div
-        className="w-full flex cursor-pointer items-center mb-8 "
+        className="w-full flex cursor-pointer items-center mb-8"
         onClick={() => {
           setActive(9);
           logOutHandler();
@@ -168,9 +168,9 @@ const ProfileSideBar = ({ active, setActive }) => {
         <span
           className={`pl-3 ${
             active === 9 ? "text-[red]" : ""
-          } 800px:block hidden`}
+          }`}
         >
-          LogOut
+          Log Out
         </span>
       </div>
     </div>
