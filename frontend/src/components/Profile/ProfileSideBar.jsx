@@ -178,3 +178,4 @@ const ProfileSideBar = ({ active, setActive }) => {
 };
 
 export default ProfileSideBar;
+

@@ -25,6 +25,21 @@ export const SellerReducer = createReducer(initialState, (builder) => {
       state.isLoading = false;
       state.error = null;
       state.success = false;
+    })
+    // Get all sellers - Admin
+    .addCase("getAllSellerRequest", (state) => {
+      state.isLoading = true;
+    })
+    .addCase("getAllSellerSuccess", (state, action) => {
+      state.isLoading = false;
+      state.sellers = action.payload;
+    })
+    .addCase("getAllSellerFailed", (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
+    .addCase("clearErrors", (state) => {
+      state.error = null;
     });
 });
 

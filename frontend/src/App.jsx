@@ -52,6 +52,7 @@ import {
 import { AdminDashboardPage } from "./routes/AdminRoute.js";
 import { useSelector } from "react-redux";
 import { BsShopWindow } from "react-icons/bs";
+import ProtectedAdminRoute from "./routes/ProtectedAdminRoute.jsx";
 
 const AppRoutes = () => {
   return (
@@ -234,13 +235,15 @@ const AppRoutes = () => {
           />
 
           {/* Admin Routes */}
-          <Route
+           <Route
             path="/admin/dashboard"
             element={
+              <ProtectedAdminRoute>
                 <AdminDashboardPage />
+              </ProtectedAdminRoute>
             }
-
-/>
+          />
+          
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -8,6 +8,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { getAllOrdersOfAdmin } from "../../../redux/actions/order";
 import Loader from "../../../components/Layout/Loader";
 import { getAllSellers } from "../../../redux/actions/seller";
+
 const AdminDashBoardMain = () => {
   const dispatch = useDispatch();
   const { adminOrders, isLoading } = useSelector((state) => state.order);
@@ -20,7 +21,6 @@ const AdminDashBoardMain = () => {
 
   const columns = [
     { field: "id", headerName: "Order ID", flex: 0.7 },
-
     {
       field: "status",
       headerName: "Status",
@@ -34,7 +34,6 @@ const AdminDashBoardMain = () => {
       type: "number",
       flex: 0.7,
     },
-
     {
       field: "total",
       headerName: "Total",
@@ -61,6 +60,7 @@ const AdminDashBoardMain = () => {
         createdAt: item?.createdAt.slice(0, 10),
       });
     });
+    
   const adminEarning =
     adminOrders &&
     adminOrders.reduce((acc, item) => acc + item.totalPrice * 0.1, 0);
@@ -73,8 +73,8 @@ const AdminDashBoardMain = () => {
       ) : (
         <div className="w-full p-4 bg-[#f5f5f5]">
           <h3 className="text-[22px] font-Poppins pb-2">Overview</h3>
-          <div className="w-full block 800px:flex items-center justify-between">
-            <div className="w-full mb-4 800px:w-[30%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
+          <div className="w-full flex flex-wrap gap-4 items-center justify-between">
+            <div className="flex-1 min-w-[250px] mb-4 min-h-[20vh] bg-white shadow rounded px-2 py-5">
               <div className="flex items-center">
                 <AiOutlineMoneyCollect
                   size={30}
@@ -91,7 +91,7 @@ const AdminDashBoardMain = () => {
                 ${adminBalance}
               </h5>
             </div>
-            <div className="w-full mb-4 800px:w-[30%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
+            <div className="flex-1 min-w-[250px] mb-4 min-h-[20vh] bg-white shadow rounded px-2 py-5">
               <div className="flex items-center">
                 <MdBorderClear size={30} className="mr-2" fill="#00000085" />
                 <h3
@@ -107,7 +107,7 @@ const AdminDashBoardMain = () => {
                 <h5 className="pt-4 pl-[2] text-[#077f9c]">View Sellers</h5>
               </Link>
             </div>
-            <div className="w-full mb-4 800px:w-[30%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
+            <div className="flex-1 min-w-[250px] mb-4 min-h-[20vh] bg-white shadow rounded px-2 py-5">
               <div className="flex items-center">
                 <AiOutlineMoneyCollect
                   size={30}

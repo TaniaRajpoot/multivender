@@ -8,15 +8,16 @@ import { HiOutlineUserGroup } from "react-icons/hi";
 import { FaProductHunt } from "react-icons/fa";
 import { MdEmojiEvents } from "react-icons/md";
 import { MdOutlineSettings } from "react-icons/md";
+
 const AdminSidebar = ({ active }) => {
   return (
-    <div className="w-full h-[89vh] bg-white shadow-sm overflow-y-scroll sticky top-0 left-0 z-10 ">
-      {/* Sidevbar Single Item */}
+    <div className="w-full h-[89vh] bg-white shadow-sm overflow-y-scroll sticky top-0 left-0 z-10">
+      {/* Sidebar Single Item */}
       <div className="w-full flex items-center p-4">
         <Link to={`/admin/dashboard`} className="w-full flex items-center">
           <RxDashboard size={30} color={active == 1 ? "crimson" : "#555"} />
           <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+            className={`hidden lg:block pl-2 text-[18px] font-[400] ${
               active == 1 ? "text-[crimson]" : "text-[#555]"
             }`}
           >
@@ -31,7 +32,7 @@ const AdminSidebar = ({ active }) => {
             color={`${active === 2 ? "crimson" : "#555"}`}
           />
           <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+            className={`hidden lg:block pl-2 text-[18px] font-[400] ${
               active === 2 ? "text-[crimson]" : "text-[#555]"
             }`}
           >
@@ -46,7 +47,7 @@ const AdminSidebar = ({ active }) => {
             color={`${active === 3 ? "crimson" : "#555"}`}
           />
           <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+            className={`hidden lg:block pl-2 text-[18px] font-[400] ${
               active === 3 ? "text-[crimson]" : "text-[#555]"
             }`}
           >
@@ -61,7 +62,7 @@ const AdminSidebar = ({ active }) => {
             color={`${active === 4 ? "crimson" : "#555"}`}
           />
           <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+            className={`hidden lg:block pl-2 text-[18px] font-[400] ${
               active === 4 ? "text-[crimson]" : "text-[#555]"
             }`}
           >
@@ -76,7 +77,7 @@ const AdminSidebar = ({ active }) => {
             color={`${active === 5 ? "crimson" : "#555"}`}
           />
           <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+            className={`hidden lg:block pl-2 text-[18px] font-[400] ${
               active === 5 ? "text-[crimson]" : "text-[#555]"
             }`}
           >
@@ -91,7 +92,7 @@ const AdminSidebar = ({ active }) => {
             color={`${active === 6 ? "crimson" : "#555"}`}
           />
           <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+            className={`hidden lg:block pl-2 text-[18px] font-[400] ${
               active === 6 ? "text-[crimson]" : "text-[#555]"
             }`}
           >
@@ -106,7 +107,7 @@ const AdminSidebar = ({ active }) => {
             color={`${active === 7 ? "crimson" : "#555"}`}
           />
           <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+            className={`hidden lg:block pl-2 text-[18px] font-[400] ${
               active === 7 ? "text-[crimson]" : "text-[#555]"
             }`}
           >
@@ -121,7 +122,7 @@ const AdminSidebar = ({ active }) => {
             color={`${active === 8 ? "crimson" : "#555"}`}
           />
           <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+            className={`hidden lg:block pl-2 text-[18px] font-[400] ${
               active === 8 ? "text-[crimson]" : "text-[#555]"
             }`}
           >
