@@ -49,7 +49,15 @@ import {
 
 } from "./routes/ShopRoutes.js";
 
-import { AdminDashboardPage } from "./routes/AdminRoute.js";
+import {
+  AdminDashboardPage,
+  AdminDashboardUsersPage,
+  AdminDashboardSellersPage,
+  AdminDashboardOrdersPage,
+  AdminDashboardProductsPage,
+  AdminDashboardEventsPage,
+  AdminDashboardWithdrawPage
+   } from "./routes/AdminRoute.js";
 import { useSelector } from "react-redux";
 import { BsShopWindow } from "react-icons/bs";
 import ProtectedAdminRoute from "./routes/ProtectedAdminRoute.jsx";
@@ -240,6 +248,54 @@ const AppRoutes = () => {
             element={
               <ProtectedAdminRoute>
                 <AdminDashboardPage />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin-users"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboardUsersPage />
+              </ProtectedAdminRoute>
+            }
+          />
+             <Route
+            path="/admin-sellers"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboardSellersPage />
+              </ProtectedAdminRoute>
+            }
+          />
+           <Route
+            path="/admin-orders"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboardOrdersPage />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin-products"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboardProductsPage />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin-events"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboardEventsPage />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin-withdraw-request"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboardWithdrawPage />
               </ProtectedAdminRoute>
             }
           />

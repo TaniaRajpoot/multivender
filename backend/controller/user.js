@@ -6,7 +6,7 @@ const User = require("../model/user");
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
 const sendToken = require("../utils/jwtToken");
-const { isAuthenticated } = require("../middleware/auth");
+const { isAuthenticated,isAdmin } = require("../middleware/auth");
 const cloudinary = require("../config/cloudinary");
 
 // ---------------- CREATE USER ----------------
@@ -368,5 +368,49 @@ router.get(
     }
   })
 );
+
+//get all Users ----> (Admin)
+router.get(
+  "/admin-all-users",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const users = await User.find().sort({
+        createdAt: -1,
+      });
+      res.status(200).json({
+        success: true,
+        users,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+//DeleteUser ---admin
+router.delete(
+  "/admin-delete-user/:id",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.params.id);
+      if (!user) {
+        return next(
+          new ErrorHandler(`User is not available with this ${req.params.id}!`, 400)
+        );
+      }
+      await User.findByIdAndDelete(req.params.id);
+      res.status(200).json({
+        success: true,
+        message: "User Deleted Successfully!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 
 module.exports = router;

@@ -5,7 +5,7 @@ const Shop = require('../model/shop');
 const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const cloudinary = require('../config/cloudinary');
-const { isSeller ,isAuthenticated} = require("../middleware/auth");
+const { isSeller ,isAuthenticated,isAdmin} = require("../middleware/auth");
 const Order = require('../model/order');
 
 // Create a new product
@@ -186,6 +186,24 @@ router.put(
   })
 );
 
-module.exports = router;
+//get all products ---- (Admin)
+router.get(
+  "/admin-all-products",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const products = await Product.find().sort({
+        createdAt: -1,
+      });
+      res.status(200).json({
+        success: true,
+        products,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
 module.exports = router;

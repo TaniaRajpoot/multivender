@@ -5,6 +5,7 @@ const Event = require("../model/event");
 const ErrorHandler = require("../utils/ErrorHandler");
 const Shop = require("../model/shop");
 const cloudinary = require("../config/cloudinary");
+const { isSeller, isAuthenticated, isAdmin } = require("../middleware/auth");
 
 // Create a new event
 router.post(
@@ -118,5 +119,26 @@ router.get(
     });
   })
 );
+
+//get all Events ---- (Admin)
+router.get(
+  "/admin-all-events",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const events = await Event.find().sort({
+        createdAt: -1,
+      });
+      res.status(200).json({
+        success: true,
+        events,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 
 module.exports = router;

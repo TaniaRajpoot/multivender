@@ -19,11 +19,21 @@ const AdminDashBoardMain = () => {
     dispatch(getAllSellers());
   }, [dispatch]);
 
+  // Debug logs
+  console.log("Sellers:", sellers);
+  console.log("Admin Orders:", adminOrders);
+
   const columns = [
-    { field: "id", headerName: "Order ID", flex: 0.7 },
+    {
+      field: "id",
+      headerName: "Order ID",
+      minWidth: 150,
+      flex: 1,
+    },
     {
       field: "status",
       headerName: "Status",
+      minWidth: 130,
       flex: 0.7,
       cellClassName: (params) =>
         params.row.status === "Delivered" ? "greenColor" : "redColor",
@@ -32,12 +42,14 @@ const AdminDashBoardMain = () => {
       field: "itemsQty",
       headerName: "Items Qty",
       type: "number",
+      minWidth: 130,
       flex: 0.7,
     },
     {
       field: "total",
       headerName: "Total",
       type: "number",
+      minWidth: 130,
       flex: 0.8,
     },
     {
@@ -60,7 +72,7 @@ const AdminDashBoardMain = () => {
         createdAt: item?.createdAt.slice(0, 10),
       });
     });
-    
+
   const adminEarning =
     adminOrders &&
     adminOrders.reduce((acc, item) => acc + item.totalPrice * 0.1, 0);
@@ -91,22 +103,24 @@ const AdminDashBoardMain = () => {
                 ${adminBalance}
               </h5>
             </div>
+
             <div className="flex-1 min-w-[250px] mb-4 min-h-[20vh] bg-white shadow rounded px-2 py-5">
               <div className="flex items-center">
                 <MdBorderClear size={30} className="mr-2" fill="#00000085" />
                 <h3
                   className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}
                 >
-                  All Seller
+                  All Sellers
                 </h3>
               </div>
               <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">
-                {sellers && sellers?.length}
+                {sellers && sellers.length}
               </h5>
               <Link to="/admin-sellers">
-                <h5 className="pt-4 pl-[2] text-[#077f9c]">View Sellers</h5>
+                <h5 className="pt-4 pl-2 text-[#077f9c]">View Sellers</h5>
               </Link>
             </div>
+
             <div className="flex-1 min-w-[250px] mb-4 min-h-[20vh] bg-white shadow rounded px-2 py-5">
               <div className="flex items-center">
                 <AiOutlineMoneyCollect
@@ -121,21 +135,27 @@ const AdminDashBoardMain = () => {
                 </h3>
               </div>
               <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">
-                {adminOrders && adminOrders?.length}
+                {adminOrders && adminOrders.length}
               </h5>
               <Link to="/admin-orders">
-                <h5 className="pt-4 pl-[2] text-[#077f9c]">View Orders</h5>
+                <h5 className="pt-4 pl-2 text-[#077f9c]">View Orders</h5>
               </Link>
             </div>
           </div>
-          <br />
 
+          <br />
+          <h3 className="text-[22px] font-Poppins pb-2">Latest Orders</h3>
           <div className="w-full min-h-[45vh] bg-white rounded">
             <DataGrid
               rows={row}
               columns={columns}
-              pageSize={4}
-              disableSelectionOnClick
+              initialState={{
+                pagination: {
+                  paginationModel: { pageSize: 5, page: 0 },
+                },
+              }}
+              pageSizeOptions={[5]}
+              disableRowSelectionOnClick
               autoHeight
             />
           </div>
