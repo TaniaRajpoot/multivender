@@ -163,12 +163,12 @@ const ProductDetails = ({ data }) => {
                         key={index}
                         className={`${
                           select === index ? "border-2 border-teal-500" : "border border-gray-300"
-                        } cursor-pointer rounded-lg overflow-hidden flex-shrink-0 transition-all hover:border-teal-400`}
+                        } cursor-pointer rounded-lg overflow-hidden shrink-0 transition-all hover:border-teal-400`}
                       >
                         <img
                           src={getImageUrl(i)}
                           alt=""
-                          className="h-[80px] w-[80px] object-cover"
+                          className="h-20 w-20 object-cover"
                           onClick={() => setSelect(index)}
                           onError={(e) => {
                             e.target.src = "/placeholder.png";
