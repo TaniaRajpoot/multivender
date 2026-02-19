@@ -7,6 +7,7 @@ const Withdraw = require("../model/withdraw");
 const sendMail = require("../utils/sendMail");
 
 const router = express.Router();
+
 //create a withdraw request only for sellers
 router.post(
   "/create-withdraw-request",
@@ -20,26 +21,24 @@ router.post(
         amount,
       };
 
+      // Create withdraw request first
+      const withdraw = await Withdraw.create(data);
+
+      // Update shop balance
+      const shop = await Shop.findById(req.seller._id);
+      shop.availableBalance = shop.availableBalance - amount;
+      await shop.save();
+
+      // Send email (don't block the response if email fails)
       try {
         await sendMail({
           email: req.seller.email,
           subject: "Withdraw Request",
-          message: `Hello ${req.seller.name}, Your withdraw request of ${amount}$ is processing. It will take 3days to 7days to processing! `,
-        });
-        res.status(201).json({
-          success: true,
+          message: `Hello ${req.seller.name}, Your withdraw request of $${amount} is processing. It will take 3 days to 7 days to process!`,
         });
       } catch (error) {
-        return next(new ErrorHandler(error.message, 500));
+        console.error("Email sending failed:", error.message);
       }
-
-      const withdraw = await Withdraw.create(data);
-
-      const shop = await Shop.findById(req.seller._id);
-
-      shop.availableBalance = shop.availableBalance - amount;
-
-      await shop.save();
 
       res.status(201).json({
         success: true,
@@ -50,7 +49,6 @@ router.post(
     }
   })
 );
-
 
 //get all withdraws ----->Admin
 router.get(
@@ -90,26 +88,32 @@ router.put(
 
       const seller = await Shop.findById(sellerId);
 
-      const transection = {
+      const transaction = {
         _id: withdraw._id,
         amount: withdraw.amount,
         updatedAt: withdraw.updatedAt,
         status: withdraw.status,
       };
 
-      seller.transections = [...seller.transections, transection];
+      // Fixed: Changed from 'transections' to 'transactions'
+      if (!seller.transactions || !Array.isArray(seller.transactions)) {
+        seller.transactions = [];
+      }
 
+      seller.transactions = [...seller.transactions, transaction];
       await seller.save();
 
+      // Send email
       try {
         await sendMail({
           email: seller.email,
           subject: "Payment confirmation",
-          message: `Hello ${seller.name}, Your withdraw request of ${withdraw.amount}$ is on the way. Delivery time depends on your bank's rules it usually takes 3days to 7days.`,
+          message: `Hello ${seller.name}, Your withdraw request of $${withdraw.amount} is on the way. Delivery time depends on your bank's rules, it usually takes 3 days to 7 days.`,
         });
       } catch (error) {
-        return next(new ErrorHandler(error.message, 500));
+        console.error("Email sending failed:", error.message);
       }
+
       res.status(201).json({
         success: true,
         withdraw,

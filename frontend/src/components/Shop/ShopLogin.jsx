@@ -44,7 +44,7 @@ const ShopLogin = () => {
       .then((res) => {
         toast.success("Login Success!");
         navigate("/dashboard");
-        window.location.reload(true);
+        // window.location.reload(true);
       })
       .catch((err) => {
         if (err.response && err.response.data && err.response.data.message) {
@@ -167,4 +167,6 @@ const ShopLogin = () => {
   );
 };
 
+
 export default ShopLogin;
+
