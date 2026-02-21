@@ -91,7 +91,7 @@ const UserOrderDetails = () => {
             <img
               src={`${item.images[0]?.url}`}
               alt="item"
-              className="w-[80px] h-[80px]"
+              className="w-20 h-20"
             />
             <div className="w-full">
               <h5 className="pl-3 text-[20px]">{item.name}</h5>
@@ -101,7 +101,7 @@ const UserOrderDetails = () => {
             </div>
             {!item.isReviewed && data?.status === "Delivered" ? (
               <div
-                className={`${styles.button} text-[#fff]`}
+                className={`${styles.button} text-white`}
                 onClick={() => setOpen(true) || setSelectedItem(item)}
               >
                 Write a review
@@ -113,7 +113,7 @@ const UserOrderDetails = () => {
 
       {open && (
         <div className="w-full fixed top-0 left-0 h-screen bg-[#0005] z-50 flex items-center justify-center">
-          <div className="w-[50%] h-min bg-[#fff] shadow rounded-md p-3">
+          <div className="w-[50%] h-min bg-white shadow rounded-md p-3">
             <div className="w-full flex justify-end p-3">
               <RxCross1
                 size={30}
@@ -121,14 +121,14 @@ const UserOrderDetails = () => {
                 className="cursor-pointer"
               />
             </div>
-            <h2 className="text-[30px] font-[500] font-Poppins text-center">
+            <h2 className="text-[30px] font-medium font-Poppins text-center">
               Give a Review
             </h2>
             <div className="w-full flex  items-center">
               <img
                 src={`${selectedItem?.images[0]?.url}`}
                 alt=""
-                className="w-[80px] h-[80px]"
+                className="w-20 h-20"
               />
               <div>
                 <div className="pl-3 text-[20px]">{selectedItem?.name}</div>
@@ -140,7 +140,7 @@ const UserOrderDetails = () => {
             <br />
             <br />
             {/* Ratings */}
-            <h5 className="pl-3 text-[20px] font-[500]">
+            <h5 className="pl-3 text-[20px] font-medium">
               Give a Rating <span className="text-red-500">*</span>
             </h5>
             <div className="flex w-full ml-2 pt-1">
@@ -166,9 +166,9 @@ const UserOrderDetails = () => {
             </div>
             <br />
             <div className="w-full ml-3">
-              <label className="block text-[20px] font-[500]">
+              <label className="block text-[20px] font-medium">
                 Write a comment
-                <span className="ml-1 font-[400] text-[16px] text-[#00000052]">
+                <span className="ml-1 font-normal text-[16px] text-[#00000052]">
                   (optional)
                 </span>
               </label>
@@ -203,7 +203,7 @@ const UserOrderDetails = () => {
       <div className="w-full 800px:flex items-center">
         <div className="w-full 800px:w-[60%]">
           {/* Shipping Address */}
-          <h4 className="pt-3 text-[20px] font-[600]">Shipping Address:</h4>
+          <h4 className="pt-3 text-[20px] font-semibold">Shipping Address:</h4>
           <h4 className="pt-3 text-[20px]">
             {data?.shippingAddress?.address1} +{" "}
             {data?.shippingAddress?.address2}

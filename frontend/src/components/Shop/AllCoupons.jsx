@@ -152,7 +152,7 @@ const AllCoupons = () => {
         <div className="w-full px-4 sm:px-8 pt-4 sm:pt-6 mt-8 bg-white rounded-md shadow-sm">
           <div className="flex justify-end mb-4">
             <button
-              className="bg-gradient-to-r from-teal-500 to-teal-600 text-white px-4 py-2 rounded-md shadow-md hover:opacity-80 transition duration-200"
+              className="bg-linear-to-r from-teal-500 to-teal-600 text-white px-4 py-2 rounded-md shadow-md hover:opacity-80 transition duration-200"
               onClick={() => setOpen(true)}
             >
               Create Coupon
@@ -171,7 +171,7 @@ const AllCoupons = () => {
           </div>
 
           {open && (
-            <div className="fixed inset-0 bg-[#00000080] z-[20000] flex items-center justify-center">
+            <div className="fixed inset-0 bg-[#00000080] z-20000 flex items-center justify-center">
               <div className="w-[90%] sm:w-[500px] bg-white rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto">
                 <button
                   onClick={() => setOpen(false)}
@@ -268,7 +268,7 @@ const AllCoupons = () => {
 
                   <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white py-2 rounded-md mt-4 hover:opacity-90 transition"
+                    className="w-full bg-linear-to-r from-teal-500 to-teal-600 text-white py-2 rounded-md mt-4 hover:opacity-90 transition"
                   >
                     Create Coupon
                   </button>

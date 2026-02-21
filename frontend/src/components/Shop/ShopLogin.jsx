@@ -148,7 +148,7 @@ const ShopLogin = () => {
             <div>
               <button
                 type="submit"
-                className="group h-[40px] relative w-full px-4 py-2 border border-transparent  text-sm font-medium flex justify-center rounded bg-blue-600 text-white hover:opacity-95"
+                className="group h-10 relative w-full px-4 py-2 border border-transparent  text-sm font-medium flex justify-center rounded bg-blue-600 text-white hover:opacity-95"
               >
                 Submit
               </button>

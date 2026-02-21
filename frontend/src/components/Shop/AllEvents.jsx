@@ -105,7 +105,6 @@ const AllEvents = () => {
             All Events
           </h1>
 
-          {/* Responsive Scroll Wrapper for Mobile */}
           <div className="w-full overflow-x-auto">
             <div className="min-w-[600px]">
               <DataGrid

@@ -36,7 +36,7 @@ const ShopHomePage = () => {
         {/* Sidebar — ShopInfo */}
         <div
           className={`
-            w-full md:w-[25%] bg-white rounded-[4px] shadow-sm
+            w-full md:w-[25%] bg-white rounded-sm shadow-sm
             md:overflow-y-scroll md:h-[90vh] md:sticky md:top-10 md:left-0 md:z-10
             ${activeTab === "info" ? "block" : "hidden"} md:block
           `}
@@ -47,7 +47,7 @@ const ShopHomePage = () => {
         {/* Main Content — ShopProfileData */}
         <div
           className={`
-            w-full md:w-[72%] rounded-[4px]
+            w-full md:w-[72%] rounded-sm bg-white shadow-sm p-4
             ${activeTab === "profile" ? "block" : "hidden"} md:block
           `}
         >

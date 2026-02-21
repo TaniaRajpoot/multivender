@@ -337,9 +337,9 @@ const MessageList = ({
           className="w-[50px] h-[50px] rounded-full"
         />
         {online ? (
-          <div className="w-[12px] h-[12px] bg-green-400 rounded-full absolute top-[2px] right-[2px]" />
+          <div className="w-3 h-3 bg-green-400 rounded-full absolute top-0.5 right-0.5" />
         ) : (
-          <div className="w-[12px] h-[12px] bg-[#c7b9b9] rounded-full absolute top-[2px] right-[2px]" />
+          <div className="w-3 h-3 bg-[#c7b9b9] rounded-full absolute top-0.5 right-0.5" />
         )}
       </div>
       <div className="pl-3">
@@ -378,7 +378,7 @@ const SellerInbox = ({
             className="w-[60px] h-[60px] rounded-full"
           />
           <div className="pl-3">
-            <h1 className="text-[18px] font-[600]">{userData?.name}</h1>
+            <h1 className="text-[18px] font-semibold">{userData?.name}</h1>
             <h1>{activeStatus ? "Active Now" : ""}</h1>
           </div>
         </div>
@@ -403,7 +403,7 @@ const SellerInbox = ({
               {item.sender !== sellerId && (
                 <img
                   src={userData?.avatar?.url}
-                  className="w-[40px] h-[40px] rounded-full mr-3"
+                  className="w-10 h-10 rounded-full mr-3"
                   alt=""
                 />
               )}
@@ -417,8 +417,8 @@ const SellerInbox = ({
                 <div>
                   <div
                     className={`w-max p-2 rounded ${
-                      item.sender === sellerId ? "bg-[#000]" : "bg-[#38c776]"
-                    } text-[#fff] h-min`}
+                      item.sender === sellerId ? "bg-black" : "bg-[#38c776]"
+                    } text-white h-min`}
                   >
                     <p>{item.text}</p>
                   </div>

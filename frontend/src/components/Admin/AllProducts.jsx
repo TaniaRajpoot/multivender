@@ -6,6 +6,8 @@ import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
 import { toast } from "react-toastify";
 import { server } from "../../server";
 import axios from "axios";
+
+
 const AllProducts = () => {
   const [data, setData] = useState([]);
 

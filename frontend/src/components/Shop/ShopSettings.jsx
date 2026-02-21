@@ -74,7 +74,7 @@ const ShopSettings = () => {
               alt="Shop Avatar"
               className="w-[200px] h-[200px] rounded-full object-cover cursor-pointer"
             />
-            <div className="w-[30px] h-[30px] bg-[#E3E9EE] rounded-full flex items-center justify-center cursor-pointer absolute bottom-[10px] right-[15px]">
+            <div className="w-[30px] h-[30px] bg-[#E3E9EE] rounded-full flex items-center justify-center cursor-pointer absolute bottom-2.5 right-[15px]">
               <label htmlFor="image">
                 <AiOutlineCamera size={20} />
               </label>
@@ -89,7 +89,7 @@ const ShopSettings = () => {
         </div>
         {/* Shop Info */}
         <form className="flex flex-col items-center" onSubmit={updateHandler}>
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
+          <div className="w-full flex items-center flex-col 800px:w-[50%] mt-5">
             <div className="w-full pl-[3%]">
               <label className="block pb-2">Shop Name</label>
             </div>
@@ -98,11 +98,11 @@ const ShopSettings = () => {
               placeholder={`${seller.name}`}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={`${styles.input} w-[95%]! mb-4 800px:mb-0`}
               required
             />
           </div>
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
+          <div className="w-full flex items-center flex-col 800px:w-[50%] mt-5">
             <div className="w-full pl-[3%]">
               <label className="block pb-2">Shop description</label>
             </div>
@@ -115,10 +115,10 @@ const ShopSettings = () => {
               }`}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={`${styles.input} w-[95%]! mb-4 800px:mb-0`}
             />
           </div>
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
+          <div className="w-full flex items-center flex-col 800px:w-[50%] mt-5">
             <div className="w-full pl-[3%]">
               <label className="block pb-2">Shop Address</label>
             </div>
@@ -127,11 +127,11 @@ const ShopSettings = () => {
               placeholder={seller?.address}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={`${styles.input} w-[95%]! mb-4 800px:mb-0`}
               required
             />
           </div>
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
+          <div className="w-full flex items-center flex-col 800px:w-[50%] mt-5">
             <div className="w-full pl-[3%]">
               <label className="block pb-2">Shop Phone Number</label>
             </div>
@@ -140,11 +140,11 @@ const ShopSettings = () => {
               placeholder={seller?.phoneNumber}
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={`${styles.input} w-[95%]! mb-4 800px:mb-0`}
               required
             />
           </div>
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
+          <div className="w-full flex items-center flex-col 800px:w-[50%] mt-5">
             <div className="w-full pl-[3%]">
               <label className="block pb-2">Shop Zip Code</label>
             </div>
@@ -153,15 +153,15 @@ const ShopSettings = () => {
               placeholder={seller?.zipCode}
               value={zipCode}
               onChange={(e) => setZipcode(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={`${styles.input} w-[95%]! mb-4 800px:mb-0`}
               required
             />
           </div>
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
+          <div className="w-full flex items-center flex-col 800px:w-[50%] mt-5">
             <input
               type="submit"
               value="Update Shop"
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={`${styles.input} w-[95%]! mb-4 800px:mb-0`}
               required
               readOnly
             />

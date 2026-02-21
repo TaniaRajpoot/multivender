@@ -201,7 +201,7 @@ const ProductDetails = ({ data }) => {
                 <div className="flex items-center mt-8 justify-between">
                   <div className="flex items-center gap-2">
                     <button
-                      className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-md px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
+                      className="bg-linear-to-r from-teal-400 to-teal-500 text-white font-bold rounded-md px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
                       onClick={decrementCount}
                     >
                       -
@@ -210,7 +210,7 @@ const ProductDetails = ({ data }) => {
                       {count}
                     </span>
                     <button
-                      className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-md px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
+                      className="bg-linear-to-r from-teal-400 to-teal-500 text-white font-bold rounded-md px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
                       onClick={incrementCount}
                     >
                       +
@@ -238,7 +238,7 @@ const ProductDetails = ({ data }) => {
 
                 {/* Add to Cart Button */}
                 <button
-                  className={`${styles.button} !rounded !mt-6 w-full capitalize text-white font-semibold !h-11 flex items-center justify-center cursor-pointer hover:opacity-90 transition`}
+                  className={`${styles.button} rounded! mt-6! w-full capitalize text-white font-semibold h-11! flex items-center justify-center cursor-pointer hover:opacity-90 transition`}
                   onClick={() => addToCartHandler(data._id)}
                 >
                   <span className="text-white flex items-center gap-2">
@@ -269,7 +269,7 @@ const ProductDetails = ({ data }) => {
                   </Link>
 
                   <button
-                    className={`${styles.button} bg-[#6443d1] !rounded !h-11 px-6 capitalize cursor-pointer hover:opacity-90 transition`}
+                    className={`${styles.button} bg-[#6443d1] rounded! h-11! px-6 capitalize cursor-pointer hover:opacity-90 transition`}
                     onClick={handleMessageSubmit}
                   >
                     <span className="text-white flex items-center gap-2 text-[14px]">
@@ -309,7 +309,7 @@ const ProductsDetailsInfo = ({
       <div className="w-full flex justify-between border-b pt-10 pb-2">
         <div className="relative">
           <h5
-            className="text-[#000] text-[16px] md:text-[18px] px-1 leading-5 font-[600] cursor-pointer"
+            className="text-black text-[16px] md:text-[18px] px-1 leading-5 font-semibold cursor-pointer"
             onClick={() => setActive(1)}
           >
             Product Details
@@ -318,7 +318,7 @@ const ProductsDetailsInfo = ({
         </div>
         <div className="relative">
           <h5
-            className="text-[#000] text-[16px] md:text-[18px] px-1 leading-5 font-[600] cursor-pointer"
+            className="text-black text-[16px] md:text-[18px] px-1 leading-5 font-semibold cursor-pointer"
             onClick={() => setActive(2)}
           >
             Product Reviews
@@ -327,7 +327,7 @@ const ProductsDetailsInfo = ({
         </div>
         <div className="relative">
           <h5
-            className="text-[#000] text-[16px] md:text-[18px] px-1 leading-5 font-[600] cursor-pointer"
+            className="text-black text-[16px] md:text-[18px] px-1 leading-5 font-semibold cursor-pointer"
             onClick={() => setActive(3)}
           >
             Seller Information
@@ -359,7 +359,7 @@ const ProductsDetailsInfo = ({
                 />
                 <div className="pl-4">
                   <div className="w-full flex items-center">
-                    <h1 className="font-[600] mr-3">{item.user?.name}</h1>
+                    <h1 className="font-semibold mr-3">{item.user?.name}</h1>
                     <Ratings rating={item?.rating} />
                   </div>
                   <p className="mt-2 text-gray-700">{item.comment}</p>
@@ -400,25 +400,25 @@ const ProductsDetailsInfo = ({
           {/* Right Section */}
           <div className="w-full md:w-[50%] mt-5 md:mt-0 md:flex flex-col items-end">
             <div className="text-left">
-              <h5 className="font-[600]">
+              <h5 className="font-semibold">
                 Joined On:{" "}
-                <span className="font-[500]">
+                <span className="font-medium">
                   {data.shop?.createdAt?.slice(0, 10)}
                 </span>
               </h5>
-              <h5 className="font-[600] pt-3">
+              <h5 className="font-semibold pt-3">
                 Total Products:{" "}
-                <span className="font-[500]">
+                <span className="font-medium">
                   {products && products.length}
                 </span>
               </h5>
-              <h5 className="font-[600] pt-3">
+              <h5 className="font-semibold pt-3">
                 Total Reviews:{" "}
-                <span className="font-[500]">{totalReviewsLength}</span>
+                <span className="font-medium">{totalReviewsLength}</span>
               </h5>
               <Link to={`/shop/preview/${data?.shop._id}`}>
                 <div
-                  className={`${styles.button} !rounded-[4px] !h-[39.5px] mt-3`}
+                  className={`${styles.button} rounded!-[4px] h-[39.5px]! mt-3`}
                 >
                   <h4 className="text-white">Visit Shop</h4>
                 </div>

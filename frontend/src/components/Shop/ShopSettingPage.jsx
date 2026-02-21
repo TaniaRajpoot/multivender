@@ -104,7 +104,7 @@ const ShopSettings = () => {
           ].map((field, index) => (
             <div
               key={index}
-              className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5"
+              className="w-full flex items-center flex-col 800px:w-[50%] mt-5"
             >
               <label className="w-full pl-[3%] block pb-2">{field.label}</label>
               <input
@@ -112,16 +112,16 @@ const ShopSettings = () => {
                 placeholder={field.value || field.label}
                 value={field.value}
                 onChange={(e) => field.setter(e.target.value)}
-                className={`${styles.input} !w-[95%] mb-4`}
+                className={`${styles.input} w-[95%]! mb-4`}
                 required
               />
             </div>
           ))}
 
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
+          <div className="w-full flex items-center flex-col 800px:w-[50%] mt-5">
             <button
               type="submit"
-              className={`${styles.input} !w-[95%] bg-blue-600 text-white cursor-pointer`}
+              className={`${styles.input} w-[95%]! bg-blue-600 text-white cursor-pointer`}
             >
               Update Shop
             </button>

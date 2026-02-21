@@ -91,7 +91,7 @@ const ProductCardDetails = ({ setOpen, data }) => {
                 <div className="w-full md:w-[50%]">
                   {/* Product Image */}
                   {data.images && data.images[0] && (
-                    <div className="w-full h-[280px] md:h-[320px] mb-4 flex items-center justify-center bg-gray-50 rounded-md overflow-hidden">
+                    <div className="w-full h-[280px] md:h-80 mb-4 flex items-center justify-center bg-gray-50 rounded-md overflow-hidden">
                       <img
                         src={`${data.images[0].url}`}
                         alt={data.name}
@@ -158,7 +158,7 @@ const ProductCardDetails = ({ setOpen, data }) => {
                   <div className="flex items-center mt-8 justify-between">
                     <div className="flex items-center gap-2">
                       <button
-                        className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-md px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
+                        className="bg-linear-to-r from-teal-400 to-teal-500 text-white font-bold rounded-md px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
                         onClick={decrementCount}
                       >
                         -
@@ -167,7 +167,7 @@ const ProductCardDetails = ({ setOpen, data }) => {
                         {count}
                       </span>
                       <button
-                        className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-md px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
+                        className="bg-linear-to-r from-teal-400 to-teal-500 text-white font-bold rounded-md px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
                         onClick={incrementCount}
                       >
                         +

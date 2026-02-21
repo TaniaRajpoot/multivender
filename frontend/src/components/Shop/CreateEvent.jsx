@@ -13,7 +13,7 @@ const CreateEvent = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [images, setImages] = useState([]); // Now stores base64 strings
+  const [images, setImages] = useState([]); 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -56,7 +56,6 @@ const CreateEvent = () => {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
 
-    // Convert files to base64
     const imagePromises = files.map((file) => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -68,7 +67,7 @@ const CreateEvent = () => {
 
     Promise.all(imagePromises)
       .then((base64Images) => {
-        setImages(base64Images); // Store base64 strings
+        setImages(base64Images); 
       })
       .catch((error) => {
         toast.error("Error reading images");
@@ -105,7 +104,7 @@ const CreateEvent = () => {
       shopId: seller._id,
       start_Date: startDate.toISOString(),
       Finish_Date: endDate.toISOString(),
-      images: images, // Array of base64 strings
+      images: images, 
     };
 
     dispatch(createEvent(eventData));

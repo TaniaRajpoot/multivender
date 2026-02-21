@@ -70,7 +70,7 @@ const OrderDetails = () => {
           <h1 className="pl-2 text-[25px]">Order Details</h1>
         </div>
         <Link to="/dashboard-orders">
-          <div className={`${styles.button} !bg-[#fce1e6] !rounded-[4px] text-[#e94560] font-[600] !h-[45px] text-[18px]`}>
+          <div className={`${styles.button} bg-[#fce1e6]! rounded-sm! text-[#e94560] font-semibold h-[45px]! text-[18px]`}>
             Order List
           </div>
         </Link>
@@ -89,7 +89,7 @@ const OrderDetails = () => {
       <br /><br />
       {order.cart?.map((item, idx) => (
         <div key={idx} className="w-full flex items-start mb-5">
-          <img src={item.images[0]?.url} alt="" className="w-[80px] h-[80px]" />
+          <img src={item.images[0]?.url} alt="" className="w-20 h-20" />
           <div className="w-full">
             <h5 className="pl-3 text-[20px]">{item.name}</h5>
             <h5 className="pl-3 text-[20px] text-[#00000091]">
@@ -108,7 +108,7 @@ const OrderDetails = () => {
       <br /><br />
       <div className="w-full 800px:flex items-center">
         <div className="w-full 800px:w-[60%]">
-          <h4 className="pt-3 text-[20px] font-[600]">Shipping Address:</h4>
+          <h4 className="pt-3 text-[20px] font-semibold">Shipping Address:</h4>
           <h4 className="pt-3 text-[20px]">
             {order.shippingAddress.address1} {order.shippingAddress.address2}
           </h4>
@@ -124,7 +124,7 @@ const OrderDetails = () => {
       </div>
 
       <br /><br />
-      <h4 className="pt-3 text-[20px] font-[600]">Order Status:</h4>
+      <h4 className="pt-3 text-[20px] font-semibold">Order Status:</h4>
       <select
         value={status}
         onChange={(e) => setStatus(e.target.value)}
@@ -136,7 +136,7 @@ const OrderDetails = () => {
       </select>
 
       <div
-        className={`${styles.button} mt-5 !bg-[#FCE1E6] !rounded-[4px] text-[#E94560] font-[600] !h-[45px] text-[18px]`}
+        className={`${styles.button} mt-5 bg-[#FCE1E6]! rounded-sm! text-[#E94560] font-semibold h-[45px]! text-[18px]`}
         onClick={order.status === "Processing refund" || order.status === "Refund Success" ? refundOrderUpdateHandler : orderUpdateHandler}
       >
         Update Status

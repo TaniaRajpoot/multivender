@@ -245,7 +245,7 @@ const MessageList = ({ data, setOpen, setCurrentChat, me, setUserData, online, s
       <div className="relative">
         <img src={user?.avatar?.url} alt="" className="w-[50px] h-[50px] rounded-full" />
         <div
-          className={`w-[12px] h-[12px] rounded-full absolute top-[2px] right-[2px] ${
+          className={`w-3 h-3 rounded-full absolute top-0.5 right-0.5 ${
             online ? "bg-green-400" : "bg-[#c7b9b9]"
           }`}
         />
@@ -271,7 +271,7 @@ const SellerInbox = ({ scrollRef, setOpen, newMessage, setNewMessage, sendMessag
         <div className="flex">
           <img src={userData?.avatar?.url} alt="" className="w-[60px] h-[60px] rounded-full" />
           <div className="pl-3">
-            <h1 className="text-[18px] font-[600]">{userData?.name}</h1>
+            <h1 className="text-[18px] font-semibold">{userData?.name}</h1>
             <h1>{activeStatus ? "Active Now" : ""}</h1>
           </div>
         </div>
@@ -287,14 +287,14 @@ const SellerInbox = ({ scrollRef, setOpen, newMessage, setNewMessage, sendMessag
             ref={scrollRef}
           >
             {msg.sender !== sellerId && (
-              <img src={userData?.avatar?.url} alt="" className="w-[40px] h-[40px] rounded-full mr-3" />
+              <img src={userData?.avatar?.url} alt="" className="w-10 h-10 rounded-full mr-3" />
             )}
             {msg.images && (
               <img src={msg.images} className="w-[300px] h-[300px] object-cover rounded-[10px] mr-2" />
             )}
             {msg.text && (
               <div>
-                <div className={`w-max p-2 rounded ${msg.sender === sellerId ? "bg-[#000]" : "bg-[#38c776]"} text-[#fff] h-min`}>
+                <div className={`w-max p-2 rounded ${msg.sender === sellerId ? "bg-black" : "bg-[#38c776]"} text-white h-min`}>
                   <p>{msg.text}</p>
                 </div>
                 <p className="text-[12px] text-[#000000d3] pt-1">{format(msg.createdAt)}</p>

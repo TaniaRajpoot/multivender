@@ -48,7 +48,6 @@ const ProductCard = ({ data, isEvent }) => {
   const addtoWishListHandler = (data) => {  
     setClick(true);
     dispatch(addToWishList(data));
-    // Dispatch add to wishlist action here if needed
   }
 
 

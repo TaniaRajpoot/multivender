@@ -16,18 +16,18 @@ const Hero = () => {
       {/* Content goes here */}
       <div className={`${styles.section} w-[90%] md:w-[60%] `}>
         <h1
-          className={`text-[35px] leading-[1.2] md:text-[60px] text-[#3d3a3a] font-[600] capitalize`}
+          className={`text-[35px] leading-[1.2] md:text-[60px] text-[#3d3a3a] font-semibold capitalize`}
         >
           Best Collection <br />
           home Decoration
         </h1>
-        <p className="pt-5 text-[16px] font-[Poppins] font-[400] text-[#000000ba] ">
+        <p className="pt-5 text-[16px] font-[Poppins] font-normal text-[#000000ba] ">
            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae, 
           assumenda? Voluptas tempore non repudiandae eos magnam aliqua 
           quides autem. Illum, laudantium temporibus soluta optio consequatur elit 
           <br /> aliquam deserunt officia. Dolorum seque nulla provident.
         </p>
-        <Link to="/products" className="inlin" >
+        <Link to="/products" className="inline-block" >
         <div className={`${styles.button} mt-5`}>
             <span className="text-[#ffff] font-[Poppins] text-[18px] ">
                 Shop Now 

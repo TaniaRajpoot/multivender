@@ -26,7 +26,6 @@ const AllOrders = () => {
       minWidth: 130,
       flex: 0.8,
       cellClassName: (params) => {
-        // ✅ FIXED: Use params.row.status instead of params.getValue
         return params.row.status === "Delivered"
           ? "text-green-600 font-medium"
           : "text-red-600 font-medium";
@@ -79,8 +78,7 @@ const AllOrders = () => {
           <h1 className="text-lg md:text-2xl font-semibold text-gray-800 mb-3 md:mb-6">
             All Orders
           </h1>
-
-          {/* Responsive Scroll Wrapper for Small Screens */}
+          
           <div className="w-full overflow-x-auto">
             <div className="min-w-[600px]">
               <DataGrid

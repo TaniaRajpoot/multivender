@@ -220,7 +220,7 @@ const PaymentInfo = ({
                 <div className="w-[50%]">
                   <label className="block pb-2 text-sm font-medium">Card Number</label>
                   <CardNumberElement
-                    className={`${styles.input} !h-[35px]`}
+                    className={`${styles.input} h-[35px]!`}
                     options={{
                       style: {
                         base: {
@@ -242,7 +242,7 @@ const PaymentInfo = ({
                 <div className="w-[50%]">
                   <label className="block pb-2 text-sm font-medium">CVV</label>
                   <CardCvcElement
-                    className={`${styles.input} !h-[35px]`}
+                    className={`${styles.input} h-[35px]!`}
                     options={{
                       style: {
                         base: {
@@ -265,7 +265,7 @@ const PaymentInfo = ({
               <button
                 type="submit"
                 onClick={paymentHandler}
-                className={`${styles.button} !bg-[#f63b60] text-white h-[45px] rounded-[5px] cursor-pointer text-[18px] font-semibold w-full`}
+                className={`${styles.button} bg-[#f63b60]! text-white h-[45px] rounded-[5px] cursor-pointer text-[18px] font-semibold w-full`}
               >
                 Submit
               </button>
@@ -296,7 +296,7 @@ const PaymentInfo = ({
               <button
                 type="submit"
                 onClick={cashOnDeliveryHandler}
-                className={`${styles.button} !bg-[#f63b60] text-white h-[45px] rounded-[5px] cursor-pointer text-[18px] font-semibold w-full`}
+                className={`${styles.button} bg-[#f63b60]! text-white h-[45px] rounded-[5px] cursor-pointer text-[18px] font-semibold w-full`}
               >
                 Confirm Order
               </button>

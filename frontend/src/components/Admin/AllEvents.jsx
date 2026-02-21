@@ -6,6 +6,8 @@ import { AiOutlineEye } from "react-icons/ai";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
+
+
 const AllEvents = () => {
   const [events, setEvents] = useState([]);
   useEffect(() => {

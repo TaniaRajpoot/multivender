@@ -48,23 +48,23 @@ const ShopProfileData = ({ isOwner }) => {
   return (
     <div className="w-full">
       {/* Toggle Part */}
-      <div className="flex w-full items-center justify-between pr-[20px]">
+      <div className="flex w-full items-center justify-between pr-5">
         <div className="w-full flex">
           <h5
             onClick={() => setActive(1)}
-            className={`${active === 1 ? "text-red-500" : "text-[#333]"} font-[600] text-[20px] cursor-pointer mr-4`}
+            className={`${active === 1 ? "text-red-500" : "text-[#333]"} font-semibold text-[20px] cursor-pointer mr-4`}
           >
             Shop Products
           </h5>
           <h5
             onClick={() => setActive(2)}
-            className={`${active === 2 ? "text-red-500" : "text-[#333]"} font-[600] text-[20px] cursor-pointer mr-4`}
+            className={`${active === 2 ? "text-red-500" : "text-[#333]"} font-semibold text-[20px] cursor-pointer mr-4`}
           >
             Running Events
           </h5>
           <h5
             onClick={() => setActive(3)}
-            className={`${active === 3 ? "text-red-500" : "text-[#333]"} font-[600] text-[20px] cursor-pointer mr-4`}
+            className={`${active === 3 ? "text-red-500" : "text-[#333]"} font-semibold text-[20px] cursor-pointer mr-4`}
           >
             Shop Reviews
           </h5>
@@ -72,8 +72,8 @@ const ShopProfileData = ({ isOwner }) => {
 
         <div>
           <Link to="/dashboard">
-            <div className={`${styles.button} !rounded-[4px] h-[42px]`}>
-              <span className="text-[#fff] capitalize">Go to Dashboard</span>
+            <div className={`${styles.button} rounded-sm! h-[42px]`}>
+              <span className="text-white capitalize">Go to Dashboard</span>
             </div>
           </Link>
         </div>
@@ -83,7 +83,7 @@ const ShopProfileData = ({ isOwner }) => {
 
       {/* Products */}
       {active === 1 && (
-        <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-12">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-12">
           {products?.length > 0 ? (
             products.map((p) => <ProductCard key={p._id} data={p} isShop />)
           ) : (
@@ -94,7 +94,7 @@ const ShopProfileData = ({ isOwner }) => {
 
       {/* Events */}
       {active === 2 && (
-        <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-12">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-12">
           {events?.length > 0 ? (
             events.map((e) => <ProductCard key={e._id} data={e} isShop isEvent />)
           ) : (
@@ -119,7 +119,7 @@ const ShopProfileData = ({ isOwner }) => {
                 />
                 <div className="pl-2">
                   <div className="flex items-center">
-                    <h1 className="font-[600] pr-2">{r.user.name}</h1>
+                    <h1 className="font-semibold pr-2">{r.user.name}</h1>
                     <Ratings rating={r.rating} />
                   </div>
                   <p className="text-[#000000a7]">{r.comment}</p>

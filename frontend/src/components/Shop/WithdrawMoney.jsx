@@ -106,13 +106,13 @@ const WithDrawMoney = () => {
         </h5>
         <div
           onClick={() => (availableBalance < 50 ? error() : setOpen(true))}
-          className={`${styles.button} text-white !h-[42px] !rounded`}
+          className={`${styles.button} text-white h-[42px]! rounded!`}
         >
           With Draw
         </div>
       </div>
       {open && (
-        <div className="w-full h-screen z-[9999] fixed top-0 left-0 flex items-center justify-center bg-[#0000004e]">
+        <div className="w-full h-screen z-9999 fixed top-0 left-0 flex items-center justify-center bg-[#0000004e]">
           <div
             className={`w-[95%] 800px:w-[50%] bg-white shadow rounded ${
               paymentMethod ? "h-[80vh] overflow-y-scroll" : "h-[unset]"
@@ -127,7 +127,7 @@ const WithDrawMoney = () => {
             </div>
             {paymentMethod ? (
               <div>
-                <h3 className="text-[22px] font-Poppins text-center font-[600]">
+                <h3 className="text-[22px] font-Poppins text-center font-semibold">
                   Add new Withdraw Method:
                 </h3>
                 <form onSubmit={handleSubmit}>
@@ -299,7 +299,7 @@ const WithDrawMoney = () => {
                         className="800px:w-[100px] w-[full] border 800px:mr-3 p-1 rounded"
                       />
                       <div
-                        className={`${styles.button} !h-[42px] text-white`}
+                        className={`${styles.button} h-[42px]! text-white`}
                         onClick={withdrawHandler}
                       >
                         Withdraw
@@ -313,7 +313,7 @@ const WithDrawMoney = () => {
                     </p>
                     <div className="w-full flex items-center">
                       <div
-                        className={`${styles.button} text-[#fff] text-[18px] mt-4`}
+                        className={`${styles.button} text-white text-[18px] mt-4`}
                         onClick={() => setPaymentMethod(true)}
                       >
                         Add New

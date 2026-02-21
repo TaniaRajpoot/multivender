@@ -56,14 +56,14 @@ const EventCard = ({ active, data }) => {
         {/* Price Section */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <h5 className="font-[500] text-[18px] lg:text-[20px] text-[#d55b45] line-through">
+            <h5 className="font-medium text-[18px] lg:text-[20px] text-[#d55b45] line-through">
               {data.originalPrice}$
             </h5>
             <h5 className="font-bold text-[22px] lg:text-[26px] text-[#333] font-Roboto">
               {data.discountPrice}$
             </h5>
           </div>
-          <span className="font-[400] text-[16px] lg:text-[17px] text-[#44a55e]">
+          <span className="font-normal text-[16px] lg:text-[17px] text-[#44a55e]">
             120 Sold
           </span>
         </div>
@@ -76,12 +76,12 @@ const EventCard = ({ active, data }) => {
         {/* Action Buttons */}
         <div className="flex items-center gap-4 flex-wrap">
           <Link to={`/product/${data._id}?isEvent=true`}>
-            <button className={`${styles.button} text-[#fff] px-8 py-3 rounded-md`}>
+            <button className={`${styles.button} text-white px-8 py-3 rounded-md`}>
               See Details
             </button>
           </Link>
           <button
-            className={`${styles.button} text-[#fff] px-8 py-3 rounded-md`}
+            className={`${styles.button} text-white px-8 py-3 rounded-md`}
             onClick={() => addToCartHandler(data)}
           >
             Add to Cart

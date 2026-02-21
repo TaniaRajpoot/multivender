@@ -19,10 +19,7 @@ const AdminDashBoardMain = () => {
     dispatch(getAllSellers());
   }, [dispatch]);
 
-  // Debug logs
-  console.log("Sellers:", sellers);
-  console.log("Admin Orders:", adminOrders);
-
+ 
   const columns = [
     {
       field: "id",
@@ -94,12 +91,12 @@ const AdminDashBoardMain = () => {
                   fill="#00000085"
                 />
                 <h3
-                  className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}
+                  className={`${styles.productTitle} text-[18px]! leading-5 font-normal! text-[#00000085]`}
                 >
                   Total Earning
                 </h3>
               </div>
-              <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">
+              <h5 className="pt-2 pl-9 text-[22px] font-medium">
                 ${adminBalance}
               </h5>
             </div>
@@ -108,12 +105,12 @@ const AdminDashBoardMain = () => {
               <div className="flex items-center">
                 <MdBorderClear size={30} className="mr-2" fill="#00000085" />
                 <h3
-                  className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}
+                  className={`${styles.productTitle} text-[18px]! leading-5 font-normal! text-[#00000085]`}
                 >
                   All Sellers
                 </h3>
               </div>
-              <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">
+              <h5 className="pt-2 pl-9 text-[22px] font-medium">
                 {sellers && sellers.length}
               </h5>
               <Link to="/admin-sellers">
@@ -129,12 +126,12 @@ const AdminDashBoardMain = () => {
                   fill="#00000085"
                 />
                 <h3
-                  className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#00000085]`}
+                  className={`${styles.productTitle} text-[18px]! leading-5 font-normal! text-[#00000085]`}
                 >
                   All Orders
                 </h3>
               </div>
-              <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">
+              <h5 className="pt-2 pl-9 text-[22px] font-medium">
                 {adminOrders && adminOrders.length}
               </h5>
               <Link to="/admin-orders">

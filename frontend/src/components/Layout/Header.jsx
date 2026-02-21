@@ -71,7 +71,7 @@ const Header = ({ activeHeading }) => {
     <>
       {/* Desktop Header - Top Section */}
       <div className={`${styles.section} hidden md:block`}>
-        <div className="flex items-center justify-between h-[50px] my-[20px]">
+        <div className="flex items-center justify-between h-[50px] my-5">
           <div>
             <Link to="/">
               <img
@@ -95,7 +95,7 @@ const Header = ({ activeHeading }) => {
               className="absolute right-2 top-1.5 cursor-pointer"
             />
             {searchData && searchData.length !== 0 ? (
-              <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
+              <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-9 p-4">
                 {searchData &&
                   searchData.map((i, index) => {
                     return (
@@ -129,7 +129,7 @@ const Header = ({ activeHeading }) => {
       {/* Desktop Header - Navigation Section */}
       <div
         className={`${
-          active ? "shadow-sm fixed top-0 left-0 z-[100]" : ""
+          active ? "shadow-sm fixed top-0 left-0 z-100" : ""
         } transition hidden md:flex items-center justify-between bg-[#3321c8] h-[70px] w-full`}
       >
         <div
@@ -140,7 +140,7 @@ const Header = ({ activeHeading }) => {
             <div className="relative h-[60px] mt-2.5 w-[270px] hidden lg:block">
               <BiMenuAltLeft size={30} className="absolute top-3 left-2" />
               <button
-                className={`h-full w-full flex justify-between items-center pl-10 bg-white font-sans text-lg font-[500] select-none rounded-t-md`}
+                className={`h-full w-full flex justify-between items-center pl-10 bg-white font-sans text-lg font-medium select-none rounded-t-md`}
               >
                 All Categories
               </button>
@@ -221,7 +221,7 @@ const Header = ({ activeHeading }) => {
       {/* Mobile Header */}
       <div
         className={`${
-          active ? "shadow-sm fixed top-0 left-0 z-[100]" : ""
+          active ? "shadow-sm fixed top-0 left-0 z-100" : ""
         } w-full h-[70px] fixed bg-white z-50 top-0 left-0 shadow-sm md:hidden`}
       >
         <div className="w-full flex items-center justify-between">
@@ -262,8 +262,8 @@ const Header = ({ activeHeading }) => {
 
         {/* Header sidebar */}
         {open && (
-          <div className="fixed w-full bg-[#0000005f] z-[200] h-full top-0 left-0">
-            <div className="fixed w-[60%] bg-white h-screen top-0 left-0 z-[201] overflow-y-auto">
+          <div className="fixed w-full bg-[#0000005f] z-200 h-full top-0 left-0">
+            <div className="fixed w-[60%] bg-white h-screen top-0 left-0 z-201 overflow-y-auto">
               <div className="w-full justify-between flex pr-3">
                 <div>
                   <div 

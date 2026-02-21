@@ -12,7 +12,7 @@ import { RxCross1 } from "react-icons/rx";
 
 
 const AllProducts = () => {
-  const { products, isLoading } = useSelector((state) => state.product);  // Changed to products
+  const { products, isLoading } = useSelector((state) => state.product);  
   const { seller } = useSelector((state) => state.seller);
   const [open , setOpen] = useState(false);
   const dispatch = useDispatch();
@@ -131,6 +131,8 @@ const AllProducts = () => {
 };
 
 export default AllProducts;
+
+
 // import { Button } from "@mui/material";
 // import { DataGrid } from "@mui/x-data-grid";
 // import React, { useEffect } from "react";

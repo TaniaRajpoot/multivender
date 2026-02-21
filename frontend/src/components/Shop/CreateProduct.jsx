@@ -246,7 +246,7 @@ const CreateProduct = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [images, setImages] = useState([]); // Now stores base64 strings
+  const [images, setImages] = useState([]); 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
