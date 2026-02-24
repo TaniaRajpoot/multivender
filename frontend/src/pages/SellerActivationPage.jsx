@@ -19,10 +19,9 @@ const SellerActivationPage = () => {
           setLoading(true);
           console.log("Sending activation request to:", `${server}/shop/activation`);
           
-          const res = await axios.post(`${server}/shop/activation`, {
-            activationToken,
-          });
-
+const res = await axios.post(`${server}/shop/activation`, {
+  activation_token: activationToken, 
+});
           console.log("Activation response:", res.data);
 
           if (res.data.success) {

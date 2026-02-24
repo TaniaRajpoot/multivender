@@ -7,7 +7,7 @@ const { isSeller, isAuthenticated, isAdmin } = require("../middleware/auth");
 const ErrorHandler = require("../utils/ErrorHandler");
 const Shop = require("../model/shop");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const cloudinary = require("cloudinary").v2;
+const cloudinary = require("../config/cloudinary"); // ✅ Fixed: use config file
 
 //create Shop
 router.post("/create-shop", async (req, res, next) => {
@@ -36,7 +36,7 @@ router.post("/create-shop", async (req, res, next) => {
       },
     };
     const activationToken = createActivationToken(seller);
-    const activationUrl = `https://client-eight-coral.vercel.app/seller/activation/${activationToken}`;
+    const activationUrl = `http://localhost:5173/seller/activation/${activationToken}`; // ✅ Fixed: localhost
     try {
       await sendMail({
         email: seller.email,
@@ -67,7 +67,7 @@ router.post(
   "/activation",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { activation_token } = req.body;
+      const { activation_token } = req.body; // ✅ backend expects activation_token
 
       const newSeller = jwt.verify(
         activation_token,
