@@ -5,16 +5,15 @@ import { Link } from 'react-router-dom'
 
 const Navbar = ({ active }) => {
   return (
-    <div className={`flex flex-col md:flex-row md:${styles.noramlFlex}`}>
+    <div className={`flex flex-col md:flex-row md:${styles.noramlFlex} gap-2`}>
       {navItems && navItems.map((i, index) => (
         <div className='flex' key={index}>
           <Link
             to={i.url}
-            className={`${
-              active === index + 1 
-                ? "text-[#17dd1f]" 
-                : "text-black md:text-white"
-            } py-3 md:py-0 md:pb-[30px] font-medium px-6 cursor-pointer block w-full`}
+            className={`${active === index + 1
+              ? "text-[#FFA62B] border-b-2 border-[#FFA62B]"
+              : "text-[#EDE7E3]/70"
+              } py-2 md:py-3 px-5 font-[600] text-[11px] uppercase tracking-[0.2em] font-sans hover:text-[#FFA62B] transition-all duration-300 block w-full whitespace-nowrap`}
           >
             {i.title}
           </Link>

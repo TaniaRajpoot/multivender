@@ -10,9 +10,9 @@ const ShopDashboardPage = () => {
       <DashboardHeader />
 
       <div className="flex w-full min-h-screen">
-        
+
         {/* Sidebar */}
-      <div className="w-20 md:w-[330px] bg-white border-r">
+        <div className="w-[80px] 800px:w-[330px] sticky top-0 z-20">
           <DashboardSideBar active={1} />
         </div>
 

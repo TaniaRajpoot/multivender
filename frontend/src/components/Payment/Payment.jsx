@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
-import styles from "../../styles/styles";
 import {
   CardNumberElement,
   CardCvcElement,
@@ -12,6 +11,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import CheckoutSteps from "../Checkout/CheckoutSteps";
 
 const Payment = () => {
   const [orderData, setOrderData] = useState(null);
@@ -41,22 +41,11 @@ const Payment = () => {
     totalPrice: orderData?.totalPrice,
   };
 
-  // Stripe Payment Handler
   const paymentHandler = async (e) => {
     e.preventDefault();
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
-      const { data } = await axios.post(
-        `${server}/payment/process`,
-        paymentData,
-        config
-      );
-
+      const config = { headers: { "Content-Type": "application/json" } };
+      const { data } = await axios.post(`${server}/payment/process`, paymentData, config);
       const client_secret = data?.client_secret;
 
       if (!stripe || !elements) {
@@ -65,9 +54,7 @@ const Payment = () => {
       }
 
       const result = await stripe.confirmCardPayment(client_secret, {
-        payment_method: {
-          card: elements.getElement(CardNumberElement),
-        },
+        payment_method: { card: elements.getElement(CardNumberElement) },
       });
 
       if (result.error) {
@@ -76,15 +63,9 @@ const Payment = () => {
         if (result.paymentIntent.status === "succeeded") {
           const orderWithPayment = {
             ...order,
-            paymentInfo: {
-              id: result.paymentIntent.id,
-              status: result.paymentIntent.status,
-              type: "Credit Card",
-            },
+            paymentInfo: { id: result.paymentIntent.id, status: result.paymentIntent.status, type: "Credit Card" },
           };
-
           await axios.post(`${server}/order/create-order`, orderWithPayment, config);
-          
           localStorage.setItem("cartItems", JSON.stringify([]));
           localStorage.setItem("latestOrder", JSON.stringify([]));
           navigate("/order/success");
@@ -97,26 +78,13 @@ const Payment = () => {
     }
   };
 
-  // Cash on Delivery Handler
   const cashOnDeliveryHandler = async (e) => {
     e.preventDefault();
-
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    const orderWithPayment = {
-      ...order,
-      paymentInfo: {
-        type: "Cash On Delivery",
-      },
-    };
+    const config = { headers: { "Content-Type": "application/json" } };
+    const orderWithPayment = { ...order, paymentInfo: { type: "Cash On Delivery" } };
 
     try {
       await axios.post(`${server}/order/create-order`, orderWithPayment, config);
-      
       localStorage.setItem("cartItems", JSON.stringify([]));
       localStorage.setItem("latestOrder", JSON.stringify([]));
       navigate("/order/success");
@@ -127,217 +95,154 @@ const Payment = () => {
     }
   };
 
-  if (!orderData) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="text-lg">Loading...</div>
-    </div>;
-  }
+  if (!orderData) return null;
 
   return (
-    <div className="w-full flex flex-col items-center py-8 bg-gray-50">
-      <div className="w-[90%] 1000px:w-[70%] block 800px:flex gap-5">
-        <div className="w-full 800px:w-[65%]">
-          <PaymentInfo
-            user={user}
-            paymentHandler={paymentHandler}
-            cashOnDeliveryHandler={cashOnDeliveryHandler}
-          />
-        </div>
-        <div className="w-full 800px:w-[35%] 800px:mt-0 mt-8">
-          <CartData orderData={orderData} />
+    <div className="w-full min-h-screen bg-[#EDE7E3] pb-20">
+      <CheckoutSteps active={2} />
+      <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-24">
+        <div className="flex flex-col lg:flex-row gap-12 mt-8">
+          <div className="w-full lg:w-[65%]">
+            <PaymentInfo
+              user={user}
+              paymentHandler={paymentHandler}
+              cashOnDeliveryHandler={cashOnDeliveryHandler}
+            />
+          </div>
+          <div className="w-full lg:w-[35%]">
+            <CartData orderData={orderData} />
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const PaymentInfo = ({
-  user,
-  paymentHandler,
-  cashOnDeliveryHandler,
-}) => {
+const PaymentInfo = ({ user, paymentHandler, cashOnDeliveryHandler }) => {
   const [select, setSelect] = useState(1);
 
+  const inputStyle = {
+    base: {
+      fontSize: "18px",
+      color: "#16697A",
+      fontWeight: "700",
+      letterSpacing: "0.025em",
+      "::placeholder": { color: "#9CA3AF", fontWeight: "400" },
+    },
+    invalid: { color: "#ef4444" },
+  };
+
   return (
-    <div className="w-full bg-white rounded-md p-5 pb-8 shadow-sm">
-      <h5 className="text-[20px] font-semibold mb-5">Payment Method</h5>
-      
-      {/* Credit/Debit Card */}
-      <div className="mb-5">
-        <div className="flex w-full pb-4 border-b mb-3">
-          <div
-            className="w-[25px] h-[25px] rounded-full bg-transparent border-[3px] border-[#1d1a1ab4] relative flex items-center justify-center cursor-pointer"
-            onClick={() => setSelect(1)}
-          >
-            {select === 1 && (
-              <div className="w-[13px] h-[13px] bg-[#1d1a1acb] rounded-full" />
-            )}
-          </div>
-          <h4 className="text-[18px] pl-2 font-semibold text-[#000000b1]">
-            Pay with Debit/Credit Card
-          </h4>
+    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 md:p-12 border border-white shadow-soft">
+      <div className="flex items-center gap-4 mb-12">
+        <div className="w-10 h-10 bg-[#16697A] rounded-xl flex items-center justify-center text-white">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
         </div>
-
-        {select === 1 && (
-          <div className="w-full pb-5">
-            <div className="w-full" onSubmit={paymentHandler} component="form">
-              <div className="w-full flex gap-3 pb-3">
-                <div className="w-[50%]">
-                  <label className="block pb-2 text-sm font-medium">Name On Card</label>
-                  <input
-                    required
-                    placeholder={user?.name}
-                    className={`${styles.input} text-[#444]`}
-                    value={user?.name || ""}
-                    readOnly
-                  />
-                </div>
-                <div className="w-[50%]">
-                  <label className="block pb-2 text-sm font-medium">Exp Date</label>
-                  <CardExpiryElement
-                    className={`${styles.input}`}
-                    options={{
-                      style: {
-                        base: {
-                          fontSize: "16px",
-                          lineHeight: 1.5,
-                          color: "#444",
-                        },
-                        empty: {
-                          color: "#3a120a",
-                          backgroundColor: "transparent",
-                          "::placeholder": {
-                            color: "#444",
-                          },
-                        },
-                      },
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="w-full flex gap-3 pb-3">
-                <div className="w-[50%]">
-                  <label className="block pb-2 text-sm font-medium">Card Number</label>
-                  <CardNumberElement
-                    className={`${styles.input} h-[35px]!`}
-                    options={{
-                      style: {
-                        base: {
-                          fontSize: "16px",
-                          lineHeight: 1.5,
-                          color: "#444",
-                        },
-                        empty: {
-                          color: "#3a120a",
-                          backgroundColor: "transparent",
-                          "::placeholder": {
-                            color: "#444",
-                          },
-                        },
-                      },
-                    }}
-                  />
-                </div>
-                <div className="w-[50%]">
-                  <label className="block pb-2 text-sm font-medium">CVV</label>
-                  <CardCvcElement
-                    className={`${styles.input} h-[35px]!`}
-                    options={{
-                      style: {
-                        base: {
-                          fontSize: "16px",
-                          lineHeight: 1.5,
-                          color: "#444",
-                        },
-                        empty: {
-                          color: "#3a120a",
-                          backgroundColor: "transparent",
-                          "::placeholder": {
-                            color: "#444",
-                          },
-                        },
-                      },
-                    }}
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                onClick={paymentHandler}
-                className={`${styles.button} bg-[#f63b60]! text-white h-[45px] rounded-[5px] cursor-pointer text-[18px] font-semibold w-full`}
-              >
-                Submit
-              </button>
-            </div>
-          </div>
-        )}
+        <h2 className="text-2xl font-[700] text-[#16697A] tracking-tight font-display italic">Payment Method</h2>
       </div>
 
-      {/* Cash on Delivery */}
-      <div>
-        <div className="flex w-full pb-4 border-b mb-3">
-          <div
-            className="w-[25px] h-[25px] rounded-full bg-transparent border-[3px] border-[#1d1a1ab4] relative flex items-center justify-center cursor-pointer"
-            onClick={() => setSelect(2)}
-          >
-            {select === 2 && (
-              <div className="w-[13px] h-[13px] bg-[#1d1a1acb] rounded-full" />
-            )}
+      <div className="space-y-6">
+        {/* Credit/Debit Card Selection */}
+        <div
+          onClick={() => setSelect(1)}
+          className={`p-8 rounded-[32px] border-2 transition-all cursor-pointer relative overflow-hidden group ${select === 1 ? "bg-white border-[#16697A] shadow-xl" : "bg-[#EDE7E3]/30 border-transparent hover:bg-white/50"
+            }`}
+        >
+          <div className="flex items-center gap-4 relative z-10">
+            <div className={`w-6 h-6 rounded-full border-4 transition-all ${select === 1 ? "border-[#16697A] bg-[#FFA62B]" : "border-[#16697A]/20"
+              }`} />
+            <h4 className="text-[17px] font-[700] text-[#16697A] font-sans">Pay with Debit/Credit Card</h4>
           </div>
-          <h4 className="text-[18px] pl-2 font-semibold text-[#000000b1]">
-            Cash on Delivery
-          </h4>
-        </div>
 
-        {select === 2 && (
-          <div className="w-full">
-            <div className="w-full" onSubmit={cashOnDeliveryHandler} component="form">
-              <button
-                type="submit"
-                onClick={cashOnDeliveryHandler}
-                className={`${styles.button} bg-[#f63b60]! text-white h-[45px] rounded-[5px] cursor-pointer text-[18px] font-semibold w-full`}
-              >
-                Confirm Order
+          {select === 1 && (
+            <div className="mt-10 space-y-8 animate-in fade-in slide-in-from-top duration-500">
+              <div className="space-y-2">
+                <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1 font-sans">Name on Card</label>
+                <input readOnly value={user?.name} className="w-full bg-[#EDE7E3]/30 border border-transparent rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner font-sans" />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1 font-sans">Exp Date</label>
+                  <div className="bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-6 py-4 shadow-inner"><CardExpiryElement options={{ style: inputStyle }} /></div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1 font-sans">CVC</label>
+                  <div className="bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-6 py-4 shadow-inner"><CardCvcElement options={{ style: inputStyle }} /></div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1 font-sans">Card Number</label>
+                <div className="bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-6 py-4 shadow-inner"><CardNumberElement options={{ style: inputStyle }} /></div>
+              </div>
+
+              <button onClick={paymentHandler} className="w-full h-20 bg-[#16697A] text-[#EDE7E3] font-[700] uppercase tracking-widest text-[13px] rounded-3xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl transform hover:-translate-y-1 font-sans">
+                Submit Payment
               </button>
             </div>
+          )}
+        </div>
+
+        {/* Cash on Delivery Selection */}
+        <div
+          onClick={() => setSelect(2)}
+          className={`p-8 rounded-[32px] border-2 transition-all cursor-pointer relative overflow-hidden group ${select === 2 ? "bg-white border-[#16697A] shadow-xl" : "bg-[#EDE7E3]/30 border-transparent hover:bg-white/50"
+            }`}
+        >
+          <div className="flex items-center gap-4 relative z-10">
+            <div className={`w-6 h-6 rounded-full border-4 transition-all ${select === 2 ? "border-[#16697A] bg-[#FFA62B]" : "border-[#16697A]/20"
+              }`} />
+            <h4 className="text-[17px] font-[700] text-[#16697A] font-sans">Cash on Delivery</h4>
           </div>
-        )}
+
+          {select === 2 && (
+            <div className="mt-10 animate-in fade-in slide-in-from-top duration-500">
+              <button onClick={cashOnDeliveryHandler} className="w-full h-20 bg-[#16697A] text-white font-[700] uppercase tracking-widest text-[13px] rounded-3xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl transform hover:-translate-y-1 font-sans">
+                Confirm
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 const CartData = ({ orderData }) => {
-  const shipping = orderData?.shipping?.toFixed(2);
   return (
-    <div className="w-full bg-white rounded-md p-5 pb-8 shadow-sm">
-      <h3 className="text-[18px] font-semibold mb-4">Order Summary</h3>
-      
-      <div className="flex justify-between mb-3">
-        <h3 className="text-[16px] font-normal text-gray-600">Subtotal:</h3>
-        <h5 className="text-[18px] font-semibold">${orderData?.subTotalPrice?.toFixed(2)}</h5>
-      </div>
-      
-      <div className="flex justify-between mb-3">
-        <h3 className="text-[16px] font-normal text-gray-600">Shipping:</h3>
-        <h5 className="text-[18px] font-semibold">${shipping}</h5>
-      </div>
-      
-      {orderData?.discountPrice > 0 && (
-        <div className="flex justify-between mb-3">
-          <h3 className="text-[16px] font-normal text-gray-600">Discount:</h3>
-          <h5 className="text-[18px] font-semibold text-green-600">
-            -${orderData.discountPrice.toFixed(2)}
-          </h5>
+    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 md:p-10 border border-white shadow-soft sticky top-8">
+      <h3 className="text-xl font-[700] text-[#16697A] mb-8 tracking-tight font-display italic">Order Summary</h3>
+
+      <div className="space-y-4">
+        <div className="flex justify-between items-center text-[10px] font-[700] text-[#6B7280] uppercase tracking-[0.2em] font-sans">
+          <span>Subtotal</span>
+          <span className="text-[#16697A] text-lg font-[700] font-sans">${orderData?.subTotalPrice?.toFixed(2)}</span>
         </div>
-      )}
-      
-      <div className="flex justify-between border-t pt-3 mt-3">
-        <h3 className="text-[18px] font-semibold">Total:</h3>
-        <h5 className="text-[20px] font-bold text-blue-600">
-          ${orderData?.totalPrice}
-        </h5>
+
+        <div className="flex justify-between items-center text-[10px] font-[700] text-[#6B7280] uppercase tracking-[0.2em] font-sans">
+          <span>Shipping</span>
+          <span className="text-[#16697A] text-lg font-[700] font-sans">${orderData?.shipping?.toFixed(2)}</span>
+        </div>
+
+        {orderData?.discountPrice > 0 && (
+          <div className="flex justify-between items-center text-[10px] font-[700] text-[#6B7280] uppercase tracking-[0.2em] font-sans">
+            <span>Discount</span>
+            <span className="text-green-600 text-lg font-[700] font-sans">-${orderData.discountPrice.toFixed(2)}</span>
+          </div>
+        )}
+
+        <div className="flex justify-between items-center pt-6 border-t border-[#16697A]/10 mt-6 font-sans">
+          <span className="text-[12px] font-[700] text-[#16697A] uppercase tracking-[0.2em]">Total</span>
+          <span className="text-3xl font-[700] text-[#16697A] tracking-tighter font-display italic">${orderData?.totalPrice}</span>
+        </div>
+      </div>
+
+      <div className="mt-12 pt-8 border-t border-[#16697A]/10 text-center">
+        <p className="text-[10px] font-[700] text-[#9CA3AF] uppercase tracking-[0.3em] mb-4 font-sans">Secured by Stripe</p>
+        <div className="flex justify-center gap-4 opacity-40">
+          {/* icons... */}
+        </div>
       </div>
     </div>
   );

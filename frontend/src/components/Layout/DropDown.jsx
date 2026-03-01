@@ -30,7 +30,7 @@ const CATEGORY_COLORS = {
   10: "bg-gray-50",
 };
 
-const DropDown = ({ setDropDown }) => {
+const DropDown = ({ setDropDown, categoriesData }) => {
   const navigate = useNavigate();
 
   const handleClick = (category) => {
@@ -40,54 +40,72 @@ const DropDown = ({ setDropDown }) => {
   };
 
   return (
-    <div className="w-[270px] bg-white absolute top-full left-0 z-30 rounded-b-2xl shadow-xl border border-gray-100 overflow-hidden">
-      {/* Header */}
-      <div className="px-4 py-2.5 bg-gray-50 border-b border-gray-100">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Browse Categories</p>
+    <div className="w-[90vw] max-w-[1200px] bg-white/70 backdrop-blur-3xl absolute top-full left-0 z-50 rounded-[40px] shadow-3xl border border-white overflow-hidden p-10 animate-in slide-in-from-top-4 duration-500">
+      {/* Header section in dropdown */}
+      <div className="flex items-center justify-between mb-8 pb-6 border-b border-[#16697A]/5">
+        <div>
+          <h3 className="text-sm font-black text-[#16697A] tracking-tighter italic uppercase font-display">Marketplace Matrix</h3>
+          <p className="text-[9px] font-black text-[#489FB5] uppercase tracking-[0.3em] font-display opacity-60">Categorical Assets Hub</p>
+        </div>
+        <div className="flex gap-2">
+          <span className="w-2 h-2 rounded-full bg-[#FFA62B] animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-[#489FB5]" />
+          <span className="w-2 h-2 rounded-full bg-[#16697A]" />
+        </div>
       </div>
 
-      {/* Category List */}
-      <div className="max-h-[60vh] overflow-y-auto">
+      {/* Hero Cards Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {categoriesData &&
           categoriesData.map((item, index) => {
             const imgSrc = item.image_Url || FALLBACK_IMAGES[item.id];
-            const colorClass = CATEGORY_COLORS[item.id] || "bg-gray-50";
+            const colorClass = CATEGORY_COLORS[item.id] || "bg-[#EDE7E3]";
 
             return (
               <div
                 key={index}
                 onClick={() => handleClick(item)}
-                className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 cursor-pointer transition-colors group border-b border-gray-50 last:border-0"
+                className="group relative cursor-pointer"
               >
-                {/* Icon container */}
-                <div className={`w-9 h-9 rounded-xl ${colorClass} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200`}>
+                {/* Card Container */}
+                <div className={`
+                   relative h-44 rounded-[32px] overflow-hidden transition-all duration-500 transform 
+                   group-hover:-translate-y-2 group-hover:shadow-2xl group-hover:shadow-[#16697A]/10
+                   border border-white/50 bg-gradient-to-br from-white/80 to-transparent
+                `}>
+                  {/* Category Image - Large & Stylized */}
+                  <div className={`absolute inset-0 opacity-10 transition-opacity duration-500 group-hover:opacity-20 ${colorClass}`} />
                   <img
                     src={imgSrc}
                     alt={item.title}
-                    className="w-6 h-6 object-contain"
+                    className="absolute right-[-10%] bottom-[-10%] w-32 h-32 object-contain transition-all duration-700 transform group-hover:scale-110 group-hover:rotate-6 drop-shadow-2xl"
                     onError={(e) => {
                       e.target.src = FALLBACK_IMAGES[item.id] || FALLBACK_IMAGES[10];
                     }}
                   />
+
+                  {/* Icon & Label */}
+                  <div className="absolute inset-0 p-6 flex flex-col justify-between">
+                    <div className={`w-12 h-12 rounded-2xl ${colorClass.replace('bg-', 'bg-opacity-20 bg-')} flex items-center justify-center backdrop-blur-md border border-white/40 shadow-sm`}>
+                      <div className="w-2 h-2 bg-[#16697A] rounded-full group-hover:scale-150 transition-transform" />
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-black text-[#16697A] leading-tight uppercase tracking-tight group-hover:text-[#FFA62B] transition-colors">
+                        {item.title}
+                      </h4>
+                      <p className="text-[9px] font-black text-[#489FB5] uppercase tracking-widest mt-1 opacity-60">Explore Hub →</p>
+                    </div>
+                  </div>
                 </div>
-
-                {/* Title */}
-                <span className="text-sm text-gray-700 font-medium group-hover:text-[#3321c8] transition-colors select-none">
-                  {item.title}
-                </span>
-
-                {/* Arrow */}
-                <svg
-                  className="w-3.5 h-3.5 text-gray-300 ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-200"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                </svg>
               </div>
             );
           })}
+      </div>
+
+      {/* Footer hint */}
+      <div className="mt-8 pt-6 border-t border-[#16697A]/5 text-center">
+        <p className="text-[9px] font-black text-[#6B7280] uppercase tracking-[0.5em] opacity-40">Secure Categorical Navigation Active</p>
       </div>
     </div>
   );

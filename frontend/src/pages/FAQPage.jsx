@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import Footer from "../components/Layout/Footer";
 import Header from "../components/Layout/Header";
-import styles from "../styles/styles";
+import { RxPlus, RxMinus } from "react-icons/rx";
 
 const FAQPage = () => {
   return (
-    <div>
+    <div className="bg-[#EDE7E3] min-h-screen">
       <Header activeHeading={5} />
       <Faq />
       <Footer />
@@ -24,304 +24,89 @@ const Faq = () => {
     }
   };
 
+  const faqData = [
+    {
+      id: 2,
+      question: "What is your return policy?",
+      answer: "If you're not satisfied with your purchase, we accept returns within 30 days of delivery. To initiate a return, please email us at support@crownmarket.com with your order number and a brief explanation."
+    },
+    {
+      id: 3,
+      question: "How do I track my order?",
+      answer: "You can track your order by clicking the tracking link in your shipping confirmation email, or by logging into your account on our website and viewing the order details."
+    },
+    {
+      id: 4,
+      question: "How do I contact customer support?",
+      answer: "You can contact our customer support team by emailing us at support@crownmarket.com, or by calling our hotline at (555) 789-0123 between 9am and 5pm EST."
+    },
+    {
+      id: 5,
+      question: "Can I change or cancel my order?",
+      answer: "Once an order has been placed, we are not able to make changes or cancellations immediately. Please contact support within 1 hour for urgent requests."
+    },
+    {
+      id: 6,
+      question: "Do you offer international shipping?",
+      answer: "Currently, we only offer shipping within the primary market zones. We are expanding our global logistics network as we speak."
+    },
+    {
+      id: 7,
+      question: "What payment methods do you accept?",
+      answer: "We accept Visa, Mastercard, PayPal, and also offer a secure Cash on Delivery system for your convenience."
+    }
+  ];
+
   return (
-    <div className={`${styles.section} my-8`}>
-      <h2 className="text-3xl font-bold text-gray-900 mb-8">FAQ</h2>
-      <div className="mx-auto space-y-4">
-        {/* single Faq */}
+    <div className="max-w-[1000px] mx-auto py-10 px-4 md:px-8">
+      <div className="text-center mb-8 animate-in slide-in-from-top duration-700">
+        <h2 className="text-2xl md:text-3xl font-[700] text-[#16697A] tracking-tight mb-4 font-display italic">FAQ</h2>
+        <div className="w-24 h-1.5 bg-[#FFA62B] mx-auto rounded-full" />
+      </div>
 
-        <div className="border-b border-gray-200 pb-4">
-          <button
-            className="flex items-center justify-between w-full"
-            onClick={() => toggleTab(2)}
-          >
-            <span className="text-lg font-medium text-gray-900">
-              What is your return policy?
-            </span>
-            {activeTab === 2 ? (
-              <svg
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+      <div className="space-y-6">
+        {faqData.map((item) => (
+          <div key={item.id} className="group">
+            <div className={`
+                bg-white/70 backdrop-blur-xl rounded-[32px] overflow-hidden border border-white transition-all duration-500
+                ${activeTab === item.id ? "shadow-2xl translate-y-[-4px]" : "hover:shadow-soft hover:translate-y-[-2px]"}
+            `}>
+              <button
+                className="flex items-center justify-between w-full h-24 px-8 text-left"
+                onClick={() => toggleTab(item.id)}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            )}
-          </button>
-          {activeTab === 2 && (
-            <div className="mt-4">
-              <p className="text-base text-gray-500">
-                If you're not satisfied with your purchase, we accept returns
-                within 30 days of delivery. To initiate a return, please email
-                us at support@myecommercestore.com with your order number and a
-                brief explanation of why you're returning the item.
-              </p>
-            </div>
-          )}
-        </div>
+                <span className={`text-xl font-[600] tracking-tight transition-colors duration-300 font-sans ${activeTab === item.id ? "text-[#16697A]" : "text-[#16697A]/70 group-hover:text-[#16697A]"}`}>
+                  {item.question}
+                </span>
+                <div className={`
+                    w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500
+                    ${activeTab === item.id ? "bg-[#FFA62B] text-white rotate-180" : "bg-[#EDE7E3] text-[#16697A]"}
+                `}>
+                  {activeTab === item.id ? <RxMinus size={24} /> : <RxPlus size={24} />}
+                </div>
+              </button>
 
-        <div className="border-b border-gray-200 pb-4">
-          <button
-            className="flex items-center justify-between w-full"
-            onClick={() => toggleTab(3)}
-          >
-            <span className="text-lg font-medium text-gray-900">
-              How do I track my order?
-            </span>
-            {activeTab === 3 ? (
-              <svg
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            )}
-          </button>
-          {activeTab === 3 && (
-            <div className="mt-4">
-              <p className="text-base text-gray-500">
-                You can track your order by clicking the tracking link in your
-                shipping confirmation email, or by logging into your account on
-                our website and viewing the order details.
-              </p>
+              <div className={`
+                  px-8 transition-all duration-500 ease-in-out
+                  ${activeTab === item.id ? "max-h-60 pb-8 opacity-100" : "max-h-0 opacity-0"}
+              `}>
+                <div className="pt-4 border-t border-[#16697A]/5">
+                  <p className="text-lg font-medium text-[#489FB5] leading-relaxed">
+                    {item.answer}
+                  </p>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        ))}
+      </div>
 
-        <div className="border-b border-gray-200 pb-4">
-          <button
-            className="flex items-center justify-between w-full"
-            onClick={() => toggleTab(4)}
-          >
-            <span className="text-lg font-medium text-gray-900">
-              How do I contact customer support?
-            </span>
-            {activeTab === 4 ? (
-              <svg
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            )}
-          </button>
-          {activeTab === 4 && (
-            <div className="mt-4">
-              <p className="text-base text-gray-500">
-                You can contact our customer support team by emailing us at
-                support@myecommercestore.com, or by calling us at (555) 123-4567
-                between the hours of 9am and 5pm EST, Monday through Friday.
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="border-b border-gray-200 pb-4">
-          <button
-            className="flex items-center justify-between w-full"
-            onClick={() => toggleTab(5)}
-          >
-            <span className="text-lg font-medium text-gray-900">
-              Can I change or cancel my order?
-            </span>
-            {activeTab === 5 ? (
-              <svg
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            )}
-          </button>
-          {activeTab === 5 && (
-            <div className="mt-4">
-              <p className="text-base text-gray-500">
-                Unfortunately, once an order has been placed, we are not able to
-                make changes or cancellations. If you no longer want the items
-                you've ordered, you can return them for a refund within 30 days
-                of delivery.
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="border-b border-gray-200 pb-4">
-          <button
-            className="flex items-center justify-between w-full"
-            onClick={() => toggleTab(6)}
-          >
-            <span className="text-lg font-medium text-gray-900">
-              Do you offer international shipping?
-            </span>
-            {activeTab === 6 ? (
-              <svg
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            )}
-          </button>
-          {activeTab === 6 && (
-            <div className="mt-4">
-              <p className="text-base text-gray-500">
-                Currently, we only offer shipping within the United States.
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="border-b border-gray-200 pb-4">
-          <button
-            className="flex items-center justify-between w-full"
-            onClick={() => toggleTab(7)}
-          >
-            <span className="text-lg font-medium text-gray-900">
-              What payment methods do you accept?
-            </span>
-            {activeTab === 7 ? (
-              <svg
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="h-6 w-6 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            )}
-          </button>
-          {activeTab === 7 && (
-            <div className="mt-4">
-              <p className="text-base text-gray-500">
-                We accept visa,mastercard,paypal payment method also we have
-                cash on delivery system.
-              </p>
-            </div>
-          )}
-        </div>
+      <div className="mt-10 p-8 bg-[#16697A] rounded-[48px] text-center shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <h3 className="text-xl font-[700] text-[#EDE7E3] tracking-tight mb-4 relative z-10 font-display italic">Contact Us</h3>
+        <button className="bg-[#FFA62B] text-[#EDE7E3] font-[700] px-12 py-5 rounded-2xl hover:bg-white hover:text-[#16697A] transition-all transform hover:scale-105 shadow-xl relative z-10 uppercase tracking-widest text-sm font-sans">
+          Submit
+        </button>
       </div>
     </div>
   );

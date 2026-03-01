@@ -1,20 +1,17 @@
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import React, { useState,useEffect } from "react";
-import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
+import React, { useState, useEffect } from "react";
+import { AiOutlineDelete, AiOutlineEye, AiOutlinePlus } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getAllProductsShop } from "../../redux/actions/product";
+import { getAllProductsShop, deleteProduct } from "../../redux/actions/product";
 import Loader from "../Layout/Loader";
-import { deleteProduct } from "../../redux/actions/product"; 
-import styles from "../../styles/styles";
 import { RxCross1 } from "react-icons/rx";
-
+import { FiPackage } from "react-icons/fi";
 
 const AllProducts = () => {
-  const { products, isLoading } = useSelector((state) => state.product);  
+  const { products, isLoading } = useSelector((state) => state.product);
   const { seller } = useSelector((state) => state.seller);
-  const [open , setOpen] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -24,237 +21,162 @@ const AllProducts = () => {
   }, [dispatch, seller]);
 
   const handleDelete = (id) => {
-    dispatch(deleteProduct(id));
-    window.location.reload();
-   
+    if (window.confirm("Authorize permanent deletion of this asset?")) {
+      dispatch(deleteProduct(id));
+      setTimeout(() => window.location.reload(), 500);
+    }
   };
 
-  
   const columns = [
-    { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },
+    {
+      field: "id",
+      headerName: "ASSET ID",
+      minWidth: 150,
+      flex: 0.7,
+      headerClassName: "grid-header"
+    },
     {
       field: "name",
-      headerName: "Name",
-      minWidth: 180,
+      headerName: "ITEM DESIGNATION",
+      minWidth: 200,
       flex: 1.4,
+      headerClassName: "grid-header"
     },
     {
       field: "price",
-      headerName: "Price",
-      minWidth: 100,
+      headerName: "RETAIL VAL.",
+      minWidth: 120,
       flex: 0.6,
+      headerClassName: "grid-header"
     },
     {
       field: "Stock",
-      headerName: "Stock",
+      headerName: "INVENTORY",
       type: "number",
-      minWidth: 80,
+      minWidth: 100,
       flex: 0.5,
+      headerClassName: "grid-header"
     },
     {
       field: "sold",
-      headerName: "Sold out",
+      headerName: "LIQUIDATED",
       type: "number",
-      minWidth: 130,
+      minWidth: 120,
       flex: 0.6,
+      headerClassName: "grid-header"
     },
     {
       field: "Preview",
-      flex: 0.8,
-      minWidth: 100,
-      headerName: "",
-      type: "number",
+      flex: 0.5,
+      minWidth: 80,
+      headerName: "VIEW",
       sortable: false,
-      renderCell: (params) => {
-        return (
-          <>
-            <Link to={`/product/${params.id}`}>
-              <Button>
-                <AiOutlineEye size={20} />
-              </Button>
-            </Link>
-          </>
-        );
-      },
+      headerClassName: "grid-header",
+      renderCell: (params) => (
+        <Link to={`/product/${params.id}`}>
+          <div className="w-10 h-10 bg-[#16697A]/5 text-[#16697A] rounded-xl flex items-center justify-center hover:bg-[#16697A] hover:text-white transition-all duration-300">
+            <AiOutlineEye size={20} />
+          </div>
+        </Link>
+      ),
     },
     {
       field: "Delete",
-      flex: 0.8,
-      minWidth: 120,
-      headerName: "",
-      type: "number",
+      flex: 0.5,
+      minWidth: 80,
+      headerName: "PURGE",
       sortable: false,
-      renderCell: (params) => {
-        return (
-          <>
-            <Button onClick={() => handleDelete(params.id)}>
-              <AiOutlineDelete size={20} />
-            </Button>
-          </>
-        );
-      },
+      headerClassName: "grid-header",
+      renderCell: (params) => (
+        <button onClick={() => handleDelete(params.id)} className="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all duration-300">
+          <AiOutlineDelete size={20} />
+        </button>
+      ),
     },
   ];
 
-  const row = [];
-
-  products &&
-    products.forEach((item) => {
-      row.push({
-        id: item._id,
-        name: item.name,
-        price: "US$ " + item.discountPrice,
-        Stock: item.stock,
-        sold: item?.sold_out || 0,
-      });
-    });
+  const rows = products?.map((item) => ({
+    id: item._id,
+    name: item.name,
+    price: "$" + item.discountPrice,
+    Stock: item.stock,
+    sold: item?.sold_out || 0,
+  })) || [];
 
   return (
-    <>
+    <div className="w-full px-4 md:px-12 py-10 font-Inter animate-in fade-in duration-1000">
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="w-full mx-8 pt-1 mt-10 bg-white">
-         
-          <DataGrid
-            rows={row}
-            columns={columns}
-            pageSize={10}
-            disableSelectionOnClick
-            autoHeight
-          />
-   
+        <div className="max-w-[1600px] mx-auto space-y-8">
+
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-white/40 backdrop-blur-xl p-10 rounded-[48px] border border-white shadow-soft">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-[#16697A] rounded-2xl flex items-center justify-center text-white">
+                  <FiPackage size={20} />
+                </div>
+                <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.4em]">Asset Registry</p>
+              </div>
+              <h1 className="text-2xl font-black text-[#16697A] tracking-tighter italic uppercase">Asset Portfolio</h1>
+            </div>
+            <Link to="/dashboard-create-product">
+              <button className="px-8 py-4 bg-[#16697A] text-white font-black rounded-2xl hover:bg-[#FFA62B] transition-all transform hover:scale-105 shadow-xl flex items-center gap-3 uppercase tracking-widest text-[10px]">
+                <AiOutlinePlus size={18} /> Add New Asset
+              </button>
+            </Link>
+          </div>
+
+          <div className="bg-white/70 backdrop-blur-2xl rounded-[48px] border border-white shadow-2xl overflow-hidden p-6 md:p-10">
+            <style>
+              {`
+                .grid-header {
+                  background-color: transparent !important;
+                  color: #16697A !important;
+                  font-weight: 900 !important;
+                  text-transform: uppercase !important;
+                  letter-spacing: 0.1em !important;
+                  font-size: 11px !important;
+                }
+                .MuiDataGrid-root {
+                  border: none !important;
+                  font-family: 'Inter', sans-serif !important;
+                }
+                .MuiDataGrid-cell {
+                  border-bottom: 1px solid #EDE7E3 !important;
+                  color: #489FB5 !important;
+                  font-weight: 700 !important;
+                  display: flex !important;
+                  align-items: center !important;
+                }
+                .MuiDataGrid-columnHeaders {
+                  border-bottom: 2px solid #16697A !important;
+                  background-color: transparent !important;
+                }
+                .MuiDataGrid-row:hover {
+                  background-color: #EDE7E3 !important;
+                  cursor: pointer !important;
+                }
+                .MuiDataGrid-footerContainer {
+                  border-top: 1px solid #EDE7E3 !important;
+                }
+              `}
+            </style>
+            <div className="w-full">
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                pageSize={10}
+                disableSelectionOnClick
+                autoHeight
+                className="custom-data-grid"
+              />
+            </div>
+          </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
 export default AllProducts;
-
-
-// import { Button } from "@mui/material";
-// import { DataGrid } from "@mui/x-data-grid";
-// import React, { useEffect } from "react";
-// import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
-// import { useDispatch, useSelector } from "react-redux";
-// import { Link } from "react-router-dom";
-// import { getAllProductsShop, deleteProduct } from "../../redux/actions/product";
-// import Loader from "../Layout/Loader";
-// import { toast } from "react-toastify";
-
-// const AllProducts = () => {
-//   const { products, isLoading } = useSelector((state) => state.products);
-//   const { seller } = useSelector((state) => state.seller);
-//   const dispatch = useDispatch();
-
-//   useEffect(() => {
-//     if (seller?._id) {
-//       dispatch(getAllProductsShop(seller._id));
-//     }
-//   }, [dispatch, seller]);
-
-//   const handleDelete = async (id) => {
-//     try {
-//       await dispatch(deleteProduct(id));
-//       toast.success("Product deleted successfully!");
-//       window.location.reload();
-//     } catch (error) {
-//       toast.error("Failed to delete product");
-//     }
-//   };
-
-//   const columns = [
-//     { field: "id", headerName: "Product ID", minWidth: 150, flex: 0.7 },
-//     {
-//       field: "name",
-//       headerName: "Name",
-//       minWidth: 180,
-//       flex: 1.4,
-//     },
-//     {
-//       field: "price",
-//       headerName: "Price",
-//       minWidth: 100,
-//       flex: 0.6,
-//     },
-//     {
-//       field: "Stock",
-//       headerName: "Stock",
-//       type: "number",
-//       minWidth: 80,
-//       flex: 0.5,
-//     },
-//     {
-//       field: "sold",
-//       headerName: "Sold Out",
-//       type: "number",
-//       minWidth: 120,
-//       flex: 0.6,
-//     },
-//     {
-//       field: "Preview",
-//       flex: 0.8,
-//       minWidth: 100,
-//       headerName: "Preview",
-//       sortable: false,
-//       renderCell: (params) => (
-//         <Link to={`/product/${params.id}`}>
-//           <Button>
-//             <AiOutlineEye size={20} />
-//           </Button>
-//         </Link>
-//       ),
-//     },
-//     {
-//       field: "Delete",
-//       flex: 0.8,
-//       minWidth: 100,
-//       headerName: "Delete",
-//       sortable: false,
-//       renderCell: (params) => (
-//         <Button onClick={() => handleDelete(params.id)}>
-//           <AiOutlineDelete size={20} className="text-red-500 hover:text-red-700" />
-//         </Button>
-//       ),
-//     },
-//   ];
-
-//   const rows =
-//     products?.map((item) => ({
-//       id: item._id,
-//       name: item.name,
-//       price: "US$ " + item.discountPrice,
-//       Stock: item.stock,
-//       sold: item?.sold_out || 0,
-//     })) || [];
-
-//   return (
-//     <>
-//       {isLoading ? (
-//         <Loader />
-//       ) : (
-//         <div className="w-full bg-white p-3 md:p-6 rounded-md shadow-sm">
-//           <h1 className="text-lg md:text-2xl font-semibold text-gray-800 mb-4 md:mb-6">
-//             All Products
-//           </h1>
-
-//           {/* Responsive Scroll Wrapper */}
-//           <div className="w-full overflow-x-auto">
-//             <div className="min-w-[600px]">
-//               <DataGrid
-//                 rows={rows}
-//                 columns={columns}
-//                 pageSize={10}
-//                 disableSelectionOnClick
-//                 autoHeight
-//               />
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </>
-//   );
-// };
-
-// export default AllProducts;

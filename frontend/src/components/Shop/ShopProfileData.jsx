@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
 import { getAllEventsShop } from "../../redux/actions/event";
 import Ratings from "../Products/Ratings";
-import styles from "../../styles/styles";
 
 const ShopProfileData = ({ isOwner }) => {
   const dispatch = useDispatch();
@@ -16,21 +15,10 @@ const ShopProfileData = ({ isOwner }) => {
 
   const shopId = paramId || seller?._id;
 
-  // Helper function to get image URL
   const getImageUrl = (image) => {
     if (!image) return "/placeholder.png";
-    
-    // If it's an object with url property (Cloudinary format)
-    if (typeof image === "object" && image.url) {
-      return image.url;
-    }
-    
-    // If it's already a URL string (starts with http)
-    if (typeof image === "string" && image.startsWith("http")) {
-      return image;
-    }
-    
-    // Fallback for old backend format or relative paths
+    if (typeof image === "object" && image.url) return image.url;
+    if (typeof image === "string" && image.startsWith("http")) return image;
     return image;
   };
 
@@ -45,95 +33,95 @@ const ShopProfileData = ({ isOwner }) => {
 
   const [active, setActive] = useState(1);
 
+  const tabs = [
+    { id: 1, label: "Shop Products" },
+    { id: 2, label: "Running Events" },
+    { id: 3, label: "Shop Reviews" },
+  ];
+
   return (
     <div className="w-full">
-      {/* Toggle Part */}
-      <div className="flex w-full items-center justify-between pr-5">
-        <div className="w-full flex">
-          <h5
-            onClick={() => setActive(1)}
-            className={`${active === 1 ? "text-red-500" : "text-[#333]"} font-semibold text-[20px] cursor-pointer mr-4`}
-          >
-            Shop Products
-          </h5>
-          <h5
-            onClick={() => setActive(2)}
-            className={`${active === 2 ? "text-red-500" : "text-[#333]"} font-semibold text-[20px] cursor-pointer mr-4`}
-          >
-            Running Events
-          </h5>
-          <h5
-            onClick={() => setActive(3)}
-            className={`${active === 3 ? "text-red-500" : "text-[#333]"} font-semibold text-[20px] cursor-pointer mr-4`}
-          >
-            Shop Reviews
-          </h5>
+      {/* Header & Navigation */}
+      <div className="flex flex-col md:flex-row w-full items-start md:items-center justify-between gap-6 mb-8">
+        <div className="flex flex-wrap gap-8 md:gap-12">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActive(tab.id)}
+              className={`relative py-4 text-sm md:text-base font-[700] transition-all uppercase tracking-[0.2em] font-sans ${active === tab.id ? "text-[#16697A]" : "text-[#6B7280]/60 hover:text-[#16697A]"
+                }`}
+            >
+              {tab.label}
+              {active === tab.id && (
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-[#FFA62B] rounded-full animate-in slide-in-from-left duration-300" />
+              )}
+            </button>
+          ))}
         </div>
 
-        <div>
+        {isOwner && (
           <Link to="/dashboard">
-            <div className={`${styles.button} rounded-sm! h-[42px]`}>
-              <span className="text-white capitalize">Go to Dashboard</span>
-            </div>
+            <button className="h-14 px-10 bg-[#16697A] text-[#EDE7E3] font-[700] uppercase tracking-[0.1em] text-[13px] rounded-2xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl font-sans">
+              Go to Dashboard
+            </button>
           </Link>
-        </div>
+        )}
       </div>
 
-      <br />
-
-      {/* Products */}
-      {active === 1 && (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-12">
-          {products?.length > 0 ? (
-            products.map((p) => <ProductCard key={p._id} data={p} isShop />)
-          ) : (
-            <h5 className="text-center py-5 text-[18px]">No products for this shop!</h5>
-          )}
-        </div>
-      )}
-
-      {/* Events */}
-      {active === 2 && (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-12">
-          {events?.length > 0 ? (
-            events.map((e) => <ProductCard key={e._id} data={e} isShop isEvent />)
-          ) : (
-            <h5 className="text-center py-5 text-[18px]">No events for this shop!</h5>
-          )}
-        </div>
-      )}
-
-      {/* Reviews */}
-      {active === 3 && (
-        <div className="w-full">
-          {allReviews?.length > 0 ? (
-            allReviews.map((r, index) => (
-              <div className="flex my-4" key={index}>
-                <img
-                  src={getImageUrl(r.user.avatar)}
-                  className="w-[50px] h-[50px] rounded-full object-cover"
-                  alt={r.user.name}
-                  onError={(e) => {
-                    e.target.src = "/placeholder.png";
-                  }}
-                />
-                <div className="pl-2">
-                  <div className="flex items-center">
-                    <h1 className="font-semibold pr-2">{r.user.name}</h1>
-                    <Ratings rating={r.rating} />
-                  </div>
-                  <p className="text-[#000000a7]">{r.comment}</p>
-                  <p className="text-[#000000a7] text-[14px]">
-                    {new Date(r.createdAt).toLocaleString()}
-                  </p>
-                </div>
+      {/* Dynamic Content Grid */}
+      <div className="min-h-[60vh]">
+        {/* Products Grid */}
+        {active === 1 && (
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-700">
+            {products?.length > 0 ? (
+              products.map((p) => <ProductCard key={p._id} data={p} isShop />)
+            ) : (
+              <div className="col-span-full py-16 text-center">
+                <h4 className="text-xl font-[700] text-[#16697A] font-display italic">No products for this shop!</h4>
               </div>
-            ))
-          ) : (
-            <h5 className="text-center py-5 text-[18px]">No reviews for this shop!</h5>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        )}
+
+        {/* Events Grid */}
+        {active === 2 && (
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-700">
+            {events?.length > 0 ? (
+              events.map((e) => <ProductCard key={e._id} data={e} isShop isEvent />)
+            ) : (
+              <div className="col-span-full py-16 text-center">
+                <h4 className="text-xl font-[700] text-[#16697A] font-display italic">No events for this shop!</h4>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Reviews Section */}
+        {active === 3 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in duration-700">
+            {allReviews?.length > 0 ? (
+              allReviews.map((r, index) => (
+                <div className="bg-white/40 backdrop-blur-md rounded-[40px] p-8 border border-white shadow-soft transition-all" key={index}>
+                  <div className="flex items-center gap-4 mb-6">
+                    <img src={getImageUrl(r.user.avatar)} className="w-14 h-14 rounded-2xl object-cover shadow-md" alt={r.user.name} />
+                    <div>
+                      <h4 className="font-[700] text-[#16697A] font-sans">{r.user.name}</h4>
+                      <div className="flex items-center gap-2">
+                        <Ratings rating={r.rating} />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-[#6B7280] font-[500] leading-relaxed font-sans italic">"{r.comment}"</p>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full py-16 text-center">
+                <h4 className="text-xl font-[700] text-[#16697A] font-display italic">No reviews for this shop!</h4>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

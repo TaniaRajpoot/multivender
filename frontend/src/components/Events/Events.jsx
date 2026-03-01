@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import styles from '../../styles/styles'
 import EventCard from "./EventCard"
 import { getAllEvents } from '../../redux/actions/event'
 
@@ -12,41 +11,40 @@ const Events = () => {
     dispatch(getAllEvents());
   }, [dispatch]);
 
-  // Get the latest event (sort by createdAt or start_Date if available)
   const latestEvent = useMemo(() => {
     if (!allEvents || allEvents.length === 0) return null;
-    
-    // Sort events by createdAt date (most recent first)
-    const sortedEvents = [...allEvents].sort((a, b) => {
+    return [...allEvents].sort((a, b) => {
       const dateA = new Date(a.createdAt || a.start_Date || 0);
       const dateB = new Date(b.createdAt || b.start_Date || 0);
-      return dateB - dateA; // Descending order (newest first)
-    });
-    
-    return sortedEvents[0];
+      return dateB - dateA;
+    })[0];
   }, [allEvents]);
 
   return (
-    <div>
-      {latestEvent && (
-        <div className={`${styles.section}`}>
-          <div className={`${styles.heading} mb-8`}>
-            <h1>Popular Events</h1>
-          </div>
-          
-          {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-            </div>
-          ) : (
-            <div className="w-full">
-              <EventCard data={latestEvent} active={true} />
-            </div>
-          )}
+    <div className="bg-[#EDE7E3] min-h-screen font-Inter">
+      <div className="max-w-[1400px] mx-auto py-10 px-4 md:px-8">
+        <div className="text-center mb-8 animate-in slide-in-from-top-8 duration-700">
+          <h2 className="text-3xl md:text-5xl font-[700] text-[#16697A] tracking-tighter leading-none italic font-display">Events</h2>
         </div>
-      )}
+
+        {isLoading ? (
+          <div className="h-[40vh] flex justify-center items-center">
+            <div className="animate-spin rounded-2xl h-16 w-16 border-4 border-[#16697A] border-t-transparent shadow-xl"></div>
+          </div>
+        ) : (
+          <div className="w-full">
+            {latestEvent ? (
+              <EventCard data={latestEvent} active={true} />
+            ) : (
+              <div className="h-[40vh] flex flex-col items-center justify-center text-center p-12 bg-white/40 backdrop-blur-xl rounded-[48px] border border-white">
+                <h2 className="text-2xl font-[700] text-[#16697A] font-display italic">No Events!</h2>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
 
-export default Events
+export default Events;

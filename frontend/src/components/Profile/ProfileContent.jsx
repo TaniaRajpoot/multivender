@@ -5,23 +5,22 @@ import {
   AiOutlineArrowRight,
   AiOutlineDelete,
 } from "react-icons/ai";
-import { RxCross1 } from "react-icons/rx"; // Add this
-import styles from "../../styles/styles";
+import { RxCross1 } from "react-icons/rx";
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
 import { MdTrackChanges } from "react-icons/md";
 import { toast } from "react-toastify";
-import { 
-  updateUserInfo, 
-  loadUser, 
-  updateUserAddress, 
-  deleteUserAddress 
+import {
+  updateUserInfo,
+  loadUser,
+  updateUserAddress,
+  deleteUserAddress
 } from "../../redux/actions/user.js";
 import { clearErrors } from "../../redux/actions/product.js";
 import axios from "axios";
 import { server } from "../../server";
-import { Country, State } from "country-state-city";
+import { Country, State, City } from "country-state-city";
 import { getAllOrdersOfUser } from "../../redux/actions/order.js";
 
 const ProfileContent = ({ active }) => {
@@ -33,7 +32,6 @@ const ProfileContent = ({ active }) => {
   const [avatar, setAvatar] = useState(null);
   const [avatarLoading, setAvatarLoading] = useState(false);
   const dispatch = useDispatch();
-
 
   useEffect(() => {
     if (user) {
@@ -52,7 +50,7 @@ const ProfileContent = ({ active }) => {
 
   useEffect(() => {
     if (updateSuccess) {
-      toast.success("Profile updated successfully!");
+      toast.success("Identity Updated Successfully");
       setPassword("");
       dispatch({ type: "clearUpdateSuccess" });
     }
@@ -60,194 +58,102 @@ const ProfileContent = ({ active }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!password) {
-      toast.error("Please enter your password to confirm changes");
+      toast.error("Authentication required to save changes");
       return;
     }
-
-    dispatch(
-      updateUserInfo({
-        name,
-        email,
-        password,
-        phoneNumber,
-      })
-    );
+    dispatch(updateUserInfo({ name, email, password, phoneNumber }));
   };
 
   const handleImage = async (e) => {
     const file = e.target.files[0];
-
     if (!file) return;
-
-    // Validate file type
-    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-    if (!validTypes.includes(file.type)) {
-      toast.error("Please upload a valid image (JPEG, PNG, or WebP)");
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size should be less than 5MB");
-      return;
-    }
-
     const reader = new FileReader();
-
     reader.onload = async () => {
       if (reader.readyState === 2) {
         setAvatar(reader.result);
         setAvatarLoading(true);
-
         try {
           const { data } = await axios.put(
             `${server}/user/update-avatar`,
             { avatar: reader.result },
-            {
-              withCredentials: true,
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
+            { withCredentials: true, headers: { "Content-Type": "application/json" } }
           );
-
           if (data.success) {
-            toast.success("Avatar updated successfully!");
-            // Reload user data to get the new avatar
+            toast.success("Avatar Rebranded Successfully");
             dispatch(loadUser());
-            setAvatar(null); // Clear preview
+            setAvatar(null);
           }
         } catch (error) {
-          toast.error(error.response?.data?.message || "Failed to update avatar");
-          setAvatar(null); // Clear preview on error
+          toast.error(error.response?.data?.message || "Rebranding failed");
+          setAvatar(null);
         } finally {
           setAvatarLoading(false);
         }
       }
     };
-
     reader.readAsDataURL(file);
   };
 
   const getAvatarUrl = () => {
-    // Show preview of new avatar if exists
-    if (avatar) {
-      return avatar;
-    }
-    if (user?.avatar?.url) {
-      return user.avatar.url;
-    } else if (user?.avatar) {
-      return user.avatar;
-    }
+    if (avatar) return avatar;
+    if (user?.avatar?.url) return user.avatar.url;
+    if (user?.avatar) return user.avatar;
     return "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg";
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full min-h-[80vh]">
       {active === 1 && (
-        <>
-          <div className="flex justify-center w-full">
-            <div className="relative">
-              <img
-                src={getAvatarUrl()}
-                alt="Profile"
-                className="w-[150px] h-[150px] rounded-full object-cover border-4 border-[#3bc177]"
-              />
-
-              <div className="w-[35px] h-[35px] bg-[#E3E9EE] rounded-full flex items-center justify-center cursor-pointer absolute bottom-[5px] right-[5px]">
-                <input
-                  type="file"
-                  id="image"
-                  className="hidden"
-                  onChange={handleImage}
-                  accept="image/*"
-                  disabled={avatarLoading}
-                />
-                <label 
-                  htmlFor="image" 
-                  className={`cursor-pointer flex items-center justify-center ${avatarLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {avatarLoading ? (
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
-                  ) : (
-                    <AiOutlineCamera size={20} />
-                  )}
-                </label>
+        <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 md:p-12 border border-white shadow-soft animate-in fade-in duration-700">
+          <div className="flex flex-col md:flex-row gap-12 items-center md:items-start">
+            <div className="relative group">
+              <div className="w-40 h-40 rounded-[56px] overflow-hidden border-4 border-white shadow-2xl relative">
+                <img src={getAvatarUrl()} alt="User" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                {avatarLoading && (
+                  <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                    <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
               </div>
+              <label htmlFor="avatar-upload" className="absolute -bottom-2 -right-2 w-12 h-12 bg-[#16697A] text-white rounded-2xl flex items-center justify-center cursor-pointer shadow-xl hover:bg-[#FFA62B] transition-all transform hover:rotate-12">
+                <AiOutlineCamera size={20} />
+                <input type="file" id="avatar-upload" className="hidden" onChange={handleImage} accept="image/*" disabled={avatarLoading} />
+              </label>
+            </div>
+
+            <div className="flex-1 w-full space-y-8">
+              <div>
+                <h2 className="text-3xl font-[700] text-[#16697A] tracking-tighter font-display italic">Profile</h2>
+              </div>
+
+              <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1 font-sans">Full Name</label>
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="w-full bg-[#EDE7E3]/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner transition-all outline-none font-sans" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1 font-sans">Email Address</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-[#EDE7E3]/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner transition-all outline-none font-sans" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1 font-sans">Phone Number</label>
+                  <input type="number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="w-full bg-[#EDE7E3]/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner transition-all outline-none font-sans" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-[#FFA62B] uppercase tracking-[0.2em] ml-1 font-sans">Enter your password</label>
+                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter password to save" required className="w-full bg-[#EDE7E3]/50 border border-[#FFA62B]/20 focus:border-[#FFA62B] focus:bg-white rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner transition-all outline-none font-sans" />
+                </div>
+
+                <div className="md:col-span-2 pt-4">
+                  <button type="submit" disabled={loading} className="group relative h-16 px-12 bg-[#16697A] text-[#EDE7E3] font-[700] rounded-2xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl disabled:opacity-50 uppercase tracking-[0.1em] text-[13px] font-sans">
+                    {loading ? "Updating..." : "Update"}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-
-          <div className="w-full px-5 mt-8">
-            <form onSubmit={handleSubmit}>
-              <div className="w-full flex flex-wrap">
-                {/* Full Name */}
-                <div className="w-full md:w-[50%] pb-3 md:pr-2">
-                  <label className="block pb-2 text-[#000000ba]">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    className={`${styles.input} w-full mb-4 md:mb-0`}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
-
-                {/* Email */}
-                <div className="w-full md:w-[50%] pb-3 md:pl-2">
-                  <label className="block pb-2 text-[#000000ba]">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    className={`${styles.input} w-full mb-4 md:mb-0`}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-
-                {/* Phone Number */}
-                <div className="w-full md:w-[50%] pb-3 md:pr-2">
-                  <label className="block pb-2 text-[#000000ba]">
-                    Phone Number
-                  </label>
-                  <input
-                    type="number"
-                    className={`${styles.input} w-full mb-4 md:mb-0`}
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                  />
-                </div>
-
-                <div className="w-full md:w-[50%] pb-3 md:pl-2">
-                  <label className="block pb-2 text-[#000000ba]">
-                    Enter your Password
-                  </label>
-                  <input
-                    type="password"
-                    className={`${styles.input} w-full mb-4 md:mb-0`}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Confirm with your password"
-                  />
-                </div>
-              </div>
-
-              <input
-                type="submit"
-                value={loading ? "Updating..." : "Update"}
-                disabled={loading}
-                className={`w-[250px] h-10 border border-[#3a24db] text-center text-[#3a24db] rounded-[3px] mt-8 cursor-pointer hover:bg-[#3a24db] hover:text-white transition-all ${
-                  loading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              />
-            </form>
-          </div>
-        </>
+        </div>
       )}
       {active === 2 && <AllOrders />}
       {active === 3 && <AllRefundOrders />}
@@ -259,186 +165,150 @@ const ProfileContent = ({ active }) => {
   );
 };
 
-
-
 const AllOrders = () => {
   const { orders } = useSelector((state) => state.order);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
-    if (user?._id) {
-      dispatch(getAllOrdersOfUser(user._id));
-    }
+    if (user?._id) dispatch(getAllOrdersOfUser(user._id));
   }, [dispatch, user?._id]);
 
   const columns = [
-    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
+    { field: "id", headerName: "Order ID", minWidth: 200, flex: 0.8 },
     {
       field: "status",
       headerName: "Status",
-      minWidth: 130,
-      flex: 0.7,
-      cellClassName: (params) => {
-        return params.row.status === "Delivered" ? "greenColor" : "redColor";
-      },
-    },
-    {
-      field: "itemsQty",
-      headerName: "Items Qty",
-      type: "number",
-      minWidth: 130,
-      flex: 0.7,
-    },
-    {
-      field: "total",
-      headerName: "Total",
-      type: "number",
-      minWidth: 130,
-      flex: 0.8,
-    },
-    {
-      field: " ",
-      flex: 1,
       minWidth: 150,
+      flex: 0.6,
+      renderCell: (params) => (
+        <span className={`px-3 py-1 rounded-full text-[10px] font-[600] uppercase tracking-widest font-sans ${params.row.status === "Delivered" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}>
+          {params.row.status}
+        </span>
+      )
+    },
+    { field: "itemsQty", headerName: "Items Qty", type: "number", minWidth: 120, flex: 0.4 },
+    { field: "total", headerName: "Total", minWidth: 150, flex: 0.6 },
+    {
+      field: "action",
       headerName: "",
-      type: "number",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <>
-            <Link to={`/user/order/${params.id}`}>
-              <Button>
-                <AiOutlineArrowRight size={20} />
-              </Button>
-            </Link>
-          </>
-        );
-      },
+      flex: 0.4,
+      minWidth: 120,
+      renderCell: (params) => (
+        <Link to={`/user/order/${params.id}`}>
+          <div className="w-10 h-10 rounded-xl bg-[#EDE7E3] flex items-center justify-center text-[#16697A] hover:bg-[#16697A] hover:text-white transition-all transform hover:scale-110">
+            <AiOutlineArrowRight size={18} />
+          </div>
+        </Link>
+      ),
     },
   ];
 
-  const row = [];
-
-  orders &&
-    orders.forEach((item) => {
-      row.push({
-        id: item._id,
-        itemsQty: item.cart.length,
-        total: "US$ " + item.totalPrice,
-        status: item.status,
-      });
-    });
+  const rows = orders?.map(item => ({
+    id: item._id,
+    itemsQty: item.cart.length,
+    total: "US$ " + item.totalPrice,
+    status: item.status,
+  })) || [];
 
   return (
-    <div className="pl-8 pt-1">
-      {orders && orders.length > 0 ? (
+    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 border border-white shadow-soft animate-in fade-in slide-in-from-right duration-700">
+      <div className="flex items-center gap-4 mb-8">
+        <h3 className="text-2xl font-[700] text-[#16697A] tracking-tight font-display italic">All Orders</h3>
+      </div>
+      <div className="data-grid-container custom-scrollbar">
         <DataGrid
-          rows={row}
+          rows={rows}
           columns={columns}
           pageSize={10}
           autoHeight
           disableRowSelectionOnClick
+          className="border-none! font-[600] text-[#16697A]! font-sans"
+          sx={{
+            "& .MuiDataGrid-columnHeaders": { backgroundColor: "#EDE7E3", borderRadius: "16px", border: "none" },
+            "& .MuiDataGrid-cell": { borderBottom: "1px solid #EDE7E3" },
+          }}
         />
-      ) : (
-        <div className="w-full flex items-center justify-center h-[200px]">
-          <p className="text-lg text-gray-500">No orders found</p>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
-
-
 
 const AllRefundOrders = () => {
   const { orders } = useSelector((state) => state.order);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getAllOrdersOfUser(user._id));
-  }, []);
-  const eligibleOrders =
-    orders && orders.filter((item) => item?.status === "Processing refund");
-  const columns = [
-    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
 
+  useEffect(() => {
+    if (user?._id) dispatch(getAllOrdersOfUser(user._id));
+  }, [dispatch, user?._id]);
+
+  const eligibleOrders = orders?.filter((item) => item?.status === "Processing refund");
+
+  const columns = [
+    { field: "id", headerName: "Order ID", minWidth: 200, flex: 0.8 },
     {
       field: "status",
       headerName: "Status",
-      minWidth: 130,
-      flex: 0.7,
-      cellClassName: (params) => {
-        return params.row.status === "Delivered" ? "greenColor" : "redColor";
-      },
-    },
-    {
-      field: "itemsQty",
-      headerName: "Items Qty",
-      type: "number",
-      minWidth: 130,
-      flex: 0.7,
-    },
-
-    {
-      field: "total",
-      headerName: "Total",
-      type: "number",
-      minWidth: 130,
-      flex: 0.8,
-    },
-
-    {
-      field: " ",
-      flex: 1,
       minWidth: 150,
-      headerName: "",
-      type: "number",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <>
-            <Link to={`/user/order/${params.id}`}>
-              <Button>
-                <AiOutlineArrowRight size={20} />
-              </Button>
-            </Link>
-          </>
-        );
-      },
+      flex: 0.6,
+      renderCell: (params) => (
+        <span className="px-3 py-1 rounded-full text-[10px] font-[600] uppercase tracking-widest bg-blue-100 text-blue-700 font-sans">
+          {params.row.status}
+        </span>
+      )
+    },
+    { field: "itemsQty", headerName: "Items Qty", type: "number", minWidth: 120, flex: 0.4 },
+    { field: "total", headerName: "Total", minWidth: 150, flex: 0.6 },
+    {
+      field: "action",
+      headerName: "Examine",
+      flex: 0.4,
+      minWidth: 120,
+      renderCell: (params) => (
+        <Link to={`/user/order/${params.id}`}>
+          <div className="w-10 h-10 rounded-xl bg-[#EDE7E3] flex items-center justify-center text-[#16697A] hover:bg-[#16697A] hover:text-white transition-all transform hover:scale-110">
+            <AiOutlineArrowRight size={18} />
+          </div>
+        </Link>
+      ),
     },
   ];
 
-  const row = [];
+  const rows = eligibleOrders?.map(item => ({
+    id: item._id,
+    itemsQty: item.cart.length,
+    total: "US$ " + item.totalPrice,
+    status: item.status,
+  })) || [];
 
-  eligibleOrders &&
-    eligibleOrders.forEach((item) => {
-      row.push({
-        id: item._id,
-        itemsQty: item.cart.length,
-        total: "US$ " + item.totalPrice,
-        status: item.status,
-      });
-    });
   return (
-    <div className="pl-8 pt-1">
-      <DataGrid
-        rows={row}
-        columns={columns}
-        pageSize={10}
-        autoHeight
-        disableRowSelectionOnClick
-      />
+    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 border border-white shadow-soft animate-in fade-in slide-in-from-right duration-700">
+      <div className="flex items-center gap-4 mb-8">
+        <h3 className="text-2xl font-[700] text-[#16697A] tracking-tight font-display italic">All Refund Orders</h3>
+      </div>
+      <div className="data-grid-container custom-scrollbar">
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={10}
+          autoHeight
+          disableRowSelectionOnClick
+          className="border-none! font-bold text-[#16697A]!"
+          sx={{
+            "& .MuiDataGrid-columnHeaders": { backgroundColor: "#EDE7E3", borderRadius: "16px", border: "none" },
+            "& .MuiDataGrid-cell": { borderBottom: "1px solid #EDE7E3" },
+          }}
+        />
+      </div>
     </div>
   );
 };
 
-
 const Inbox = () => {
   return (
-    <div className="w-full px-5">
-      <h1 className="text-[25px] font-semibold text-[#000000ba] pb-4">Inbox</h1>
-      <p className="text-[#000000ba]">No messages yet.</p>
+    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-12 text-center border border-white shadow-soft animate-in fade-in slide-in-from-right duration-700">
+      <h3 className="text-2xl font-[700] text-[#16697A] mb-2 tracking-tight font-display italic">Inbox</h3>
     </div>
   );
 };
@@ -447,84 +317,68 @@ const TrackOrder = () => {
   const { orders } = useSelector((state) => state.order);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getAllOrdersOfUser(user._id));
-  }, []);
-  const columns = [
-    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
 
+  useEffect(() => {
+    if (user?._id) dispatch(getAllOrdersOfUser(user._id));
+  }, [dispatch, user?._id]);
+
+  const columns = [
+    { field: "id", headerName: "Order ID", minWidth: 200, flex: 0.8 },
     {
       field: "status",
       headerName: "Status",
-      minWidth: 130,
-      flex: 0.7,
-      cellClassName: (params) => {
-        return params.row.status === "Delivered" ? "greenColor" : "redColor";
-      },
-    },
-    {
-      field: "itemsQty",
-      headerName: "Items Qty",
-      type: "number",
-      minWidth: 130,
-      flex: 0.7,
-    },
-
-    {
-      field: "total",
-      headerName: "Total",
-      type: "number",
-      minWidth: 130,
-      flex: 0.8,
-    },
-
-    {
-      field: " ",
-      flex: 1,
       minWidth: 150,
-      headerName: "",
-      type: "number",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <>
-            <Link to={`/user/track/order/${params.id}`}>
-              <Button>
-                <MdTrackChanges size={20} />
-              </Button>
-            </Link>
-          </>
-        );
-      },
+      flex: 0.6,
+      renderCell: (params) => (
+        <span className="px-3 py-1 rounded-full text-[10px] font-[600] uppercase tracking-widest bg-pacific-blue/10 text-[#16697A] font-sans">
+          {params.row.status}
+        </span>
+      )
+    },
+    { field: "itemsQty", headerName: "Items Qty", type: "number", minWidth: 120, flex: 0.4 },
+    {
+      field: "action",
+      headerName: "Live Tracking",
+      flex: 0.4,
+      minWidth: 120,
+      renderCell: (params) => (
+        <Link to={`/user/track/order/${params.id}`}>
+          <div className="w-10 h-10 rounded-xl bg-[#16697A] flex items-center justify-center text-white hover:bg-[#FFA62B] transition-all transform hover:rotate-12">
+            <MdTrackChanges size={18} />
+          </div>
+        </Link>
+      ),
     },
   ];
 
-  const row = [];
-
-  orders &&
-    orders.forEach((item) => {
-      row.push({
-        id: item._id,
-        itemsQty: item.cart.length,
-        total: "US$ " + item.totalPrice,
-        status: item.status,
-      });
-    });
+  const rows = orders?.map(item => ({
+    id: item._id,
+    itemsQty: item.cart.length,
+    status: item.status,
+  })) || [];
 
   return (
-    <div className="pl-8 pt-1">
-      <DataGrid
-        rows={row}
-        columns={columns}
-        pageSize={10}
-        disableSelectionOnClick
-        autoHeight
-      />
+    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 border border-white shadow-soft animate-in fade-in slide-in-from-right duration-700">
+      <div className="flex items-center gap-4 mb-8">
+        <h3 className="text-2xl font-[700] text-[#16697A] tracking-tight font-display italic">Track Order</h3>
+      </div>
+      <div className="data-grid-container custom-scrollbar">
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={10}
+          autoHeight
+          disableRowSelectionOnClick
+          className="border-none! font-bold text-[#16697A]!"
+          sx={{
+            "& .MuiDataGrid-columnHeaders": { backgroundColor: "#EDE7E3", borderRadius: "16px", border: "none" },
+            "& .MuiDataGrid-cell": { borderBottom: "1px solid #EDE7E3" },
+          }}
+        />
+      </div>
     </div>
   );
 };
-
-
 
 const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
@@ -534,110 +388,44 @@ const ChangePassword = () => {
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-
-    if (newPassword !== confirmPassword) {
-      toast.error("New passwords don't match!");
-      return;
-    }
-
-    if (newPassword.length < 4) {
-      toast.error("Password should be at least 4 characters!");
-      return;
-    }
-
+    if (newPassword !== confirmPassword) { toast.error("Sequence mismatch: Passwords do not align"); return; }
+    if (newPassword.length < 4) { toast.error("Security risk: Password too short"); return; }
     setLoading(true);
-
     try {
-      const { data } = await axios.put(
-        `${server}/user/update-user-password`,
-        {
-          oldPassword,
-          newPassword,
-          confirmPassword,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
+      const { data } = await axios.put(`${server}/user/update-user-password`, { oldPassword, newPassword, confirmPassword }, { withCredentials: true, headers: { "Content-Type": "application/json" } });
       if (data.success) {
-        toast.success(data.message || "Password updated successfully!");
-        setOldPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
+        toast.success("Security Credentials Updated");
+        setOldPassword(""); setNewPassword(""); setConfirmPassword("");
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update password");
+      toast.error(error.response?.data?.message || "Security update failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full px-5">
-      <h1 className="text-[25px] font-semibold text-[#000000ba] pb-4">
-        Change Password
-      </h1>
-
-      <div className="w-full">
-        <form onSubmit={handlePasswordChange}>
-          <div className="w-full md:w-[50%]">
-            {/* Old Password */}
-            <div className="w-full pb-3">
-              <label className="block pb-2 text-[#000000ba]">Old Password</label>
-              <input
-                type="password"
-                className={`${styles.input} w-full mb-4`}
-                value={oldPassword}
-                onChange={(e) => setOldPassword(e.target.value)}
-                placeholder="Enter your old password"
-                required
-              />
-            </div>
-
-            {/* New Password */}
-            <div className="w-full pb-3">
-              <label className="block pb-2 text-[#000000ba]">New Password</label>
-              <input
-                type="password"
-                className={`${styles.input} w-full mb-4`}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter your new password"
-                required
-              />
-            </div>
-
-            {/* Confirm Password */}
-            <div className="w-full pb-3">
-              <label className="block pb-2 text-[#000000ba]">
-                Confirm New Password
-              </label>
-              <input
-                type="password"
-                className={`${styles.input} w-full mb-4`}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your new password"
-                required
-              />
-            </div>
-
-            {/* Submit Button */}
-            <input
-              type="submit"
-              value={loading ? "Updating..." : "Update Password"}
-              disabled={loading}
-              className={`w-[250px] h-10 border border-[#3a24db] text-center text-[#3a24db] rounded-[3px] mt-4 cursor-pointer hover:bg-[#3a24db] hover:text-white transition-all ${
-                loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            />
-          </div>
-        </form>
+    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 md:p-12 border border-white shadow-soft animate-in fade-in slide-in-from-right duration-700">
+      <div className="flex items-center gap-4 mb-10">
+        <h3 className="text-2xl font-[700] text-[#16697A] tracking-tight font-display italic">Change Password</h3>
       </div>
+      <form onSubmit={handlePasswordChange} className="max-w-md space-y-6">
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1 font-sans">Enter your old password</label>
+          <input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required className="w-full bg-[#EDE7E3]/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner transition-all outline-none font-sans" />
+        </div>
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1 font-sans">Enter your new password</label>
+          <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required className="w-full bg-[#EDE7E3]/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner transition-all outline-none font-sans" />
+        </div>
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1 font-sans">Enter your confirm password</label>
+          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="w-full bg-[#EDE7E3]/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner transition-all outline-none font-sans" />
+        </div>
+        <button type="submit" disabled={loading} className="w-full h-16 bg-[#16697A] text-[#EDE7E3] font-[700] rounded-2xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl disabled:opacity-50 uppercase tracking-widest text-xs font-sans">
+          Update Password
+        </button>
+      </form>
     </div>
   );
 };
@@ -645,30 +433,18 @@ const ChangePassword = () => {
 const Address = () => {
   const [open, setOpen] = useState(false);
   const [country, setCountry] = useState("");
+  const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [zipCode, setZipCode] = useState();
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
   const [addressType, setAddressType] = useState("");
-  const { user, successMessage, error } = useSelector((state) => state.user); // ✅ Add successMessage and error
+  const { user, successMessage, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-  const addressTypeData = [
-    { name: "Default" },
-    { name: "Home" },
-    { name: "Office" },
-  ];
-
-  // ✅ Handle success and error messages
   useEffect(() => {
-    if (error) {
-      toast.error(error);
-      dispatch({ type: "clearErrors" });
-    }
-    if (successMessage) {
-      toast.success(successMessage);
-      dispatch({ type: "clearMessages" }); // Clear success message
-    }
+    if (error) { toast.error(error); dispatch({ type: "clearErrors" }); }
+    if (successMessage) { toast.success("Geography Database Updated"); dispatch({ type: "clearMessages" }); }
   }, [error, successMessage, dispatch]);
 
   const handleDelete = (item) => {
@@ -678,197 +454,103 @@ const Address = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (addressType === "" || country === "" || city === "") {
-      toast.error("Please fill all the fields!");
+    if (addressType === "" || country === "" || state === "" || city === "") {
+      toast.error("Geolocation data incomplete");
     } else {
-      dispatch(
-        updateUserAddress({
-          country,
-          city,
-          address1,
-          address2,
-          zipCode,
-          addressType,
-        })
-      );
-      setOpen(false);
-      setCountry("");
-      setCity("");
-      setAddress1("");
-      setAddress2("");
-      setZipCode(null);
-      setAddressType("");
+      dispatch(updateUserAddress({ country, state, city, address1, address2, zipCode, addressType }));
+      setOpen(false); setCountry(""); setState(""); setCity(""); setAddress1(""); setAddress2(""); setZipCode(null); setAddressType("");
     }
   };
 
   return (
-    <div className="w-full px-5">
-      {open && (
-        <div className="fixed w-full h-screen bg-[#0000004b] top-0 left-0 flex items-center justify-center z-50">
-          <div className="w-[35%] h-[80vh] bg-white rounded shadow relative overflow-y-scroll">
-            <div className="w-full flex justify-end p-3">
-              <RxCross1
-                size={30}
-                className="cursor-pointer"
-                onClick={() => setOpen(false)}
-              />
-            </div>
-            <h1 className="text-center text-[25px] font-Poppins">
-              Add New Address
-            </h1>
-            <div className="w-full">
-              <form onSubmit={handleSubmit} className="w-full">
-                <div className="w-full block p-4">
-                  {/* Country */}
-                  <div className="w-full pb-2">
-                    <label className="block pb-2">Country</label>
-                    <select
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      className="w-[95%] border h-10 rounded-[5px] px-2"
-                      required
-                    >
-                      <option value="">Choose your country</option>
-                      {Country &&
-                        Country.getAllCountries().map((item) => (
-                          <option key={item.isoCode} value={item.isoCode}>
-                            {item.name}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-
-                  {/* City */}
-                  <div className="w-full pb-2">
-                    <label className="block pb-2">City</label>
-                    <select
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      className="w-[95%] border h-10 rounded-[5px] px-2"
-                      required
-                    >
-                      <option value="">Choose your city</option>
-                      {State &&
-                        State.getStatesOfCountry(country).map((item) => (
-                          <option key={item.isoCode} value={item.isoCode}>
-                            {item.name}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-
-                  {/* Address 1 */}
-                  <div className="w-full pb-2">
-                    <label className="block pb-2">Address 1</label>
-                    <input
-                      type="text"
-                      className={`${styles.input}`}
-                      required
-                      value={address1}
-                      onChange={(e) => setAddress1(e.target.value)}
-                    />
-                  </div>
-
-                  {/* Address 2 */}
-                  <div className="w-full pb-2">
-                    <label className="block pb-2">Address 2</label>
-                    <input
-                      type="text"
-                      className={`${styles.input}`}
-                      value={address2}
-                      onChange={(e) => setAddress2(e.target.value)}
-                    />
-                  </div>
-
-                  {/* Zip Code */}
-                  <div className="w-full pb-2">
-                    <label className="block pb-2">Zip Code</label>
-                    <input
-                      type="number"
-                      className={`${styles.input}`}
-                      required
-                      value={zipCode}
-                      onChange={(e) => setZipCode(e.target.value)}
-                    />
-                  </div>
-
-                  {/* Address Type */}
-                  <div className="w-full pb-2">
-                    <label className="block pb-2">Address Type</label>
-                    <select
-                      value={addressType}
-                      onChange={(e) => setAddressType(e.target.value)}
-                      className="w-[95%] border h-10 rounded-[5px] px-2"
-                      required
-                    >
-                      <option value="">Choose your Address Type</option>
-                      {addressTypeData.map((item) => (
-                        <option key={item.name} value={item.name}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Submit */}
-                  <div className="w-full pb-2">
-                    <input
-                      type="submit"
-                      value="Submit"
-                      className={`${styles.input} mt-5 cursor-pointer hover:bg-[#3a24db] hover:text-white`}
-                    />
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
+    <div className="w-full">
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <h3 className="text-2xl font-[700] text-[#16697A] tracking-tight font-display italic">User Address</h3>
         </div>
-      )}
-
-      <div className="flex w-full items-center justify-between">
-        <h1 className="text-[25px] font-semibold text-[#000000] pb-2">
-          My Addresses
-        </h1>
-        <div
-          className={`${styles.button} rounded-md cursor-pointer`}
-          onClick={() => setOpen(true)}
-        >
-          <span className="text-white">Add New</span>
-        </div>
+        <button onClick={() => setOpen(true)} className="px-6 py-3 bg-[#16697A] text-[#EDE7E3] font-[700] rounded-xl hover:bg-[#FFA62B] transition-all shadow-lg text-xs uppercase tracking-widest font-sans">
+          Add New Address
+        </button>
       </div>
 
-      <br />
-
-      {user && user.addresses && user.addresses.length > 0 ? (
-        user.addresses.map((item, index) => (
-          <div
-            className="w-full bg-white h-[70px] rounded-sm flex items-center px-3 shadow-sm justify-between pr-10 mb-4"
-            key={index}
-          >
-            <div className="flex items-center min-w-[20%]">
-              <h5 className="pl-5 font-semibold">{item.addressType}</h5>
-            </div>
-            <div className="pl-8 flex items-center min-w-[50%]">
-              <h6>
-                {item.address1} {item.address2}
-              </h6>
-            </div>
-            <div className="pl-8 flex items-center min-w-[15%]">
-              <h6>{user.phoneNumber || "N/A"}</h6>
-            </div>
-            <div className="min-w-[10%] flex justify-end pl-8">
-              <AiOutlineDelete
-                size={25}
-                className="cursor-pointer text-red-500 hover:text-red-700"
-                onClick={() => handleDelete(item)}
-              />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {user && user.addresses.map((item, index) => (
+          <div key={index} className="bg-white/70 backdrop-blur-xl rounded-[32px] p-6 border border-white shadow-soft group relative transition-all hover:bg-white">
+            <div className="flex justify-between items-start">
+              <div>
+                <span className="px-2 py-1 bg-[#82C0CC]/10 text-[#16697A] text-[10px] font-[600] uppercase tracking-widest rounded-md mb-2 inline-block font-sans">
+                  {item.addressType}
+                </span>
+                <h4 className="text-sm font-[700] text-[#16697A] mb-1 font-sans">{item.address1}</h4>
+                <p className="text-xs font-[500] text-[#6B7280] font-sans">{item.city}{item.state ? `, ${item.state}` : ""}, {item.country}</p>
+                <p className="text-[10px] font-[600] text-[#489FB5] mt-2 uppercase tracking-widest font-sans">ZIP: {item.zipCode}</p>
+              </div>
+              <button onClick={() => handleDelete(item)} className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all transform hover:rotate-12">
+                <AiOutlineDelete size={18} />
+              </button>
             </div>
           </div>
-        ))
-      ) : (
-        <h5 className="text-center pt-8 text-[18px]">
-          You don't have any saved addresses!
-        </h5>
+        ))}
+      </div>
+
+      {open && (
+        <div className="fixed inset-0 bg-[#0F4D58]/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-white/90 backdrop-blur-2xl rounded-[40px] p-8 md:p-12 border border-white shadow-2xl animate-in zoom-in duration-300 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <button onClick={() => setOpen(false)} className="absolute top-8 right-8 text-[#16697A] hover:rotate-90 transition-all p-2 bg-[#EDE7E3] rounded-xl"><RxCross1 size={18} /></button>
+            <h2 className="text-2xl font-[700] text-[#16697A] tracking-tighter mb-8 text-center font-display italic">Add New Address</h2>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-widest ml-1 font-sans">Country</label>
+                  <select value={country} onChange={(e) => { setCountry(e.target.value); setState(""); setCity(""); }} required className="w-full bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-4 py-3 font-[600] text-sm text-[#16697A] shadow-inner outline-none font-sans appearance-none">
+                    <option value="">Select Country</option>
+                    {Country.getAllCountries().map((item) => <option key={item.isoCode} value={item.isoCode}>{item.name}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-widest ml-1 font-sans">State/Province</label>
+                  <select value={state} onChange={(e) => { setState(e.target.value); setCity(""); }} required className="w-full bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-4 py-3 font-[600] text-sm text-[#16697A] shadow-inner outline-none font-sans appearance-none">
+                    <option value="">Select State</option>
+                    {State.getStatesOfCountry(country).map((item) => <option key={item.isoCode} value={item.isoCode}>{item.name}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-widest ml-1 font-sans">City</label>
+                  <select value={city} onChange={(e) => setCity(e.target.value)} required className="w-full bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-4 py-3 font-[600] text-sm text-[#16697A] shadow-inner outline-none font-sans appearance-none">
+                    <option value="">Select City</option>
+                    {City.getCitiesOfState(country, state).map((item) => <option key={item.name} value={item.name}>{item.name}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-widest ml-1 font-sans">Address 1</label>
+                <input type="text" value={address1} onChange={(e) => setAddress1(e.target.value)} required className="w-full bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-6 py-4 font-[600] text-[#16697A] shadow-inner outline-none font-sans" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-widest ml-1 font-sans">Address 2</label>
+                <input type="text" value={address2} onChange={(e) => setAddress2(e.target.value)} className="w-full bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-6 py-4 font-[600] text-[#16697A] shadow-inner outline-none font-sans" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-widest ml-1 font-sans">Zip Code</label>
+                  <input type="number" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required className="w-full bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-4 py-3 font-[600] text-[#16697A] shadow-inner outline-none font-sans" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-widest ml-1 font-sans">Address Type</label>
+                  <select value={addressType} onChange={(e) => setAddressType(e.target.value)} required className="w-full bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-4 py-3 font-[600] text-[#16697A] shadow-inner outline-none font-sans">
+                    <option value="">Select Type</option>
+                    <option value="Home">Home</option>
+                    <option value="Office">Office</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" className="w-full h-16 bg-[#16697A] text-[#EDE7E3] font-[700] rounded-2xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl mt-4 uppercase tracking-[0.1em] text-[13px] font-sans">
+                Submit
+              </button>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

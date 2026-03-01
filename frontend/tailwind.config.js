@@ -6,14 +6,16 @@ export default {
   ],
   theme: {
     fontFamily: {
-      roboto: ["Roboto", "sans-serif"],
-      poppins: ["Poppins", "sans-serif"],
+      sans: ["DM Sans", "sans-serif"],
+      display: ["Cormorant Garamond", "serif"],
+      inter: ["Inter", "sans-serif"],
     },
     extend: {
       colors: {
         primary: "#3b82f6", // your custom primary
       },
       screens: {
+        "800px": "800px",
         "sm-custom": "800px",
         "md-custom": "1050px",
         "lg-custom": "1110px",

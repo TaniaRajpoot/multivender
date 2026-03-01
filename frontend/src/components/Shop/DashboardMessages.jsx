@@ -2,12 +2,12 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
+import { AiOutlineArrowRight, AiOutlineSend, AiOutlinePaperClip } from "react-icons/ai";
 import { TfiGallery } from "react-icons/tfi";
 import { format } from "timeago.js";
 import socketIO from "socket.io-client";
-import styles from "../../styles/styles";
 import { server, socket_server } from "../../server";
+import { BsArrowLeft } from "react-icons/bs";
 
 const ENDPOINT = socket_server;
 const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
@@ -26,7 +26,6 @@ const DashboardMessages = () => {
   const [open, setOpen] = useState(false);
   const scrollRef = useRef(null);
 
-  // Receive incoming messages
   useEffect(() => {
     socket.on("getMessage", (data) => {
       setArrivalMessage({
@@ -36,10 +35,7 @@ const DashboardMessages = () => {
         images: data.images || null,
       });
     });
-  }, []);
 
-  // Listen for last message updates
-  useEffect(() => {
     socket.on("getLastMessage", ({ lastMessage, lastMessageId }) => {
       setConversations((prev) =>
         prev.map((conv) =>
@@ -51,73 +47,51 @@ const DashboardMessages = () => {
     });
   }, []);
 
-  // Append arrival message if belongs to current chat
   useEffect(() => {
     if (arrivalMessage && currentChat?.members.includes(arrivalMessage.sender)) {
       setMessages((prev) => [...prev, arrivalMessage]);
     }
   }, [arrivalMessage, currentChat]);
 
-  // Fetch all seller conversations
   useEffect(() => {
     const getConversations = async () => {
       if (!seller?._id) return;
       try {
-        const res = await axios.get(
-          `${server}/conversation/get-all-conversation-seller/${seller._id}`,
-          { withCredentials: true }
-        );
+        const res = await axios.get(`${server}/conversation/get-all-conversation-seller/${seller._id}`, { withCredentials: true });
         setConversations(res.data.conversations);
-      } catch (error) {
-        console.error(error);
-      }
+      } catch (error) { }
     };
     getConversations();
   }, [seller]);
 
-  // Setup socket online users
   useEffect(() => {
-    if (!seller?._id) return;
-    socket.emit("addUser", seller._id);
-    socket.on("getUsers", (data) => {
-      setOnlineUsers(data);
-    });
+    if (seller?._id) {
+      socket.emit("addUser", seller._id);
+      socket.on("getUsers", (data) => setOnlineUsers(data));
+    }
   }, [seller]);
 
   const onlineCheck = (chat) => {
     const chatMember = chat.members.find((m) => m !== seller._id);
-    return onlineUsers.some((user) => user.userId === chatMember);
+    return onlineUsers.some((u) => u.userId === chatMember);
   };
 
-  // Fetch messages of current chat
   useEffect(() => {
     const getMessages = async () => {
       if (!currentChat?._id) return;
       try {
         const res = await axios.get(`${server}/messages/get-all-messages/${currentChat._id}`);
         setMessages(res.data.messages);
-      } catch (error) {
-        console.error(error);
-      }
+      } catch (error) { }
     };
     getMessages();
   }, [currentChat]);
 
-  // Send new message
   const sendMessageHandler = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() && !images) return;
 
-    const message = {
-      sender: seller._id,
-      text: newMessage,
-      conversationId: currentChat._id,
-      images: images || null,
-    };
-
     const receiverId = currentChat.members.find((m) => m !== seller._id);
-
-    // Send via socket
     socket.emit("sendMessage", {
       senderId: seller._id,
       receiverId,
@@ -126,40 +100,28 @@ const DashboardMessages = () => {
     });
 
     try {
-      const res = await axios.post(`${server}/messages/create-new-message`, message);
+      const res = await axios.post(`${server}/messages/create-new-message`, {
+        sender: seller._id,
+        text: newMessage,
+        conversationId: currentChat._id,
+        images: images || null,
+      });
       setMessages([...messages, res.data.message]);
-      
-      // Clear input fields immediately after sending
       setNewMessage("");
       setImages(null);
 
-      // Update last message in conversation
       const lastMsg = images ? "Photo" : newMessage;
       await axios.put(`${server}/conversation/update-last-message/${currentChat._id}`, {
         lastMessage: lastMsg,
         lastMessageId: seller._id,
       });
-
-      // Emit socket event to update conversations in real-time
-      socket.emit("updateLastMessage", {
-        lastMessage: lastMsg,
-        lastMessageId: seller._id,
-      });
-
-      // Update local conversation state
+      socket.emit("updateLastMessage", { lastMessage: lastMsg, lastMessageId: seller._id });
       setConversations((prev) =>
-        prev.map((conv) =>
-          conv._id === currentChat._id
-            ? { ...conv, lastMessage: lastMsg, lastMessageId: seller._id }
-            : conv
-        )
+        prev.map((conv) => (conv._id === currentChat._id ? { ...conv, lastMessage: lastMsg, lastMessageId: seller._id } : conv))
       );
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) { }
   };
 
-  // Handle image upload
   const handleImageUpload = (e) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -168,51 +130,112 @@ const DashboardMessages = () => {
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  // Scroll to last message
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   return (
-    <div className="w-[90%] bg-white m-5 h-[85vh] overflow-y-scroll rounded">
-      {!open && (
-        <>
-          <h1 className="text-center text-[30px] py-3 font-Poppins">All Messages</h1>
+    <div className="flex-1 h-[85vh] bg-white/40 backdrop-blur-2xl rounded-[48px] shadow-3xl border border-white overflow-hidden flex relative animate-in fade-in duration-700">
+
+      {/* Sidebar: Conversation List */}
+      <div className={`
+         w-full md:w-[400px] flex flex-col border-r border-white bg-white/20 transition-all duration-500
+         ${open ? "hidden md:flex" : "flex"}
+      `}>
+        <div className="p-8 border-b border-white">
+          <h2 className="text-2xl font-black text-[#16697A] tracking-tighter italic uppercase">Shop Inbox</h2>
+          <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.4em] mt-1">Manage your messages</p>
+        </div>
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
           {conversations.map((conv, idx) => (
             <MessageList
               key={idx}
               data={conv}
+              me={seller?._id}
+              online={onlineCheck(conv)}
+              active={currentChat?._id === conv._id}
               setOpen={setOpen}
               setCurrentChat={setCurrentChat}
-              me={seller._id}
               setUserData={setUserData}
-              online={onlineCheck(conv)}
               setActiveStatus={setActiveStatus}
               isLoading={isLoading}
             />
           ))}
-        </>
-      )}
+        </div>
+      </div>
 
-      {open && currentChat && userData && (
-        <SellerInbox
-          scrollRef={scrollRef}
-          setOpen={setOpen}
-          newMessage={newMessage}
-          setNewMessage={setNewMessage}
-          sendMessageHandler={sendMessageHandler}
-          messages={messages}
-          sellerId={seller._id}
-          userData={userData}
-          activeStatus={activeStatus}
-          handleImageUpload={handleImageUpload}
-        />
-      )}
+      {/* Main Message View */}
+      <div className={`
+         flex-1 flex flex-col bg-white/10 transition-all duration-500
+         ${open ? "flex" : "hidden md:flex"}
+      `}>
+        {currentChat && userData ? (
+          <>
+            <div className="h-24 px-8 border-b border-white flex items-center justify-between backdrop-blur-md">
+              <div className="flex items-center gap-4">
+                <button onClick={() => setOpen(false)} className="md:hidden w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center text-[#16697A]">
+                  <BsArrowLeft size={20} />
+                </button>
+                <div className="relative">
+                  <img src={userData?.avatar?.url} alt="" className="w-12 h-12 rounded-[18px] object-cover ring-2 ring-white shadow-md" />
+                  {activeStatus && <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 border-2 border-white rounded-full" />}
+                </div>
+                <div>
+                  <h3 className="font-black text-[#16697A] tracking-tight truncate max-w-[200px] uppercase">{userData?.name}</h3>
+                  <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-widest leading-none">{activeStatus ? "Active Now" : "Offline"}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
+              {messages.map((msg, idx) => (
+                <MessageBubble key={idx} msg={msg} sellerId={seller._id} userData={userData} me={seller._id} />
+              ))}
+              <div ref={scrollRef} />
+            </div>
+
+            <div className="p-8 relative">
+              {images && (
+                <div className="absolute bottom-full left-8 mb-4 animate-in slide-in-from-bottom-2 duration-300">
+                  <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white w-32 aspect-square">
+                    <img src={images} alt="Preview" className="w-full h-full object-cover" />
+                    <button onClick={() => setImages(null)} className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full">×</button>
+                  </div>
+                </div>
+              )}
+              <form onSubmit={sendMessageHandler} className="bg-white/80 backdrop-blur-xl rounded-[32px] border border-white p-2 flex items-center shadow-xl">
+                <label className="w-12 h-12 flex items-center justify-center text-[#16697A] hover:bg-[#EDE7E3] rounded-2xl cursor-pointer transition-colors">
+                  <TfiGallery size={18} />
+                  <input type="file" className="hidden" onChange={handleImageUpload} />
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter your message..."
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  className="flex-1 px-4 py-2 font-bold text-[#16697A] placeholder:text-[#16697A]/20 outline-none bg-transparent"
+                />
+                <button type="submit" className={`p-3 rounded-2xl transition-all duration-300 ${newMessage.trim() || images ? 'bg-[#16697A] text-white shadow-lg' : 'text-[#6B7280] bg-transparent opacity-20'}`}>
+                  <AiOutlineSend size={22} />
+                </button>
+              </form>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-12">
+            <div className="w-24 h-24 bg-[#EDE7E3] rounded-[40px] flex items-center justify-center text-[#16697A]/20 mb-8 transform -rotate-12">
+              <AiOutlineSend size={48} />
+            </div>
+            <h2 className="text-xl font-black text-[#16697A] tracking-tighter italic">Shop Inbox</h2>
+            <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.4em] mt-2">Select a chat to start messaging</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-const MessageList = ({ data, setOpen, setCurrentChat, me, setUserData, online, setActiveStatus, isLoading }) => {
+const MessageList = ({ data, setOpen, setCurrentChat, me, setUserData, online, setActiveStatus, isLoading, active }) => {
   const [user, setUser] = useState({});
   const navigate = useNavigate();
 
@@ -222,9 +245,7 @@ const MessageList = ({ data, setOpen, setCurrentChat, me, setUserData, online, s
       try {
         const res = await axios.get(`${server}/user/user-info/${userId}`);
         setUser(res.data.user);
-      } catch (error) {
-        console.error(error);
-      }
+      } catch (error) { }
     };
     fetchUser();
   }, [me, data]);
@@ -239,23 +260,18 @@ const MessageList = ({ data, setOpen, setCurrentChat, me, setUserData, online, s
 
   return (
     <div
-      className="w-full flex p-3 cursor-pointer hover:bg-[#00000010]"
       onClick={handleClick}
+      className={`px-8 py-6 flex items-center gap-4 cursor-pointer transition-all duration-500 relative group ${active ? "bg-white/60 shadow-inner" : "hover:bg-white/30"}`}
     >
+      {active && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-12 bg-[#FFA62B] rounded-r-full" />}
       <div className="relative">
-        <img src={user?.avatar?.url} alt="" className="w-[50px] h-[50px] rounded-full" />
-        <div
-          className={`w-3 h-3 rounded-full absolute top-0.5 right-0.5 ${
-            online ? "bg-green-400" : "bg-[#c7b9b9]"
-          }`}
-        />
+        <img src={user?.avatar?.url || user?.avatar} alt="" className="w-14 h-14 rounded-[20px] object-cover ring-2 ring-white shadow-md transform group-hover:scale-105 transition-transform" />
+        <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-4 border-white ${online ? 'bg-green-400' : 'bg-[#c7b9b9]'}`} />
       </div>
-      <div className="pl-3">
-        <h1 className="text-[18px]">{user?.name}</h1>
-        <p className="text-[16px] text-[#000c]">
-          {!isLoading && data?.lastMessageId === me
-            ? "You: "
-            : `${user?.name ? user.name.split(" ")[0] : ""}: `}
+      <div className="flex-1 min-w-0">
+        <h4 className="font-black text-[#16697A] tracking-tight truncate uppercase italic">{user?.name}</h4>
+        <p className="text-xs font-bold text-[#6B7280] truncate mt-0.5 opacity-60">
+          {!isLoading && data?.lastMessageId === me ? "Merchant: " : ""}
           {data?.lastMessage}
         </p>
       </div>
@@ -263,69 +279,28 @@ const MessageList = ({ data, setOpen, setCurrentChat, me, setUserData, online, s
   );
 };
 
-const SellerInbox = ({ scrollRef, setOpen, newMessage, setNewMessage, sendMessageHandler, messages, sellerId, userData, activeStatus, handleImageUpload }) => {
+const MessageBubble = ({ msg, sellerId, userData, me }) => {
+  const isMe = msg.sender === me;
   return (
-    <div className="w-full min-h-full flex flex-col justify-between">
-      {/* Header */}
-      <div className="w-full flex p-3 items-center justify-between bg-slate-200">
-        <div className="flex">
-          <img src={userData?.avatar?.url} alt="" className="w-[60px] h-[60px] rounded-full" />
-          <div className="pl-3">
-            <h1 className="text-[18px] font-semibold">{userData?.name}</h1>
-            <h1>{activeStatus ? "Active Now" : ""}</h1>
+    <div className={`flex w-full mb-4 animate-in fade-in slide-in-from-bottom-2 duration-500 ${isMe ? 'justify-end' : 'justify-start'}`}>
+      {!isMe && (
+        <img src={userData?.avatar?.url} className="w-8 h-8 rounded-xl object-cover mr-3 shadow-md border-2 border-white self-end" alt="" />
+      )}
+      <div className="max-w-[70%] space-y-1">
+        {msg.images && (
+          <div className="rounded-[24px] overflow-hidden border-4 border-white shadow-2xl mb-2">
+            <img src={msg.images?.url || msg.images} alt="" className="w-full max-h-80 object-cover" />
           </div>
-        </div>
-        <AiOutlineArrowRight size={20} className="cursor-pointer" onClick={() => setOpen(false)} />
-      </div>
-
-      {/* Messages */}
-      <div className="px-3 h-[65vh] py-3 overflow-y-scroll">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`flex w-full my-2 ${msg.sender === sellerId ? "justify-end" : "justify-start"}`}
-            ref={scrollRef}
-          >
-            {msg.sender !== sellerId && (
-              <img src={userData?.avatar?.url} alt="" className="w-10 h-10 rounded-full mr-3" />
-            )}
-            {msg.images && (
-              <img src={msg.images} className="w-[300px] h-[300px] object-cover rounded-[10px] mr-2" />
-            )}
-            {msg.text && (
-              <div>
-                <div className={`w-max p-2 rounded ${msg.sender === sellerId ? "bg-black" : "bg-[#38c776]"} text-white h-min`}>
-                  <p>{msg.text}</p>
-                </div>
-                <p className="text-[12px] text-[#000000d3] pt-1">{format(msg.createdAt)}</p>
-              </div>
-            )}
+        )}
+        {msg.text && (
+          <div className={`p-5 rounded-[24px] shadow-sm transform transition-all ${isMe ? 'bg-[#16697A] text-white rounded-tr-none translate-x-1' : 'bg-white text-[#16697A] rounded-tl-none border border-white'}`}>
+            <p className="text-sm font-bold leading-relaxed">{msg.text}</p>
           </div>
-        ))}
+        )}
+        <p className={`text-[9px] font-black text-[#6B7280] uppercase tracking-[0.3em] px-2 ${isMe ? 'text-right' : 'text-left'}`}>
+          {format(msg.createdAt)}
+        </p>
       </div>
-
-      {/* Input */}
-      <form className="p-3 relative w-full flex justify-between items-center" onSubmit={sendMessageHandler}>
-        <div className="w-[30px]">
-          <input type="file" id="image" className="hidden" onChange={handleImageUpload} />
-          <label htmlFor="image">
-            <TfiGallery className="cursor-pointer" size={20} />
-          </label>
-        </div>
-        <div className="w-full relative">
-          <input
-            type="text"
-            placeholder="Enter your message..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            className={`${styles.input}`}
-          />
-          <input type="submit" value="Send" className="hidden" id="send" />
-          <label htmlFor="send">
-            <AiOutlineSend size={20} className="absolute right-4 top-5 cursor-pointer" />
-          </label>
-        </div>
-      </form>
     </div>
   );
 };

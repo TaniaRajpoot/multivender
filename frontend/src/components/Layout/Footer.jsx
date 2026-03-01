@@ -15,101 +15,112 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <div className="bg-black text-white ">
-      <div className="md:flex md:justify-between md:items-center sm:px-12 px-4 bg-[#342ac8] py-7">
-        <h1 className="lg:text-4xl text-3xl md:mb-0 mb-6 lg:leading-normal font-semibold md:w-2/5">
-          <span className="text-[#56d879]"> Subscribe</span> us for getting new{" "}
-          <br /> events and offers
+    <div className="w-full bg-[#EDE7E3] text-[#6B7280] font-sans border-t border-[#16697A]/10">
+      {/* ── Subscribe Section ── */}
+      <div className="w-full bg-[#EDE7E3] py-6 px-10 md:flex md:justify-between md:items-center">
+        <h1 className="text-2xl lg:text-3xl md:mb-0 mb-8 leading-tight font-[700] md:w-3/5 italic font-display tracking-tight text-[#16697A]">
+          <span className="text-[#FFA62B]">Subscribe</span> us for getting new{" "}
+          <br className="hidden lg:block" /> events and offers
         </h1>
-        <div>
+        <div className="flex flex-col sm:flex-row gap-4">
           <input
             type="text"
             required
             placeholder="Enter your email..."
-            className=" bg-white text-gray-800 sm:w-72 sm:mr-5 mr-1 lg:mb-0 mb-4 py-2.5 rounded px-2 focus:outline-none "
+            className="bg-white text-[#16697A] border border-[#16697A]/10 sm:w-80 py-4 px-6 rounded-full focus:outline-none focus:border-[#FFA62B] transition-all placeholder:text-[#16697A]/40 font-sans text-sm shadow-inner"
           />
-          <button className="bg-[#56d879] hover:bg-teal-500 duration-300 px-5 py-2.5 rounded-md text-white md:w-auto w-full ">
+          <button className="bg-[#FFA62B] hover:bg-[#e8941f] duration-500 px-10 py-4 rounded-full text-white font-[700] uppercase tracking-widest text-[12px] shadow-lg shadow-orange-950/20 whitespace-nowrap">
             Submit
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:px-8 px-5 py-16 sm:text-center">
-        <ul className="px-5 text-center sm:text-start flex sm:block flex-col items-center">
+      {/* ── Main Footer Grid ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:px-8 px-5 py-8">
+        <div className="flex flex-col gap-6">
           <img
-            src="https://shopo.quomodothemes.website/assets/images/logo.svg?utm_source=chatgpt.com"
-            alt=""
-            style={{ filter: "brightness(0) invert(1)" }}
+            src="/logo.png"
+            alt="Crown Market"
+            className="w-28 opacity-90"
           />
-          <br />
-          <p>The home and elements to create breautifull products </p>
-          <div className="flex items-center mt-[15px]">
-            <AiFillFacebook size={25} className="cursor-pointer" />
+          <p className="text-[#6B7280] text-[15px] leading-relaxed max-w-[280px] font-[500] italic font-sans">
+            The home and elements to create beautiful products
+          </p>
+          <div className="flex items-center gap-5 mt-4">
+            <AiFillFacebook size={22} className="text-[#16697A]/60 cursor-pointer hover:text-[#FFA62B] transition-colors" />
             <AiOutlineTwitter
-              size={25}
-              style={{ marginLeft: "15px", cursor: "cursor-pointer" }}
+              size={22}
+              className="text-[#16697A]/60 cursor-pointer hover:text-[#FFA62B] transition-colors"
             />
             <AiOutlineInstagram
-              size={25}
-              style={{ marginLeft: "15px", cursor: "cursor-pointer" }}
+              size={22}
+              className="text-[#16697A]/60 cursor-pointer hover:text-[#FFA62B] transition-colors"
             />
             <AiOutlineYoutube
-              size={25}
-              style={{ marginLeft: "15px", cursor: "cursor-pointer" }}
+              size={22}
+              className="text-[#16697A]/60 cursor-pointer hover:text-[#FFA62B] transition-colors"
             />
           </div>
-        </ul>
-        <ul className="text-center sm:text-start">
-          <h1 className="mb-1 font-semibold">Company</h1>
-          {footerProductLinks.map((link) => (
-            <li key={link.name}>
-              <Link
-                to={link.link}
-                className="text-gray-400 hover:text-teal-400 duration-300 text-sm cursor-pointer leading-6"
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        </div>
 
-        <ul className="text-center sm:text-start">
-          <h1 className="mb-1 font-semibold">Shop</h1>
-          {footercompanyLinks.map((link) => (
-            <li key={link.name}>
-              <Link
-                to={link.link}
-                className="text-gray-400 hover:text-teal-400 duration-300 text-sm cursor-pointer leading-6"
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div>
+          <h4 className="text-[#16697A] font-[700] uppercase tracking-[0.2em] text-[11px] mb-8 font-sans">Company</h4>
+          <ul className="flex flex-col gap-4">
+            {footerProductLinks.map((link) => (
+              <li key={link.name}>
+                <Link
+                  to={link.link}
+                  className="text-[#6B7280] hover:text-[#FFA62B] duration-300 text-[14px] font-[500] tracking-tight font-sans"
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        <ul className="text-center sm:text-start">
-          <h1 className="mb-1 font-semibold">Support</h1>
-          {footerSupportLinks.map((link) => (
-            <li key={link.name}>
-              <Link
-                to={link.link}
-                className="text-gray-400 hover:text-teal-400 duration-300 text-sm cursor-pointer leading-6"
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div>
+          <h4 className="text-[#16697A] font-[700] uppercase tracking-[0.2em] text-[11px] mb-8 font-sans">Shop</h4>
+          <ul className="flex flex-col gap-4">
+            {footercompanyLinks.map((link) => (
+              <li key={link.name}>
+                <Link
+                  to={link.link}
+                  className="text-[#6B7280] hover:text-[#FFA62B] duration-300 text-[14px] font-[500] tracking-tight font-sans"
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="text-[#16697A] font-[700] uppercase tracking-[0.2em] text-[11px] mb-8 font-sans">Support</h4>
+          <ul className="flex flex-col gap-4">
+            {footerSupportLinks.map((link) => (
+              <li key={link.name}>
+                <Link
+                  to={link.link}
+                  className="text-[#6B7280] hover:text-[#FFA62B] duration-300 text-[14px] font-[500] tracking-tight font-sans"
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 text-center pt-2 text-gray-400 text-sm pb-8">
-        <span> @ 2025 TaniaAshraf. All rights reserved.</span>
-        <span>Terms . Privacy Policy</span>
-        <div className="sm:block flex items-center justify-center w-full">
+      {/* ── Bottom Bar ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-center sm:text-left items-center px-12 py-10 border-t border-[#16697A]/10 text-[#6B7280] text-[11px] font-[600] uppercase tracking-[0.1em] font-sans">
+        <span>© 2025 TaniaAshraf. All rights reserved.</span>
+        <span className="sm:text-center">Terms · Privacy Policy</span>
+        <div className="flex justify-center sm:justify-end">
           <img
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtwZGS06LQiYrucl4l1fkLG6QIPHVMJktWbA&s"
             alt="payment methods"
-            className="mx-auto sm:mx-0 w-40 h-auto object-fit opacity-80 hover:opacity-100 transition duration-300"
+            className="w-32 opacity-60 hover:opacity-100 transition duration-500 rounded-lg shadow-sm"
           />
         </div>
       </div>

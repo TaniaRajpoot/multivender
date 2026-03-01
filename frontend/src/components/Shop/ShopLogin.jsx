@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
 const ShopLogin = () => {
   const navigate = useNavigate();
@@ -12,161 +11,83 @@ const ShopLogin = () => {
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
 
-  // Helper function to get image URL (for future use with shop logos)
-  const getImageUrl = (image) => {
-    if (!image) return "/placeholder.png";
-    
-    // If it's an object with url property (Cloudinary format)
-    if (typeof image === "object" && image.url) {
-      return image.url;
-    }
-    
-    // If it's already a URL string
-    if (typeof image === "string" && image.startsWith("http")) {
-      return image;
-    }
-    
-    // Fallback for relative paths
-    return image;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios
-      .post(
-        `${server}/shop/login-shop`,
-        {
-          email,
-          password,
-        },
-        { withCredentials: true }
-      )
-      .then((res) => {
-        toast.success("Login Success!");
-        navigate("/dashboard");
-        // window.location.reload(true);
-      })
-      .catch((err) => {
-        if (err.response && err.response.data && err.response.data.message) {
-          toast.error(err.response.data.message);
-        } else {
-          toast.error("Server not responding. Please try again later.");
-        }
-      });
+    try {
+      const { data } = await axios.post(`${server}/shop/login-shop`, { email, password }, { withCredentials: true });
+      toast.success("Login Success!");
+      navigate("/dashboard");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Login failed");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-3xl font-semibold text-gray-900 text-center">
-          Login to your Shop Account
-        </h2>
-      </div>
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Input for Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  type="email"
-                  name="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-              </div>
-            </div>
-            {/* Input for Password */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  type={visible ? "text" : "password"}
-                  name="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-                {/* toggle visibility password */}
-                {visible ? (
-                  <AiOutlineEye
-                    className="absolute right-2 cursor-pointer top-2"
-                    size={25}
-                    onClick={() => setVisible(false)}
-                  />
-                ) : (
-                  <AiOutlineEyeInvisible
-                    className="absolute right-2 cursor-pointer top-2"
-                    size={25}
-                    onClick={() => setVisible(true)}
-                  />
-                )}
-              </div>
-            </div>
-            {/* Remember me  */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="remember-me"
-                  name="remember-me"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 block text-sm text-gray-900"
-                >
-                  Remember me
-                </label>
-              </div>
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-500 "
-                >
-                  Forgot Your Password?
-                </a>
-              </div>
-            </div>
-            {/* Submit Button */}
-            <div>
-              <button
-                type="submit"
-                className="group h-10 relative w-full px-4 py-2 border border-transparent  text-sm font-medium flex justify-center rounded bg-blue-600 text-white hover:opacity-95"
-              >
-                Submit
-              </button>
-            </div>
-            {/* Link to signUp */}
-            <div className=" flex items-center w-full">
-              <h4>Not have any Account?</h4>
-              <Link to="/shop-create" className="text-blue-600 pl-2">
-                SignUp
-              </Link>
-            </div>
-          </form>
+    <div className="min-h-screen bg-[#EDE7E3] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-Inter">
+      {/* Background Orbs */}
+      <div className="absolute top-[20%] right-[-5%] w-[35%] h-[35%] bg-[#16697A]/10 rounded-full blur-[100px]" />
+      <div className="absolute bottom-[-5%] left-[10%] w-[30%] h-[30%] bg-[#FFA62B]/10 rounded-full blur-[80px]" />
+
+      <div className="w-full max-w-md bg-white/40 backdrop-blur-2xl rounded-[56px] shadow-3xl border border-white p-10 md:p-14 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl font-[700] text-[#16697A] tracking-tighter font-display italic">Login to your shop</h2>
         </div>
+
+        <form className="space-y-8" onSubmit={handleSubmit}>
+          <div className="space-y-6">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1">Email address</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@example.com"
+                className="w-full bg-[#EDE7E3]/60 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-3xl px-8 py-5 font-[500] text-[#16697A] shadow-inner transition-all outline-none font-sans"
+              />
+            </div>
+
+            <div className="space-y-1 relative">
+              <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1">Password</label>
+              <input
+                type={visible ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full bg-[#EDE7E3]/60 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-3xl px-8 py-5 font-[500] text-[#16697A] shadow-inner transition-all outline-none font-sans"
+              />
+              <div className="absolute right-6 bottom-5 text-[#16697A]/40 cursor-pointer" onClick={() => setVisible(!visible)}>
+                {visible ? <AiOutlineEye size={24} /> : <AiOutlineEyeInvisible size={24} />}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between px-2">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" className="w-5 h-5 rounded-lg border-2 border-[#16697A]/20 text-[#16697A] focus:ring-[#16697A] transition-all" />
+              <span className="text-xs font-[500] text-[#6B7280] group-hover:text-[#16697A] transition-colors font-sans">Remember me</span>
+            </label>
+            <a href="#" className="text-xs font-[700] text-[#489FB5] hover:text-[#16697A] transition-colors uppercase tracking-widest font-sans">Forgot Password?</a>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full h-16 bg-[#16697A] text-[#EDE7E3] font-[700] uppercase tracking-[0.2em] text-[13px] rounded-3xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl font-sans"
+          >
+            Login
+          </button>
+
+          <div className="text-center pt-4">
+            <p className="text-sm font-[500] text-[#6B7280] font-sans">Not have any account?</p>
+            <Link to="/shop-create" className="text-sm font-[700] text-[#16697A] hover:text-[#FFA62B] transition-colors font-sans mt-2 inline-block">
+              Sign up
+            </Link>
+          </div>
+        </form>
       </div>
     </div>
   );
 };
 
-
 export default ShopLogin;
-

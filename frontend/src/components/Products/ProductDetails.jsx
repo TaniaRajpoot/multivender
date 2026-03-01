@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import styles from "../../styles/styles";
 import {
   AiFillHeart,
   AiOutlineHeart,
   AiOutlineMessage,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { backend_url, server } from "../../server";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
 import { toast } from "react-toastify";
@@ -18,6 +16,7 @@ import {
 } from "../../redux/actions/wishlist";
 import Ratings from "./Ratings";
 import axios from "axios";
+import { server } from "../../server";
 
 const ProductDetails = ({ data }) => {
   const navigate = useNavigate();
@@ -32,15 +31,8 @@ const ProductDetails = ({ data }) => {
 
   const getImageUrl = (image) => {
     if (!image) return "/placeholder.png";
-    
-    if (typeof image === "object" && image.url) {
-      return image.url;
-    }
-    
-    if (typeof image === "string" && image.startsWith("http")) {
-      return image;
-    }
-    
+    if (typeof image === "object" && image.url) return image.url;
+    if (typeof image === "string" && image.startsWith("http")) return image;
     return image;
   };
 
@@ -51,17 +43,11 @@ const ProductDetails = ({ data }) => {
     } else {
       setClick(false);
     }
+    window.scrollTo(0, 0);
   }, [dispatch, wishlist, data]);
 
-  const incrementCount = () => {
-    setCount(count + 1);
-  };
-
-  const decrementCount = () => {
-    if (count > 1) {
-      setCount(count - 1);
-    }
-  };
+  const incrementCount = () => setCount(count + 1);
+  const decrementCount = () => { if (count > 1) setCount(count - 1); };
 
   const removeFromWishlistHandler = (data) => {
     setClick(!click);
@@ -88,29 +74,8 @@ const ProductDetails = ({ data }) => {
     }
   };
 
-  const totalReviewsLength =
-    products?.length > 0
-      ? products.reduce(
-          (acc, product) => acc + (product?.reviews?.length || 0),
-          0
-        )
-      : 0;
-
-  const totalRatings =
-    products?.length > 0
-      ? products.reduce(
-          (acc, product) =>
-            acc +
-            (product.reviews?.length > 0
-              ? product.reviews.reduce(
-                  (sum, review) => sum + (review.rating || 0),
-                  0
-                )
-              : 0),
-          0
-        )
-      : 0;
-
+  const totalReviewsLength = products?.length > 0 ? products.reduce((acc, product) => acc + (product?.reviews?.length || 0), 0) : 0;
+  const totalRatings = products?.length > 0 ? products.reduce((acc, product) => acc + (product.reviews?.length > 0 ? product.reviews.reduce((sum, review) => sum + (review.rating || 0), 0) : 0), 0) : 0;
   const averageRating = totalReviewsLength > 0 ? totalRatings / totalReviewsLength : 0;
 
   const handleMessageSubmit = async () => {
@@ -118,170 +83,147 @@ const ProductDetails = ({ data }) => {
       const groupTitle = data._id + user._id;
       const userId = user._id;
       const sellerId = data.shop._id;
-      axios
-        .post(`${server}/conversation/create-new-converation`, {
-          groupTitle,
-          userId,
-          sellerId,
-        })
-        .then((res) => {
-          navigate(`/inbox?/${res.data.conversation._id}`);
-        })
-        .catch((error) => {
-          toast.error(error.response.data?.message);
-        });
+      axios.post(`${server}/conversation/create-new-converation`, { groupTitle, userId, sellerId })
+        .then((res) => { navigate(`/inbox?/${res.data.conversation._id}`); })
+        .catch((error) => { toast.error(error.response.data?.message); });
     } else {
       toast.error("Please Login To Create A Conversation!");
     }
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-[#EDE7E3] min-h-screen pb-10">
       {data ? (
-        <div className={`${styles.section} w-[90%] md:w-[80%]`}>
-          <div className="w-full py-5">
-            <div className="block w-full md:flex md:gap-8">
-              {/* Left Part - Images */}
-              <div className="w-full md:w-[40%]">
-                {/* Main Image */}
-                <div className="w-full h-[400px] md:h-[450px] flex items-center justify-center bg-gray-50 rounded-lg mb-4">
-                  <img
-                    src={getImageUrl(data.images?.[select])}
-                    alt={data.name}
-                    className="max-w-full max-h-full object-contain p-4"
-                    onError={(e) => {
-                      e.target.src = "/placeholder.png";
-                    }}
-                  />
-                </div>
-                
-                {/* Thumbnail Images */}
-                <div className="w-full flex gap-2 overflow-x-auto">
-                  {data &&
-                    data.images.map((i, index) => (
-                      <div
+        <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-24">
+          <div className="w-full py-8 md:py-16">
+            <div className="flex flex-col lg:flex-row gap-16 xl:gap-24">
+              {/* Left Side: Professional Image Gallery */}
+              <div className="w-full lg:w-1/2">
+                <div className="sticky top-24">
+                  <div className="relative aspect-square w-full bg-white/40 backdrop-blur-md rounded-[48px] overflow-hidden shadow-soft group">
+                    <img
+                      src={getImageUrl(data.images?.[select])}
+                      alt={data.name}
+                      className="w-full h-full object-contain p-12 mix-blend-multiply group-hover:scale-110 transition-transform duration-1000"
+                    />
+                    <div className="absolute top-8 left-8 bg-[#FFA62B] text-white px-5 py-2 rounded-2xl text-[10px] font-[700] shadow-xl uppercase tracking-widest font-sans">
+                      New Arrival
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 mt-8 px-2 overflow-x-auto pb-4 scrollbar-hide">
+                    {data.images.map((i, index) => (
+                      <button
                         key={index}
-                        className={`${
-                          select === index ? "border-2 border-teal-500" : "border border-gray-300"
-                        } cursor-pointer rounded-lg overflow-hidden shrink-0 transition-all hover:border-teal-400`}
+                        onClick={() => setSelect(index)}
+                        className={`relative h-24 w-24 min-w-[96px] rounded-3xl overflow-hidden transition-all duration-300 ${select === index
+                          ? "ring-4 ring-[#16697A] ring-offset-4 ring-offset-[#EDE7E3] scale-105"
+                          : "opacity-60 hover:opacity-100 hover:scale-105"
+                          }`}
                       >
-                        <img
-                          src={getImageUrl(i)}
-                          alt=""
-                          className="h-20 w-20 object-cover"
-                          onClick={() => setSelect(index)}
-                          onError={(e) => {
-                            e.target.src = "/placeholder.png";
-                          }}
-                        />
-                      </div>
+                        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
+                        <img src={getImageUrl(i)} alt="" className="h-full w-full object-contain mix-blend-multiply p-2" />
+                      </button>
                     ))}
+                  </div>
                 </div>
               </div>
 
-              {/* Right Part - Product Info */}
-              <div className="w-full md:w-[60%] pt-5 md:pt-0">
-                <h1 className={`${styles.productTitle} text-[24px] md:text-[28px] font-semibold`}>
+              {/* Right Side: Information & Interactions */}
+              <div className="w-full lg:w-1/2 flex flex-col pt-4">
+                <div className="flex items-center gap-2 mb-6 uppercase tracking-[0.3em] font-black text-[#489FB5] text-xs">
+                  <span>Shop</span>
+                  <span className="w-1 h-1 bg-[#FFA62B] rounded-full" />
+                  <span>{data.category}</span>
+                </div>
+
+                <h1 className="text-3xl md:text-4xl font-[700] text-[#16697A] leading-tight mb-6 font-display italic">
                   {data.name}
                 </h1>
-                <p className="mt-4 text-gray-600 text-[15px] leading-relaxed">
-                  {data.description}
-                </p>
-                
-                <div className="flex items-center gap-3 pt-4">
-                  <h4 className={`${styles.productDiscountPrice} text-[22px] md:text-[26px]`}>
-                    {data.discountPrice}$
-                  </h4>
-                  <h3 className={`${styles.price} text-[18px] md:text-[20px]`}>
-                    {data.originalPrice ? `${data.originalPrice}$` : null}
-                  </h3>
-                </div>
 
-                {/* Quantity Handler */}
-                <div className="flex items-center mt-8 justify-between">
-                  <div className="flex items-center gap-2">
-                    <button
-                      className="bg-linear-to-r from-teal-400 to-teal-500 text-white font-bold rounded-md px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
-                      onClick={decrementCount}
-                    >
-                      -
-                    </button>
-                    <span className="bg-gray-200 text-gray-800 px-6 py-2 font-medium rounded-md min-w-[60px] text-center">
-                      {count}
-                    </span>
-                    <button
-                      className="bg-linear-to-r from-teal-400 to-teal-500 text-white font-bold rounded-md px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
-                      onClick={incrementCount}
-                    >
-                      +
-                    </button>
-                  </div>
-                  <div>
-                    {click ? (
-                      <AiFillHeart
-                        size={30}
-                        className="cursor-pointer"
-                        onClick={() => removeFromWishlistHandler(data)}
-                        color="red"
-                        title="Remove from wishlist"
-                      />
-                    ) : (
-                      <AiOutlineHeart
-                        size={30}
-                        className="cursor-pointer"
-                        onClick={() => addToWishlistHandler(data)}
-                        title="Add to wishlist"
-                      />
+                <div className="flex items-center gap-8 mb-10">
+                  <div className="flex flex-col">
+                    <span className="text-4xl font-black text-[#16697A]">${data.discountPrice}</span>
+                    {data.originalPrice && (
+                      <span className="text-[#9CA3AF] line-through font-bold mt-1">${data.originalPrice}</span>
                     )}
                   </div>
+                  <div className="h-12 w-[1px] bg-[#16697A]/10" />
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1">
+                      <Ratings rating={data.ratings || 4.5} />
+                      <span className="text-[#16697A] font-[600] text-sm ml-2 font-sans">({data.reviews?.length || 0})</span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Add to Cart Button */}
-                <button
-                  className={`${styles.button} rounded! mt-6! w-full capitalize text-white font-semibold h-11! flex items-center justify-center cursor-pointer hover:opacity-90 transition`}
-                  onClick={() => addToCartHandler(data._id)}
-                >
-                  <span className="text-white flex items-center gap-2">
-                    Add to cart
-                    <AiOutlineShoppingCart size={20} />
-                  </span>
-                </button>
+                <p className="text-[#6B7280] text-lg leading-relaxed mb-10 font-medium">
+                  {data.description}
+                </p>
 
-                {/* Seller Part */}
-                <div className="flex items-center justify-between pt-8 border-t mt-8">
-                  <Link to={`/shop/preview/${data.shop?._id}`} className="flex items-center">
-                    <img
-                      className="w-[50px] h-[50px] rounded-full mr-4 object-cover"
-                      src={getImageUrl(data?.shop?.avatar)}
-                      alt={data?.shop?.name}
-                      onError={(e) => {
-                        e.target.src = "/placeholder.png";
-                      }}
-                    />
+                {/* Interaction Section */}
+                <div className="bg-white/40 backdrop-blur-md border border-white rounded-[40px] p-8 md:p-10 mb-12 shadow-soft">
+                  <div className="flex flex-wrap items-center gap-6 mb-8">
+                    <div className="flex items-center bg-[#EDE7E3] p-1.5 rounded-2xl shadow-inner border border-white/50">
+                      <button
+                        className="w-12 h-12 flex items-center justify-center text-[#16697A] hover:bg-white hover:rounded-xl hover:shadow-soft transition-all text-xl font-black"
+                        onClick={decrementCount}
+                      > - </button>
+                      <span className="w-16 text-center text-[#16697A] font-black text-lg">{count}</span>
+                      <button
+                        className="w-12 h-12 flex items-center justify-center text-[#16697A] hover:bg-white hover:rounded-xl hover:shadow-soft transition-all text-xl font-black"
+                        onClick={incrementCount}
+                      > + </button>
+                    </div>
+                    <p className="text-[#6B7280] text-sm font-bold italic ml-2">Only <span className="text-[#FFA62B]">{data.stock} units</span> left in stock</p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <button
+                      className="flex-1 h-20 flex items-center justify-center gap-4 bg-[#16697A] text-[#EDE7E3] font-[700] text-lg rounded-3xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl hover:shadow-[#FFA62B]/20 transform hover:-translate-y-1 font-sans uppercase tracking-widest text-sm"
+                      onClick={() => addToCartHandler(data._id)}
+                    >
+                      <AiOutlineShoppingCart size={24} />
+                      <span>Add to cart</span>
+                    </button>
+                    <button
+                      onClick={() => click ? removeFromWishlistHandler(data) : addToWishlistHandler(data)}
+                      className={`h-20 w-20 flex items-center justify-center rounded-3xl transition-all duration-500 shadow-xl transform hover:-translate-y-1 ${click ? "bg-[#FFA62B] text-white" : "bg-white text-[#16697A] hover:text-[#FFA62B]"
+                        }`}
+                    >
+                      {click ? <AiFillHeart size={28} /> : <AiOutlineHeart size={28} />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Seller Mini Card */}
+                <div className="flex items-center justify-between p-6 bg-white/20 rounded-[32px] border border-white/40 group hover:bg-white/40 transition-all duration-500">
+                  <Link to={`/shop/preview/${data.shop?._id}`} className="flex items-center gap-4">
+                    <div className="relative">
+                      <img
+                        className="w-16 h-16 rounded-2xl object-cover shadow-lg border-2 border-white"
+                        src={getImageUrl(data?.shop?.avatar)}
+                        alt={data?.shop?.name}
+                      />
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm" />
+                    </div>
                     <div>
-                      <h3 className={`${styles.shop_name} text-[16px] font-semibold`}>
-                        {data?.shop?.name}
-                      </h3>
-                      <h5 className="text-[14px] text-gray-600">
-                        ({averageRating.toFixed(1)}/5) Ratings
-                      </h5>
+                      <h4 className="font-[700] text-[#16697A] text-lg group-hover:text-[#489FB5] transition-colors">{data?.shop?.name}</h4>
+                      <p className="text-xs font-[600] text-[#6B7280] font-sans">Store • {averageRating.toFixed(1)}/5 Stars</p>
                     </div>
                   </Link>
-
                   <button
-                    className={`${styles.button} bg-[#6443d1] rounded! h-11! px-6 capitalize cursor-pointer hover:opacity-90 transition`}
                     onClick={handleMessageSubmit}
+                    className="w-14 h-14 bg-[#16697A] text-white rounded-2xl flex items-center justify-center hover:bg-[#489FB5] transition-all shadow-lg"
                   >
-                    <span className="text-white flex items-center gap-2 text-[14px]">
-                      Send Message <AiOutlineMessage />
-                    </span>
+                    <AiOutlineMessage size={24} />
                   </button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Product Details and More Information */}
+          {/* Detailed Info Tabs */}
           <ProductsDetailsInfo
             data={data}
             products={products}
@@ -295,138 +237,107 @@ const ProductDetails = ({ data }) => {
   );
 };
 
-const ProductsDetailsInfo = ({
-  data,
-  products,
-  totalReviewsLength,
-  averageRating,
-  getImageUrl,
-}) => {
+const ProductsDetailsInfo = ({ data, products, totalReviewsLength, averageRating, getImageUrl }) => {
   const [active, setActive] = useState(1);
 
+  const tabs = [
+    { id: 1, label: "Product Details" },
+    { id: 2, label: `Product Reviews` },
+    { id: 3, label: "Seller Information" },
+  ];
+
   return (
-    <div className="bg-[#f5f6fb] px-3 md:px-10 py-2 rounded mt-8">
-      <div className="w-full flex justify-between border-b pt-10 pb-2">
-        <div className="relative">
-          <h5
-            className="text-black text-[16px] md:text-[18px] px-1 leading-5 font-semibold cursor-pointer"
-            onClick={() => setActive(1)}
+    <div className="mt-20">
+      <div className="flex flex-wrap gap-8 md:gap-16 border-b border-[#16697A]/10 pb-4 mb-12">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActive(tab.id)}
+            className={`relative py-2 text-lg font-[700] transition-all font-sans uppercase tracking-[0.1em] ${active === tab.id ? "text-[#16697A]" : "text-[#6B7280]/60 hover:text-[#16697A]"
+              }`}
           >
-            Product Details
-          </h5>
-          {active === 1 && <div className={`${styles.active_indicator}`}></div>}
-        </div>
-        <div className="relative">
-          <h5
-            className="text-black text-[16px] md:text-[18px] px-1 leading-5 font-semibold cursor-pointer"
-            onClick={() => setActive(2)}
-          >
-            Product Reviews
-          </h5>
-          {active === 2 && <div className={`${styles.active_indicator}`}></div>}
-        </div>
-        <div className="relative">
-          <h5
-            className="text-black text-[16px] md:text-[18px] px-1 leading-5 font-semibold cursor-pointer"
-            onClick={() => setActive(3)}
-          >
-            Seller Information
-          </h5>
-          {active === 3 && <div className={`${styles.active_indicator}`}></div>}
-        </div>
+            {tab.label}
+            {active === tab.id && (
+              <div className="absolute -bottom-4 left-0 w-full h-1 bg-[#FFA62B] rounded-full animate-in slide-in-from-left duration-300" />
+            )}
+          </button>
+        ))}
       </div>
 
-      {active === 1 && (
-        <div className="py-6">
-          <p className="text-[15px] leading-7 whitespace-pre-line text-gray-700">
-            {data.description}
-          </p>
-        </div>
-      )}
-
-      {active === 2 && (
-        <div className="w-full min-h-[40vh] flex flex-col py-3 overflow-y-auto">
-          {data && data.reviews && data.reviews.length > 0 ? (
-            data.reviews.map((item, index) => (
-              <div className="w-full flex my-4" key={index}>
-                <img
-                  src={getImageUrl(item.user.avatar)}
-                  alt={item.user.name}
-                  className="w-[50px] h-[50px] rounded-full object-cover"
-                  onError={(e) => {
-                    e.target.src = "/placeholder.png";
-                  }}
-                />
-                <div className="pl-4">
-                  <div className="w-full flex items-center">
-                    <h1 className="font-semibold mr-3">{item.user?.name}</h1>
-                    <Ratings rating={item?.rating} />
-                  </div>
-                  <p className="mt-2 text-gray-700">{item.comment}</p>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-center text-gray-500 py-10">No reviews available</p>
-          )}
-        </div>
-      )}
-
-      {active === 3 && (
-        <div className="w-full block md:flex justify-between p-5 gap-8">
-          {/* Left Section */}
-          <div className="w-full md:w-[50%]">
-            <Link to={`/shop/preview/${data?.shop?._id}`}>
-              <div className="flex items-center">
-                <img
-                  src={getImageUrl(data?.shop?.avatar)}
-                  alt={data?.shop?.name}
-                  className="w-[50px] h-[50px] rounded-full mr-4 object-cover"
-                  onError={(e) => {
-                    e.target.src = "/placeholder.png";
-                  }}
-                />
-                <div>
-                  <h3 className={`${styles.shop_name}`}>{data.shop.name}</h3>
-                  <h5 className="text-[15px] text-gray-600">
-                    ({averageRating.toFixed(1)}/5) Ratings
-                  </h5>
-                </div>
-              </div>
-            </Link>
-            <p className="pt-4 text-gray-600">{data?.shop?.description}</p>
+      <div className="min-h-[400px]">
+        {active === 1 && (
+          <div className="bg-white/40 backdrop-blur-md rounded-[48px] p-10 md:p-16 border border-white shadow-soft animate-in fade-in duration-700">
+            <p className="text-[#6B7280] text-lg leading-relaxed whitespace-pre-line font-[500] font-sans">
+              {data.description}
+            </p>
           </div>
+        )}
 
-          {/* Right Section */}
-          <div className="w-full md:w-[50%] mt-5 md:mt-0 md:flex flex-col items-end">
-            <div className="text-left">
-              <h5 className="font-semibold">
-                Joined On:{" "}
-                <span className="font-medium">
-                  {data.shop?.createdAt?.slice(0, 10)}
-                </span>
-              </h5>
-              <h5 className="font-semibold pt-3">
-                Total Products:{" "}
-                <span className="font-medium">
-                  {products && products.length}
-                </span>
-              </h5>
-              <h5 className="font-semibold pt-3">
-                Total Reviews:{" "}
-                <span className="font-medium">{totalReviewsLength}</span>
-              </h5>
-              <Link to={`/shop/preview/${data?.shop._id}`}>
-                <div
-                  className={`${styles.button} rounded!-[4px] h-[39.5px]! mt-3`}
-                >
-                  <h4 className="text-white">Visit Shop</h4>
+        {active === 2 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in duration-700">
+            {data && data.reviews && data.reviews.length > 0 ? (
+              data.reviews.map((item, index) => (
+                <div className="bg-white/40 backdrop-blur-md rounded-[40px] p-8 border border-white shadow-soft transition-all hover:scale-[1.02]" key={index}>
+                  <div className="flex items-center gap-4 mb-6">
+                    <img src={getImageUrl(item.user.avatar)} alt="" className="w-14 h-14 rounded-2xl object-cover shadow-md" />
+                    <div>
+                      <h4 className="font-[700] text-[#16697A] font-sans">{item.user?.name}</h4>
+                      <Ratings rating={item?.rating} />
+                    </div>
+                  </div>
+                  <p className="text-[#6B7280] font-[500] leading-relaxed italic font-sans">"{item.comment}"</p>
+                  <p className="text-[10px] font-[700] text-[#9CA3AF] uppercase tracking-widest mt-6 font-sans">Verified Purchase • 2 days ago</p>
                 </div>
+              ))
+            ) : (
+              <div className="col-span-full py-20 text-center">
+                <h4 className="text-xl font-[600] text-[#16697A] font-sans">No Reviews for this product!</h4>
+              </div>
+            )}
+          </div>
+        )}
+
+        {active === 3 && (
+          <div className="flex flex-col lg:flex-row gap-12 animate-in fade-in duration-700">
+            <div className="w-full lg:w-[40%] bg-[#16697A] rounded-[48px] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl" />
+              <div className="relative z-10">
+                <img src={getImageUrl(data?.shop?.avatar)} alt="" className="w-32 h-32 rounded-[32px] object-cover mb-8 border-4 border-white/20 shadow-2xl" />
+                <h2 className="text-4xl font-black mb-2">{data.shop.name}</h2>
+                <p className="text-[#82C0CC] font-bold mb-8">Official Partner Store</p>
+                <div className="grid grid-cols-2 gap-6 mt-12">
+                  <div>
+                    <p className="text-[10px] font-black opacity-60 uppercase tracking-widest mb-1">Joined</p>
+                    <p className="font-black">{data.shop?.createdAt?.slice(0, 4)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black opacity-60 uppercase tracking-widest mb-1">Products</p>
+                    <p className="font-black">{products?.length || 0}+</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black opacity-60 uppercase tracking-widest mb-1">Satisfaction</p>
+                    <p className="font-black">98.5%</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black opacity-60 uppercase tracking-widest mb-1">Rating</p>
+                    <p className="font-black text-[#FFA62B]">{averageRating.toFixed(1)}/5</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1 bg-white/40 backdrop-blur-md rounded-[48px] p-10 md:p-16 border border-white shadow-soft flex flex-col justify-center">
+              <h3 className="text-2xl font-[700] text-[#16697A] mb-6 font-display italic">Shop Info</h3>
+              <p className="text-[#6B7280] text-lg leading-relaxed font-[500] mb-12 font-sans">
+                {data?.shop?.description}
+              </p>
+              <Link to={`/shop/preview/${data?.shop._id}`} className="inline-flex items-center justify-center h-20 px-12 bg-[#16697A] text-[#EDE7E3] font-[700] rounded-3xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl self-start font-sans uppercase tracking-widest text-sm">
+                Visit Shop
               </Link>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

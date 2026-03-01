@@ -5,6 +5,7 @@ const router = express.Router();
 const Order = require("../model/order");
 const Product = require("../model/product");
 const Shop = require("../model/shop");
+const Event = require("../model/event");
 const { isAuthenticated, isAdmin, isSeller } = require("../middleware/auth");
 
 //create Order (User)
@@ -98,18 +99,27 @@ router.put(
   catchAsyncError(async (req, res, next) => {
     try {
       const order = await Order.findById(req.params.id);
-      
+
       if (!order) {
         return next(new ErrorHandler("Order Not Found", 400));
       }
 
-      // Helper function to update product stock
+      // Helper function to update product stock and sales
       async function updateOrder(id, qty) {
+        // Try updating Product model
         const product = await Product.findById(id);
         if (product) {
           product.stock -= qty;
           product.sold_out += qty;
           await product.save({ validateBeforeSave: false });
+        }
+
+        // Also try updating Event model (in case it's an event product)
+        const event = await Event.findById(id);
+        if (event) {
+          event.stock -= qty;
+          event.sold_out += qty;
+          await event.save({ validateBeforeSave: false });
         }
       }
 
@@ -212,7 +222,7 @@ router.put(
         for (const item of order.cart) {
           await updateOrder(item._id, item.qty);
         }
-        
+
         // Deduct the refunded amount from seller's balance
         const serviceCharge = order.totalPrice * 0.1;
         const sellerAmount = order.totalPrice - serviceCharge;

@@ -26,8 +26,8 @@ import { loadUser } from "./redux/actions/user.js";
 import { loadSeller } from "./redux/actions/seller.js";
 import { getAllProducts } from "./redux/actions/product.js";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
-import PaymentPage from "./pages/PaymentPage.jsx"; 
-import OrderSuccessPage from "./pages/OrderSuccessPage.jsx"; 
+import PaymentPage from "./pages/PaymentPage.jsx";
+import OrderSuccessPage from "./pages/OrderSuccessPage.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import SellerProtectedRoute from "./routes/SelllerProtectedRoute.jsx";
 
@@ -57,7 +57,7 @@ import {
   AdminDashboardProductsPage,
   AdminDashboardEventsPage,
   AdminDashboardWithdrawPage
-   } from "./routes/AdminRoute.js";
+} from "./routes/AdminRoute.js";
 import { useSelector } from "react-redux";
 import { BsShopWindow } from "react-icons/bs";
 import ProtectedAdminRoute from "./routes/ProtectedAdminRoute.jsx";
@@ -77,17 +77,17 @@ const AppRoutes = () => {
         <Route path="/best-selling" element={<BestSellingPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        
+
         {/* Protected User Routes */}
-        <Route 
-          path="/profile" 
+        <Route
+          path="/profile"
           element={
             <ProtectedRoute>
               <ProfilePage />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
+        <Route
           path="/checkout"
           element={
             <ProtectedRoute>
@@ -95,7 +95,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-        <Route 
+        <Route
           path="/payment"
           element={
             <ProtectedRoute>
@@ -103,7 +103,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-        <Route 
+        <Route
           path="/inbox"
           element={
             <ProtectedRoute>
@@ -111,23 +111,23 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-          <Route 
-          path="/user/order/:id" 
+        <Route
+          path="/user/order/:id"
           element={
             <ProtectedRoute>
               <OrderDetailsPage />
             </ProtectedRoute>
-          } 
+          }
         />
-          <Route 
-          path="/user/track/order/:id" 
+        <Route
+          path="/user/track/order/:id"
           element={
             <ProtectedRoute>
               <TrackOrderPage />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
+        <Route
           path="/order/success"
           element={
             <ProtectedRoute>
@@ -144,37 +144,37 @@ const AppRoutes = () => {
         <Route path="/shop/preview/:id" element={<ShopPreviewPage />} />
 
         {/* Protected Seller Routes */}
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={
             <SellerProtectedRoute>
               <ShopDashboardPage />
             </SellerProtectedRoute>
-          } 
+          }
         />
-         <Route 
-          path="/settings" 
+        <Route
+          path="/settings"
           element={
             <SellerProtectedRoute>
               <ShopSettingsPage />
             </SellerProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/dashboard-create-product" 
+        <Route
+          path="/dashboard-create-product"
           element={
             <SellerProtectedRoute>
               <ShopCreateProduct />
             </SellerProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/dashboard-products" 
+        <Route
+          path="/dashboard-products"
           element={
             <SellerProtectedRoute>
               <ShopAllProducts />
             </SellerProtectedRoute>
-          } 
+          }
         />
         <Route
           path="/dashboard-orders"
@@ -192,121 +192,121 @@ const AppRoutes = () => {
             </SellerProtectedRoute>
           }
         />
-        <Route 
-          path="/dashboard-create-event" 
+        <Route
+          path="/dashboard-create-event"
           element={
             <SellerProtectedRoute>
               <ShopCreateEvent />
             </SellerProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/dashboard-events" 
+        <Route
+          path="/dashboard-events"
           element={
             <SellerProtectedRoute>
               <ShopAllEvents />
             </SellerProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/dashboard-refunds" 
+        <Route
+          path="/dashboard-refunds"
           element={
             <SellerProtectedRoute>
               <ShopAllRefunds />
             </SellerProtectedRoute>
-          } 
+          }
         />
-          <Route 
-            path="/dashboard-coupons" 
-            element={
-              <SellerProtectedRoute>
-                <ShopAllCoupons />
-              </SellerProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/dashboard-withdraw-money" 
-            element={
-              <SellerProtectedRoute>
-                <ShopWithdrawMoneyPage />
-              </SellerProtectedRoute>
-            } 
-          />
+        <Route
+          path="/dashboard-coupons"
+          element={
+            <SellerProtectedRoute>
+              <ShopAllCoupons />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-withdraw-money"
+          element={
+            <SellerProtectedRoute>
+              <ShopWithdrawMoneyPage />
+            </SellerProtectedRoute>
+          }
+        />
 
-           <Route 
-            path="/dashboard-messages" 
-            element={
-              <SellerProtectedRoute>
-                <ShopInboxPage />
-              </SellerProtectedRoute>
-            } 
-          />
+        <Route
+          path="/dashboard-messages"
+          element={
+            <SellerProtectedRoute>
+              <ShopInboxPage />
+            </SellerProtectedRoute>
+          }
+        />
 
-          {/* Admin Routes */}
-           <Route
-            path="/admin/dashboard"
-            element={
-              <ProtectedAdminRoute>
-                <AdminDashboardPage />
-              </ProtectedAdminRoute>
-            }
-          />
-          <Route
-            path="/admin-users"
-            element={
-              <ProtectedAdminRoute>
-                <AdminDashboardUsersPage />
-              </ProtectedAdminRoute>
-            }
-          />
-             <Route
-            path="/admin-sellers"
-            element={
-              <ProtectedAdminRoute>
-                <AdminDashboardSellersPage />
-              </ProtectedAdminRoute>
-            }
-          />
-           <Route
-            path="/admin-orders"
-            element={
-              <ProtectedAdminRoute>
-                <AdminDashboardOrdersPage />
-              </ProtectedAdminRoute>
-            }
-          />
-          <Route
-            path="/admin-products"
-            element={
-              <ProtectedAdminRoute>
-                <AdminDashboardProductsPage />
-              </ProtectedAdminRoute>
-            }
-          />
-          <Route
-            path="/admin-events"
-            element={
-              <ProtectedAdminRoute>
-                <AdminDashboardEventsPage />
-              </ProtectedAdminRoute>
-            }
-          />
-          <Route
-            path="/admin-withdraw-request"
-            element={
-              <ProtectedAdminRoute>
-                <AdminDashboardWithdrawPage />
-              </ProtectedAdminRoute>
-            }
-          />
-          
+        {/* Admin Routes */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardPage />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-users"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardUsersPage />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-sellers"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardSellersPage />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-orders"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardOrdersPage />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-products"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardProductsPage />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-events"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardEventsPage />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-withdraw-request"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardWithdrawPage />
+            </ProtectedAdminRoute>
+          }
+        />
+
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
 
-      <ToastContainer 
+      <ToastContainer
         position="bottom-center"
         autoClose={5000}
         hideProgressBar={false}
@@ -322,6 +322,8 @@ const AppRoutes = () => {
   );
 };
 
+import ScrollToTop from "./components/Layout/ScrollToTop.jsx";
+
 const App = () => {
   useEffect(() => {
     Store.dispatch(loadUser());
@@ -331,6 +333,7 @@ const App = () => {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AppRoutes />
     </BrowserRouter>
   );
