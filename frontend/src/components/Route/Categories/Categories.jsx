@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { brandingData, categoriesData } from "../../../static/data";
 import styles from "../../../styles/styles";
+import styles from "../../../styles/styles";
 import { useNavigate } from "react-router-dom";
 
 // ✅ Reliable replacement images — all original URLs in data.js were broken
@@ -129,10 +130,3 @@ const Categories = () => {
                 </div>
               );
             })}
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default Categories;

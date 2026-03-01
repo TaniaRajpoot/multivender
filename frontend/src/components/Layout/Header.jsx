@@ -336,6 +336,69 @@ const Header = ({ activeHeading }) => {
       {/* Cart & Wishlist Popups */}
       {openCart && <Cart setOpenCart={setOpenCart} />}
       {openWishlist && <Wishlist setOpenWishList={setOpenWishList} />}
+               >
+                      <div className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 border-b border-gray-50 last:border-0">
+                        <img
+                          src={item.images && item.images[0]?.url}
+                          alt={item.name}
+                          className="w-9 h-9 rounded-lg object-cover shrink-0"
+                        />
+                        <p className="text-sm text-gray-700 line-clamp-2">{item.name}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Nav Links */}
+            <div className="px-4 pb-4 border-b border-gray-100">
+              <Navbar active={activeHeading} />
+            </div>
+
+            {/* Become Seller */}
+            <div className="px-4 py-5">
+              <Link
+                to={isSeller ? "/dashboard" : "/shop-create"}
+                onClick={() => setOpen(false)}
+              >
+                <div className="flex items-center justify-center gap-1.5 bg-[#3321c8] text-white text-sm font-medium px-4 py-2.5 rounded-xl w-full">
+                  {isSeller ? "Go to Shop" : "Become Seller"}
+                  <IoIosArrowForward size={16} />
+                </div>
+              </Link>
+            </div>
+
+            {/* Profile / Auth */}
+            <div className="px-4 pb-6 flex justify-center">
+              {isAuthenticated ? (
+                <Link to="/profile" onClick={() => setOpen(false)} className="flex items-center gap-3">
+                  <img
+                    src={user?.avatar?.url || user?.avatar}
+                    className="w-[48px] h-[48px] rounded-full object-cover border-[3px] border-[#3bc177]"
+                    alt={user?.name}
+                  />
+                  <span className="text-sm font-semibold text-gray-700">{user?.name}</span>
+                </Link>
+              ) : (
+                <div className="flex items-center gap-2 text-[15px] text-gray-600">
+                  <Link to="/login" onClick={() => setOpen(false)} className="hover:text-[#3321c8] font-medium transition-colors">
+                    Login
+                  </Link>
+                  <span className="text-gray-300">/</span>
+                  <Link to="/sign-up" onClick={() => setOpen(false)} className="hover:text-[#3321c8] font-medium transition-colors">
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cart & Wishlist Popups */}
+      {openCart && <Cart setOpenCart={setOpenCart} />}
+      {openWishlist && <Wishlist setOpenWishList={setOpenWishList} />}
     </>
   );
 };

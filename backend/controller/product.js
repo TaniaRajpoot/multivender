@@ -13,7 +13,6 @@ router.post('/create-product', catchAsyncErrors(async (req, res, next) => {
     const { shopId, images } = req.body;
     const shop = await Shop.findById(shopId);
     
-    console.log('Shop found:', shop);
     
     if (!shop) {
         return next(new ErrorHandler("Shop Id is Invalid", 400));
@@ -38,7 +37,6 @@ router.post('/create-product', catchAsyncErrors(async (req, res, next) => {
         url: result.secure_url,
     }));
 
-    console.log('Uploaded images to Cloudinary:', imageData);
 
     const productData = {
         ...req.body,
@@ -47,11 +45,9 @@ router.post('/create-product', catchAsyncErrors(async (req, res, next) => {
         shop: shop,
     };
 
-    console.log('Product Data before save:', productData);
 
     const product = await Product.create(productData);
     
-    console.log('Product created:', product);
     
     res.status(201).json({
         success: true,
@@ -62,11 +58,9 @@ router.post('/create-product', catchAsyncErrors(async (req, res, next) => {
 
 // Get all products of a shop
 router.get('/get-all-products-shop/:id', catchAsyncErrors(async (req, res, next) => {
-    console.log('Getting products for shop:', req.params.id);
     
     const products = await Product.find({ shopId: req.params.id });
     
-    console.log('Found products:', products.length);
     
     res.status(200).json({
         success: true,
@@ -118,8 +112,8 @@ router.get('/get-all-products', catchAsyncErrors(async (req, res, next) => {
 //review for a Product
 router.put(
   "/create-new-review",
-  isAuthenticated, // ✅ Fixed typo from isAthuenticated
-  catchAsyncErrors(async (req, res, next) => { // ✅ Fixed typo from catchAsyncError
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => { 
     try {
       const { user, rating, comment, productId, orderId } = req.body;
       
