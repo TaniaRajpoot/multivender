@@ -24,3 +24,26 @@
   color: red !important;
   font-weight: bold;
 }
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #16697A;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #FFA62B;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #16697A transparent;
+}

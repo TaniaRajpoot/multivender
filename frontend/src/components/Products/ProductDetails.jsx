@@ -17,8 +17,12 @@ import {
 import Ratings from "./Ratings";
 import axios from "axios";
 import { server } from "../../server";
+import CountDown from "../Events/CountDown";
+import { useSearchParams } from "react-router-dom";
 
 const ProductDetails = ({ data }) => {
+  const [searchParams] = useSearchParams();
+  const isEvent = searchParams.get("isEvent");
   const navigate = useNavigate();
   const { cart } = useSelector((state) => state.cart);
   const { user, isAuthenticated } = useSelector((state) => state.user);
@@ -161,6 +165,36 @@ const ProductDetails = ({ data }) => {
                   {data.description}
                 </p>
 
+                {isEvent && (
+                  <div className="mt-8 mb-8 p-6 bg-[#FFF5F5] border border-[#FED7D7] rounded-3xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="flex h-2 w-2 rounded-full bg-red-500 animate-ping" />
+                        <p className="text-[11px] font-black text-[#E53E3E] uppercase tracking-[0.3em]">🚀 Limited Time Event!</p>
+                      </div>
+
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-red-100 pb-6 mb-6">
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-bold text-red-500/60 uppercase tracking-widest">Starts:</p>
+                          <p className="text-sm font-black text-[#0D1A12]">{data.start_Date ? new Date(data.start_Date).toLocaleDateString() : '01/01/2025'}</p>
+                        </div>
+                        <div className="space-y-1 md:text-right">
+                          <p className="text-[10px] font-bold text-red-500/60 uppercase tracking-widest">Ends:</p>
+                          <p className="text-sm font-black text-[#0D1A12]">{data.Finish_Date ? new Date(data.Finish_Date).toLocaleDateString() : '31/12/2025'}</p>
+                        </div>
+                      </div>
+
+                      <div className="text-center">
+                        <p className="text-[10px] font-bold text-red-500/60 uppercase tracking-[0.4em] mb-4">Time Remaining</p>
+                        <div className="deadline-timer">
+                          <CountDown data={data} isDeadline={true} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Interaction Section */}
                 <div className="bg-white/40 backdrop-blur-md border border-white rounded-[40px] p-8 md:p-10 mb-12 shadow-soft">
                   <div className="flex flex-wrap items-center gap-6 mb-8">
@@ -221,16 +255,16 @@ const ProductDetails = ({ data }) => {
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Detailed Info Tabs */}
-          <ProductsDetailsInfo
-            data={data}
-            products={products}
-            totalReviewsLength={totalReviewsLength}
-            averageRating={averageRating}
-            getImageUrl={getImageUrl}
-          />
+            {/* Detailed Info Tabs */}
+            <ProductsDetailsInfo
+              data={data}
+              products={products}
+              totalReviewsLength={totalReviewsLength}
+              averageRating={averageRating}
+              getImageUrl={getImageUrl}
+            />
+          </div>
         </div>
       ) : null}
     </div>

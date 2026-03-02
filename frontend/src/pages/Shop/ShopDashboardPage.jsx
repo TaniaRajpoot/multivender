@@ -12,7 +12,7 @@ const ShopDashboardPage = () => {
       <div className="flex w-full min-h-screen">
 
         {/* Sidebar */}
-        <div className="w-[80px] 800px:w-[330px] sticky top-0 z-20">
+        <div className="w-[80px] md:w-[330px] sticky top-0 z-20">
           <DashboardSideBar active={1} />
         </div>
 

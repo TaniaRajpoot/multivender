@@ -1,26 +1,51 @@
-import React from 'react'
-import styles from '../../styles/styles'
-import { navItems } from '../../static/data'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { navItems } from '../../static/data';
+import { Link } from 'react-router-dom';
 
 const Navbar = ({ active }) => {
   return (
-    <div className={`flex flex-col md:flex-row md:${styles.noramlFlex} gap-2`}>
-      {navItems && navItems.map((i, index) => (
-        <div className='flex' key={index}>
+    <nav className="flex flex-col md:flex-row items-start md:items-center w-full md:w-auto">
+      {navItems && navItems.map((item, index) => {
+        const isActive = active === index + 1;
+        return (
           <Link
-            to={i.url}
-            className={`${active === index + 1
-              ? "text-[#FFA62B] border-b-2 border-[#FFA62B]"
-              : "text-[#EDE7E3]/70"
-              } py-2 md:py-3 px-5 font-[600] text-[11px] uppercase tracking-[0.2em] font-sans hover:text-[#FFA62B] transition-all duration-300 block w-full whitespace-nowrap`}
+            key={index}
+            to={item.url}
+            className="group relative px-8 md:px-4 flex items-center whitespace-nowrap w-full md:w-auto"
+            style={{ height: '44px' }}
           >
-            {i.title}
+            {/* Animated bottom indicator - Only on desktop */}
+            <span style={{
+              position: 'absolute',
+              bottom: 0,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              height: '3px',
+              borderRadius: '3px 3px 0 0',
+              backgroundColor: '#FFFFFF',
+              width: isActive ? '40%' : '0%',
+              transition: 'all 0.3s ease',
+            }}
+              className="hidden md:block group-hover:!w-[40%]"
+            />
+
+            <span
+              style={{
+                fontSize: '14px',
+                fontWeight: isActive ? 600 : 500,
+                fontFamily: "'DM Sans', sans-serif",
+                color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.85)',
+                transition: 'all 0.3s ease',
+              }}
+              className={`group-hover:!text-white ${isActive ? "text-white" : "text-[#16697A]/80 md:text-white/80"}`}
+            >
+              {item.title}
+            </span>
           </Link>
-        </div>
-      ))}
-    </div>
-  )
-}
+        );
+      })}
+    </nav>
+  );
+};
 
 export default Navbar;

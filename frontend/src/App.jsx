@@ -45,7 +45,7 @@ import {
   ShopAllRefunds,
   ShopSettingsPage,
   ShopWithdrawMoneyPage,
-  ShopInboxPage
+  ShopInboxPage,
 
 } from "./routes/ShopRoutes.js";
 
@@ -56,7 +56,8 @@ import {
   AdminDashboardOrdersPage,
   AdminDashboardProductsPage,
   AdminDashboardEventsPage,
-  AdminDashboardWithdrawPage
+  AdminDashboardWithdrawPage,
+  AdminDashboardSettingsPage
 } from "./routes/AdminRoute.js";
 import { useSelector } from "react-redux";
 import { BsShopWindow } from "react-icons/bs";
@@ -296,6 +297,14 @@ const AppRoutes = () => {
           element={
             <ProtectedAdminRoute>
               <AdminDashboardWithdrawPage />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-settings"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboardSettingsPage />
             </ProtectedAdminRoute>
           }
         />

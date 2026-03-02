@@ -5,13 +5,15 @@ import AdminDashboardOrdersPage from "../pages/AdminDashboardOrdersPage.jsx";
 import AdminDashboardProductsPage from "../pages/AdminDashboardProductsPage.jsx";
 import AdminDashboardEventsPage from "../pages/AdminDashboardEventsPage.jsx";
 import AdminDashboardWithdrawPage from "../pages/AdminDashboardWithdrawPage.jsx";
+import AdminDashboardSettingsPage from "../pages/AdminDashboardSettingsPage.jsx";
 
-export  {
+export {
     AdminDashboardPage,
     AdminDashboardUsersPage,
     AdminDashboardSellersPage,
     AdminDashboardOrdersPage,
     AdminDashboardProductsPage,
     AdminDashboardEventsPage,
-    AdminDashboardWithdrawPage
-    };
+    AdminDashboardWithdrawPage,
+    AdminDashboardSettingsPage
+};

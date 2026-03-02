@@ -59,7 +59,7 @@ const ProfileSideBar = ({ active, setActive }) => {
             }}
           >
             <item.icon size={22} className={`${active === item.id ? "text-[#FFA62B]" : "text-[#489FB5] group-hover:text-[#16697A]"} transition-colors`} />
-            <span className={`pl-4 text-sm font-[600] font-sans ${active === item.id ? "text-white" : "text-[#16697A]/60"}`}>
+            <span className={`hidden 800px:block pl-4 text-sm font-[600] font-sans ${active === item.id ? "text-white" : "text-[#16697A]/60"}`}>
               {item.label}
             </span>
             {active === item.id && (

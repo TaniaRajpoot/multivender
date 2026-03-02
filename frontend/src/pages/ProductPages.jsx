@@ -9,26 +9,35 @@ const ProductsPage = () => {
   const { allProducts } = useSelector((state => state.product));
   const categoryData = SearchParams.get("category");
   const [data, setData] = useState([]);
+  const [sortType, setSortType] = useState("");
 
   useEffect(() => {
+    let d = [];
     if (categoryData === null) {
-      const d =
-        allProducts && [...allProducts].sort((a, b) => a.sold_out - b.sold_out);
-      setData(d);
+      d = allProducts && [...allProducts];
     } else {
-      const d =
-        allProducts && [...allProducts].filter((i) => i.category === categoryData);
-      setData(d);
+      d = allProducts && [...allProducts].filter((i) => i.category === categoryData);
     }
+
+    if (d) {
+      if (sortType === "Price: Low to High") {
+        d.sort((a, b) => a.discountPrice - b.discountPrice);
+      } else if (sortType === "Price: High to Low") {
+        d.sort((a, b) => b.discountPrice - a.discountPrice);
+      } else {
+        d.sort((a, b) => b.sold_out - a.sold_out);
+      }
+    }
+    setData(d);
     window.scrollTo(0, 0);
-  }, [allProducts, categoryData]);
+  }, [allProducts, categoryData, sortType]);
 
   return (
     <div className="min-h-screen bg-[#EDE7E3]">
       <Header activeHeading={3} />
 
       {/* Page Header */}
-      <div className="w-full bg-[#16697A] py-16 md:py-24 relative overflow-hidden">
+      <div className="w-full bg-[#16697A] py-10 md:py-14 relative overflow-hidden shadow-inner">
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFA62B]/10 rounded-full -translate-x-1/2 translate-y-1/2 blur-3xl" />
 
@@ -46,10 +55,14 @@ const ProductsPage = () => {
             Showing <span className="text-[#FFA62B]">{data ? data.length : 0}</span> results
           </p>
           <div className="flex gap-4">
-            <select className="bg-white/50 backdrop-blur-md border border-[#16697A]/10 rounded-xl px-6 py-3 text-sm font-[600] text-[#16697A] focus:outline-none shadow-sm font-sans">
-              <option>Popularity</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
+            <select
+              value={sortType}
+              onChange={(e) => setSortType(e.target.value)}
+              className="bg-white/50 backdrop-blur-md border border-[#16697A]/10 rounded-xl px-6 py-3 text-sm font-[600] text-[#16697A] focus:outline-none shadow-sm font-sans cursor-pointer hover:bg-white transition-colors"
+            >
+              <option value="">Popularity</option>
+              <option value="Price: Low to High">Price: Low to High</option>
+              <option value="Price: High to Low">Price: High to Low</option>
             </select>
           </div>
         </div>

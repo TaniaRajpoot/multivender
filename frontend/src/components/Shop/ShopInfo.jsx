@@ -29,13 +29,9 @@ const ShopInfo = ({ isOwner }) => {
   }, [dispatch, id]);
 
   const logoutHandler = async () => {
-    try {
-      await axios.get(`${server}/shop/logout`, { withCredentials: true });
-      toast.success("Logout successful");
-      window.location.reload();
-    } catch (error) {
-      toast.error("Failed to logout");
-    }
+    dispatch(logoutSeller());
+    toast.success("Logout successful");
+    window.location.reload();
   };
 
   const totalReviewsLength = products?.reduce((acc, product) => acc + (product.reviews?.length || 0), 0) || 0;

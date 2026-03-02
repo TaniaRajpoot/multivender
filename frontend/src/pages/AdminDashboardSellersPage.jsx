@@ -7,8 +7,8 @@ const AdminDashboardSellerPage = () => {
   return (
     <div>
       <AdminHeader />
-      <div className="w-full flex">
-        <div className="w-20 md:w-[100px] lg:w-[330px]">
+      <div className="w-full flex items-start">
+        <div className="w-[80px] lg:w-[330px] sticky top-24 z-20">
           <AdminSidebar active={3} />
         </div>
         <AllSellers />

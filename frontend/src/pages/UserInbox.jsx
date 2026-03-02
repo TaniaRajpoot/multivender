@@ -146,17 +146,17 @@ const UserInboxPage = () => {
   return (
     <div className="bg-[#EDE7E3] min-h-screen font-Inter">
       <Header />
-      <div className="max-w-[1400px] mx-auto py-10 px-4 md:px-8">
-        <div className="h-[80vh] bg-white/40 backdrop-blur-2xl rounded-[48px] shadow-3xl border border-white overflow-hidden flex relative">
+      <div className="max-w-[1400px] mx-auto py-4 md:py-10 px-2 md:px-8">
+        <div className="h-[85vh] md:h-[80vh] bg-white/40 backdrop-blur-2xl rounded-[32px] md:rounded-[48px] shadow-3xl border border-white overflow-hidden flex relative">
 
           {/* Sidebar: Conversation List */}
           <div className={`
              w-full md:w-[400px] flex flex-col border-r border-white bg-white/20 transition-all duration-500
              ${open ? "hidden md:flex" : "flex"}
           `}>
-            <div className="p-8 border-b border-white">
-              <h2 className="text-2xl font-black text-[#16697A] tracking-tighter italic">CHANNELS</h2>
-              <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.4em] mt-1">Merchant Comms Hub</p>
+            <div className="p-4 md:p-8 border-b border-white">
+              <h2 className="text-xl md:text-2xl font-black text-[#16697A] tracking-tighter italic uppercase">CHANNELS</h2>
+              <p className="text-[9px] md:text-[10px] font-black text-[#489FB5] uppercase tracking-[0.2em] md:tracking-[0.4em] mt-1">Merchant Comms Hub</p>
             </div>
             <div className="flex-1 overflow-y-auto custom-scrollbar">
               {conversations.map((item, index) => (
@@ -190,7 +190,7 @@ const UserInboxPage = () => {
             {currentChat ? (
               <>
                 {/* Chat Header */}
-                <div className="h-24 px-8 border-b border-white flex items-center justify-between backdrop-blur-md">
+                <div className="h-20 md:h-24 px-4 md:px-8 border-b border-white flex items-center justify-between backdrop-blur-md">
                   <div className="flex items-center gap-4">
                     <button onClick={() => setOpen(false)} className="md:hidden w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center text-[#16697A]">
                       <BsArrowLeft size={20} />
@@ -318,7 +318,7 @@ const MessageBubble = ({ item, me, userData, isImage }) => {
       {!isMe && (
         <img src={userData?.avatar?.url} className="w-8 h-8 rounded-xl object-cover mr-3 shadow-md border-2 border-white self-end" alt="" />
       )}
-      <div className={`max-w-[70%] space-y-1`}>
+      <div className={`max-w-[85%] md:max-w-[70%] space-y-1`}>
         {item.images && (
           <div className="rounded-[24px] overflow-hidden border-4 border-white shadow-2xl mb-2">
             <img src={item.images?.url || item.images} alt="" className="w-full max-h-80 object-cover" />

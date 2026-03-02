@@ -105,10 +105,10 @@ const ProfileContent = ({ active }) => {
   return (
     <div className="w-full min-h-[80vh]">
       {active === 1 && (
-        <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 md:p-12 border border-white shadow-soft animate-in fade-in duration-700">
-          <div className="flex flex-col md:flex-row gap-12 items-center md:items-start">
+        <div className="bg-white/70 backdrop-blur-xl rounded-[32px] md:rounded-[40px] p-4 md:p-12 border border-white shadow-soft animate-in fade-in duration-700">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-center md:items-start">
             <div className="relative group">
-              <div className="w-40 h-40 rounded-[56px] overflow-hidden border-4 border-white shadow-2xl relative">
+              <div className="w-28 h-28 md:w-40 md:h-40 rounded-[32px] md:rounded-[56px] overflow-hidden border-4 border-white shadow-2xl relative">
                 <img src={getAvatarUrl()} alt="User" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 {avatarLoading && (
                   <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center">
@@ -175,28 +175,62 @@ const AllOrders = () => {
   }, [dispatch, user?._id]);
 
   const columns = [
-    { field: "id", headerName: "Order ID", minWidth: 200, flex: 0.8 },
     {
-      field: "status",
-      headerName: "Status",
+      field: "id",
+      headerName: "Order ID",
       minWidth: 150,
-      flex: 0.6,
+      flex: 0.7,
       renderCell: (params) => (
-        <span className={`px-3 py-1 rounded-full text-[10px] font-[600] uppercase tracking-widest font-sans ${params.row.status === "Delivered" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}>
-          {params.row.status}
+        <span className="font-mono text-[11px] font-bold text-[#16697A]/70 italic tracking-tighter">
+          #{params.value?.slice(-8).toUpperCase()}
         </span>
       )
     },
-    { field: "itemsQty", headerName: "Items Qty", type: "number", minWidth: 120, flex: 0.4 },
-    { field: "total", headerName: "Total", minWidth: 150, flex: 0.6 },
+    {
+      field: "status",
+      headerName: "Status",
+      minWidth: 130,
+      flex: 0.5,
+      renderCell: (params) => {
+        const isDelivered = params.row.status === "Delivered";
+        return (
+          <div className="flex items-center gap-2">
+            <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isDelivered ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" : "bg-[#FFA62B] shadow-[0_0_8px_rgba(255,166,43,0.6)]"}`} />
+            <span className={`text-[10px] font-black uppercase tracking-[0.15em] ${isDelivered ? "text-emerald-600" : "text-[#FFA62B]"}`}>
+              {params.row.status}
+            </span>
+          </div>
+        );
+      }
+    },
+    {
+      field: "itemsQty",
+      headerName: "Qty",
+      type: "number",
+      minWidth: 80,
+      flex: 0.3,
+      renderCell: (params) => (
+        <span className="font-black text-[#16697A]">{params.value}</span>
+      )
+    },
+    {
+      field: "total",
+      headerName: "Total",
+      minWidth: 120,
+      flex: 0.5,
+      renderCell: (params) => (
+        <span className="font-black text-[#16697A] tabular-nums">{params.value}</span>
+      )
+    },
     {
       field: "action",
       headerName: "",
-      flex: 0.4,
-      minWidth: 120,
+      flex: 0.3,
+      minWidth: 80,
+      sortable: false,
       renderCell: (params) => (
         <Link to={`/user/order/${params.id}`}>
-          <div className="w-10 h-10 rounded-xl bg-[#EDE7E3] flex items-center justify-center text-[#16697A] hover:bg-[#16697A] hover:text-white transition-all transform hover:scale-110">
+          <div className="w-10 h-10 rounded-xl bg-white shadow-sm border border-[#EDE7E3] flex items-center justify-center text-[#16697A] hover:bg-[#16697A] hover:text-white transition-all transform hover:rotate-12">
             <AiOutlineArrowRight size={18} />
           </div>
         </Link>
@@ -207,26 +241,57 @@ const AllOrders = () => {
   const rows = orders?.map(item => ({
     id: item._id,
     itemsQty: item.cart.length,
-    total: "US$ " + item.totalPrice,
+    total: "US$ " + item.totalPrice.toLocaleString(),
     status: item.status,
   })) || [];
 
   return (
-    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 border border-white shadow-soft animate-in fade-in slide-in-from-right duration-700">
-      <div className="flex items-center gap-4 mb-8">
-        <h3 className="text-2xl font-[700] text-[#16697A] tracking-tight font-display italic">All Orders</h3>
+    <div className="bg-white/70 backdrop-blur-3xl rounded-[40px] p-6 md:p-10 border border-white shadow-soft animate-in fade-in slide-in-from-bottom-8 duration-1000">
+      <div className="flex items-center justify-between mb-10">
+        <div>
+          <h3 className="text-3xl font-black text-[#16697A] tracking-tighter font-display italic leading-none uppercase">Order History</h3>
+          <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.4em] mt-2 ml-1">Archive of your excellence</p>
+        </div>
+        <div className="w-16 h-1 bg-gradient-to-r from-[#16697A] to-transparent rounded-full hidden md:block" />
       </div>
-      <div className="data-grid-container custom-scrollbar">
+
+      <div className="data-grid-container custom-scrollbar overflow-hidden rounded-[24px] border border-white shadow-inner bg-white/30">
         <DataGrid
           rows={rows}
           columns={columns}
           pageSize={10}
           autoHeight
           disableRowSelectionOnClick
-          className="border-none! font-[600] text-[#16697A]! font-sans"
+          disableColumnMenu
+          className="border-none! font-sans"
           sx={{
-            "& .MuiDataGrid-columnHeaders": { backgroundColor: "#EDE7E3", borderRadius: "16px", border: "none" },
-            "& .MuiDataGrid-cell": { borderBottom: "1px solid #EDE7E3" },
+            border: "none",
+            "& .MuiDataGrid-main": { borderRadius: "24px" },
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: "#16697A",
+              color: "white",
+              border: "none",
+              minHeight: "60px!important",
+              "& .MuiDataGrid-columnHeaderTitle": {
+                fontWeight: "900",
+                fontSize: "11px",
+                textTransform: "uppercase",
+                letterSpacing: "0.2em"
+              },
+              "& .MuiDataGrid-iconSeparator": { display: "none" }
+            },
+            "& .MuiDataGrid-cell": {
+              borderBottom: "1px solid #EDE7E3",
+              fontSize: "13px",
+              padding: "16px!important"
+            },
+            "& .MuiDataGrid-row:hover": {
+              backgroundColor: "rgba(255, 166, 43, 0.05)!important",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: "none",
+              backgroundColor: "transparent"
+            }
           }}
         />
       </div>
@@ -246,28 +311,56 @@ const AllRefundOrders = () => {
   const eligibleOrders = orders?.filter((item) => item?.status === "Processing refund");
 
   const columns = [
-    { field: "id", headerName: "Order ID", minWidth: 200, flex: 0.8 },
+    {
+      field: "id",
+      headerName: "Refund ID",
+      minWidth: 150,
+      flex: 0.7,
+      renderCell: (params) => (
+        <span className="font-mono text-[11px] font-bold text-[#16697A]/70 italic tracking-tighter">
+          #{params.value?.slice(-8).toUpperCase()}
+        </span>
+      )
+    },
     {
       field: "status",
       headerName: "Status",
-      minWidth: 150,
-      flex: 0.6,
+      minWidth: 130,
+      flex: 0.5,
       renderCell: (params) => (
-        <span className="px-3 py-1 rounded-full text-[10px] font-[600] uppercase tracking-widest bg-blue-100 text-blue-700 font-sans">
+        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-blue-50 text-blue-500 border border-blue-100 shadow-sm font-sans">
           {params.row.status}
         </span>
       )
     },
-    { field: "itemsQty", headerName: "Items Qty", type: "number", minWidth: 120, flex: 0.4 },
-    { field: "total", headerName: "Total", minWidth: 150, flex: 0.6 },
+    {
+      field: "itemsQty",
+      headerName: "Qty",
+      type: "number",
+      minWidth: 80,
+      flex: 0.3,
+      renderCell: (params) => (
+        <span className="font-black text-[#16697A]">{params.value}</span>
+      )
+    },
+    {
+      field: "total",
+      headerName: "Total",
+      minWidth: 120,
+      flex: 0.5,
+      renderCell: (params) => (
+        <span className="font-black text-[#16697A]">{params.value}</span>
+      )
+    },
     {
       field: "action",
-      headerName: "Examine",
-      flex: 0.4,
-      minWidth: 120,
+      headerName: "",
+      flex: 0.3,
+      minWidth: 80,
+      sortable: false,
       renderCell: (params) => (
         <Link to={`/user/order/${params.id}`}>
-          <div className="w-10 h-10 rounded-xl bg-[#EDE7E3] flex items-center justify-center text-[#16697A] hover:bg-[#16697A] hover:text-white transition-all transform hover:scale-110">
+          <div className="w-10 h-10 rounded-xl bg-white shadow-sm border border-[#EDE7E3] flex items-center justify-center text-[#16697A] hover:bg-[#16697A] hover:text-white transition-all transform hover:rotate-12">
             <AiOutlineArrowRight size={18} />
           </div>
         </Link>
@@ -278,26 +371,57 @@ const AllRefundOrders = () => {
   const rows = eligibleOrders?.map(item => ({
     id: item._id,
     itemsQty: item.cart.length,
-    total: "US$ " + item.totalPrice,
+    total: "US$ " + item.totalPrice.toLocaleString(),
     status: item.status,
   })) || [];
 
   return (
-    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 border border-white shadow-soft animate-in fade-in slide-in-from-right duration-700">
-      <div className="flex items-center gap-4 mb-8">
-        <h3 className="text-2xl font-[700] text-[#16697A] tracking-tight font-display italic">All Refund Orders</h3>
+    <div className="bg-white/70 backdrop-blur-3xl rounded-[40px] p-6 md:p-10 border border-white shadow-soft animate-in fade-in slide-in-from-bottom-8 duration-1000">
+      <div className="flex items-center justify-between mb-10">
+        <div>
+          <h3 className="text-3xl font-black text-[#16697A] tracking-tighter font-display italic leading-none uppercase text-[#489FB5]">Refund Vault</h3>
+          <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.4em] mt-2 ml-1">Processed reversals</p>
+        </div>
+        <div className="w-16 h-1 bg-gradient-to-r from-[#489FB5] to-transparent rounded-full hidden md:block" />
       </div>
-      <div className="data-grid-container custom-scrollbar">
+
+      <div className="data-grid-container custom-scrollbar overflow-hidden rounded-[24px] border border-white shadow-inner bg-white/30">
         <DataGrid
           rows={rows}
           columns={columns}
           pageSize={10}
           autoHeight
           disableRowSelectionOnClick
-          className="border-none! font-bold text-[#16697A]!"
+          disableColumnMenu
+          className="border-none! font-sans"
           sx={{
-            "& .MuiDataGrid-columnHeaders": { backgroundColor: "#EDE7E3", borderRadius: "16px", border: "none" },
-            "& .MuiDataGrid-cell": { borderBottom: "1px solid #EDE7E3" },
+            border: "none",
+            "& .MuiDataGrid-main": { borderRadius: "24px" },
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: "#82C0CC",
+              color: "white",
+              border: "none",
+              minHeight: "60px!important",
+              "& .MuiDataGrid-columnHeaderTitle": {
+                fontWeight: "900",
+                fontSize: "11px",
+                textTransform: "uppercase",
+                letterSpacing: "0.2em"
+              },
+              "& .MuiDataGrid-iconSeparator": { display: "none" }
+            },
+            "& .MuiDataGrid-cell": {
+              borderBottom: "1px solid #EDE7E3",
+              fontSize: "13px",
+              padding: "16px!important"
+            },
+            "& .MuiDataGrid-row:hover": {
+              backgroundColor: "rgba(130, 192, 204, 0.05)!important",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: "none",
+              backgroundColor: "transparent"
+            }
           }}
         />
       </div>

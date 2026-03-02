@@ -131,7 +131,9 @@ const DashboardMessages = () => {
   };
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
   }, [messages]);
 
   return (
@@ -187,11 +189,13 @@ const DashboardMessages = () => {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
+            <div
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar"
+            >
               {messages.map((msg, idx) => (
                 <MessageBubble key={idx} msg={msg} sellerId={seller._id} userData={userData} me={seller._id} />
               ))}
-              <div ref={scrollRef} />
             </div>
 
             <div className="p-8 relative">

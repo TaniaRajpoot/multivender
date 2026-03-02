@@ -59,87 +59,136 @@ const OrderDetails = () => {
   const statusOptions = order?.status === "Processing refund" || order?.status === "Refund Success"
     ? ["Processing refund", "Refund Success"]
     : ["Processing", "Transferred to delivery partner", "Shipping", "Received", "On the way", "Delivered"].slice(
-        ["Processing", "Transferred to delivery partner", "Shipping", "Received", "On the way", "Delivered"].indexOf(order.status)
-      );
+      ["Processing", "Transferred to delivery partner", "Shipping", "Received", "On the way", "Delivered"].indexOf(order.status)
+    );
 
   return (
-    <div className={`py-4 min-h-screen ${styles.section}`}>
-      <div className="w-full flex items-center justify-between">
-        <div className="flex items-center">
-          <BsFillBagFill size={30} color="crimson" />
-          <h1 className="pl-2 text-[25px]">Order Details</h1>
-        </div>
-        <Link to="/dashboard-orders">
-          <div className={`${styles.button} bg-[#fce1e6]! rounded-sm! text-[#e94560] font-semibold h-[45px]! text-[18px]`}>
-            Order List
+    <div className={`py-8 min-h-screen ${styles.section}`}>
+      <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 border border-white shadow-soft">
+        <div className="w-full flex items-center justify-between pb-8 border-b border-[#16697A]/10">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-[#16697A] rounded-2xl flex items-center justify-center text-white shadow-lg">
+              <BsFillBagFill size={24} />
+            </div>
+            <div>
+              <h1 className={`${styles.heading} !pb-0`}>Order Details</h1>
+              <p className="text-[12px] font-bold text-[#16697A]/60 uppercase tracking-widest mt-1">Manage single order flow</p>
+            </div>
           </div>
-        </Link>
-      </div>
+          <Link to="/dashboard-orders">
+            <div className={`${styles.button} !my-0`}>
+              Order List
+            </div>
+          </Link>
+        </div>
 
-      <div className="w-full flex items-center justify-between pt-6">
-        <h5 className="text-[#00000084]">
-          Order ID: <span>#{order._id?.slice(0, 8)}</span>
-        </h5>
-        <h5 className="text-[#00000084]">
-          Placed on: <span>{order.createdAt?.slice(0, 10)}</span>
-        </h5>
-      </div>
-
-      {/* Order Items */}
-      <br /><br />
-      {order.cart?.map((item, idx) => (
-        <div key={idx} className="w-full flex items-start mb-5">
-          <img src={item.images[0]?.url} alt="" className="w-20 h-20" />
-          <div className="w-full">
-            <h5 className="pl-3 text-[20px]">{item.name}</h5>
-            <h5 className="pl-3 text-[20px] text-[#00000091]">
-              US${item.discountPrice} x {item.qty}
-            </h5>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8">
+          <div className="bg-[#EDE7E3]/40 rounded-3xl p-6 border border-white/50">
+            <h5 className="text-[10px] font-black text-[#16697A]/40 uppercase tracking-[0.3em] mb-2">Order Identification</h5>
+            <p className="text-lg font-black text-[#16697A]">#{order._id}</p>
+          </div>
+          <div className="bg-[#EDE7E3]/40 rounded-3xl p-6 border border-white/50">
+            <h5 className="text-[10px] font-black text-[#16697A]/40 uppercase tracking-[0.3em] mb-2">Placement Date</h5>
+            <p className="text-lg font-black text-[#16697A]">{new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
           </div>
         </div>
-      ))}
 
-      <div className="border-t w-full text-right">
-        <h5 className="pt-3 text-[18px]">
-          Total Price: <strong>US${order.totalPrice}</strong>
-        </h5>
-      </div>
-
-      <br /><br />
-      <div className="w-full 800px:flex items-center">
-        <div className="w-full 800px:w-[60%]">
-          <h4 className="pt-3 text-[20px] font-semibold">Shipping Address:</h4>
-          <h4 className="pt-3 text-[20px]">
-            {order.shippingAddress.address1} {order.shippingAddress.address2}
-          </h4>
-          <h4 className="text-[20px]">{order.shippingAddress.country}</h4>
-          <h4 className="text-[20px]">{order.shippingAddress.city}</h4>
-          <h4 className="text-[20px]">{order.user?.phoneNumber}</h4>
+        {/* Order Items */}
+        <div className="mb-10">
+          <h4 className="text-[14px] font-black text-[#16697A] uppercase tracking-widest mb-6 px-2">Purchased Items</h4>
+          <div className="space-y-4">
+            {order.cart?.map((item, idx) => (
+              <div key={idx} className="group bg-white/50 hover:bg-white rounded-3xl p-4 flex items-center gap-6 border border-transparent hover:border-[#16697A]/10 transition-all duration-300">
+                <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-md group-hover:scale-105 transition-transform duration-500">
+                  <img src={item.images[0]?.url} alt="" className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1">
+                  <h5 className="text-[16px] font-black text-[#16697A] uppercase tracking-wide mb-1">{item.name}</h5>
+                  <p className="text-[14px] font-bold text-[#489FB5]">
+                    US${item.discountPrice} <span className="text-[#16697A]/30 mx-2">x</span> {item.qty}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[16px] font-black text-[#FFA62B]">US${(item.discountPrice * item.qty).toFixed(2)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 flex justify-end px-6">
+            <div className="text-right">
+              <p className="text-[10px] font-black text-[#16697A]/40 uppercase tracking-widest mb-1">Grand Total</p>
+              <h2 className="text-3xl font-black text-[#16697A]">US${order.totalPrice}</h2>
+            </div>
+          </div>
         </div>
 
-        <div className="w-full 800px:w-[40%]">
-          <h4 className="pt-3 text-[20px]">Payment Info:</h4>
-          <h4>Status: {order.paymentInfo?.status || "Not Paid"}</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+          <div className="bg-[#16697A]/5 rounded-[32px] p-8 border border-white/50 backdrop-blur-sm">
+            <h4 className="text-[12px] font-black text-[#16697A] uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-[#FFA62B] rounded-full shadow-glow" />
+              Shipping Information
+            </h4>
+            <div className="space-y-2 text-[#16697A]/80 font-bold">
+              <p className="text-lg text-[#16697A] font-black">{order.user?.name}</p>
+              <p>{order.shippingAddress.address1} {order.shippingAddress.address2}</p>
+              <p>{order.shippingAddress.city}, {order.shippingAddress.country}</p>
+              <p className="pt-2 text-[#489FB5]">{order.user?.phoneNumber}</p>
+            </div>
+          </div>
+
+          <div className="bg-[#16697A]/5 rounded-[32px] p-8 border border-white/50 backdrop-blur-sm">
+            <h4 className="text-[12px] font-black text-[#16697A] uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-[#FFA62B] rounded-full shadow-glow" />
+              Payment Details
+            </h4>
+            <div className="space-y-4">
+              <div>
+                <p className="text-[10px] font-black text-[#16697A]/40 uppercase tracking-widest mb-1">Payment Status</p>
+                <div className={`inline-flex px-4 py-1.5 rounded-full text-[12px] font-black uppercase tracking-widest ${order.paymentInfo?.status === "Succeeded"
+                    ? "bg-green-100 text-green-700 border border-green-200"
+                    : "bg-orange-100 text-orange-700 border border-orange-200"
+                  }`}>
+                  {order.paymentInfo?.status || "Pending"}
+                </div>
+              </div>
+              {order.paymentInfo?.type && (
+                <div>
+                  <p className="text-[10px] font-black text-[#16697A]/40 uppercase tracking-widest mb-1">Method</p>
+                  <p className="text-[14px] font-black text-[#16697A] uppercase">{order.paymentInfo.type}</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
 
-      <br /><br />
-      <h4 className="pt-3 text-[20px] font-semibold">Order Status:</h4>
-      <select
-        value={status}
-        onChange={(e) => setStatus(e.target.value)}
-        className="w-[200px] mt-2 border h-[35px] rounded-[5px]"
-      >
-        {statusOptions.map((option, idx) => (
-          <option key={idx} value={option}>{option}</option>
-        ))}
-      </select>
+        <div className="bg-[#16697A] rounded-[32px] p-8 text-white shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+          <div className="relative z-10 lg:flex items-center justify-between">
+            <div>
+              <h4 className="text-[18px] font-black uppercase tracking-widest mb-2">Order Fulfillment</h4>
+              <p className="text-white/60 text-xs font-bold uppercase tracking-[0.2em]">Update current shipping status</p>
+            </div>
+            <div className="mt-6 lg:mt-0 flex flex-wrap items-center gap-4">
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="bg-white/10 border border-white/20 text-white font-black text-[13px] uppercase tracking-wider rounded-2xl px-6 h-[50px] outline-none focus:bg-white/20 transition-all cursor-pointer min-w-[240px]"
+              >
+                <option value="" className="text-gray-800">Select Status</option>
+                {statusOptions.map((option, idx) => (
+                  <option key={idx} value={option} className="text-gray-800">{option}</option>
+                ))}
+              </select>
 
-      <div
-        className={`${styles.button} mt-5 bg-[#FCE1E6]! rounded-sm! text-[#E94560] font-semibold h-[45px]! text-[18px]`}
-        onClick={order.status === "Processing refund" || order.status === "Refund Success" ? refundOrderUpdateHandler : orderUpdateHandler}
-      >
-        Update Status
+              <div
+                className="bg-[#FFA62B] text-[#16697A] font-black text-[13px] uppercase tracking-[0.2em] px-10 h-[50px] flex items-center justify-center rounded-2xl cursor-pointer hover:bg-white transition-all duration-500 shadow-xl"
+                onClick={order.status === "Processing refund" || order.status === "Refund Success" ? refundOrderUpdateHandler : orderUpdateHandler}
+              >
+                Apply Changes
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

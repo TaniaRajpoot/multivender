@@ -1,28 +1,28 @@
 import axios from 'axios';
 import { server } from '../../server';
 //loading seller
-export const loadSeller = ( ) =>async(dispatch) =>{
-    try {
-        dispatch({
-            type:"LoadSellerRequest"
-        });
-        const {data} = await axios.get(`${server}/shop/get-seller`,{withCredentials:true});
-        console.log(data);
-        dispatch({
-            type:"LoadSellerSuccess",
-            payload: data.seller,
-        });
-    } catch (error) {
-        console.error('LoadSeller error:', error);
-        dispatch({
-            type:"LoadSellerFail",
-            payload: error?.response?.data?.message || error?.message || "Something went wrong"
-        })
-    }
+export const loadSeller = () => async (dispatch) => {
+  try {
+    dispatch({
+      type: "LoadSellerRequest"
+    });
+    const { data } = await axios.get(`${server}/shop/get-seller`, { withCredentials: true });
+    console.log(data);
+    dispatch({
+      type: "LoadSellerSuccess",
+      payload: data.seller,
+    });
+  } catch (error) {
+    console.error('LoadSeller error:', error);
+    dispatch({
+      type: "LoadSellerFail",
+      payload: error?.response?.data?.message || error?.message || "Something went wrong"
+    })
+  }
 };
 
 
-   // get all sellers --- admin 
+// get all sellers --- admin 
 export const getAllSellers = () => async (dispatch) => {
   try {
     dispatch({
@@ -42,5 +42,19 @@ export const getAllSellers = () => async (dispatch) => {
       type: "getAllSellerFailed",
       payload: error.response?.data.message,
     });
+  }
+};
+
+// logout seller
+export const logoutSeller = () => async (dispatch) => {
+  try {
+    const { data } = await axios.get(`${server}/shop/logout`, {
+      withCredentials: true,
+    });
+    dispatch({
+      type: "sellerLogout",
+    });
+  } catch (error) {
+    console.error("Logout seller error:", error);
   }
 };

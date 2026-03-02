@@ -26,7 +26,7 @@ const DashboardHeader = () => {
       <div className="flex items-center gap-4">
         <Link to="/dashboard" className="flex items-center gap-3 group">
           <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center p-2 group-hover:bg-[#FFA62B] transition-all duration-500 shadow-xl">
-            <img src="/logo-icon.png" alt="" className="w-full h-full object-contain brightness-0 invert" />
+            <img src="/logo.png" alt="" className="w-full h-full object-contain brightness-0 invert" />
           </div>
           <div>
             <h1 className="text-xl font-black text-white tracking-tighter leading-none italic">CROWN<span className="text-[#FFA62B]">MARKET</span></h1>

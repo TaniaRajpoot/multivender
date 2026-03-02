@@ -6,8 +6,8 @@ const ShopAllEvents = () => {
   return (
     <div>
       <DashboardHeader />
-      <div className="flex justify-between w-full">
-      <div className="w-20 md:w-[330px] bg-white border-r">
+      <div className="flex items-start justify-between w-full">
+        <div className="w-[80px] md:w-[330px] sticky top-0 z-20">
           <DashboardSideBar active={5} />
         </div>
         <div className="w-full flex justify-center">

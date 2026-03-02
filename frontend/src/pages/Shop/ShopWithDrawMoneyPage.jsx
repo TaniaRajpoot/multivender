@@ -7,12 +7,12 @@ const ShopWithDrawMoneyPage = () => {
     <div>
       <DashboardHeader />
       <div className="flex items-start justify-between w-full">
-        <div className="w-20 md:w-[100px] lg:w-[330px]">
+        <div className="w-[80px] md:w-[330px] sticky top-0 z-20">
           <DashboardSidebar active={7} />
         </div>
         <WithDrawMoney />
       </div>
-      
+
     </div>
   );
 };
