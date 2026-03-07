@@ -1,17 +1,3 @@
-// const mongoose = require("mongoose");
-
-// const connectDatabase = () => {
-//   mongoose
-//     .connect(process.env.DB_URL, {
-//       useNewUrlParser: true,
-//       useUnifiedTopology: true,
-//     })
-//     .then((data) => {
-//       console.log(`mongodb connected with server : ${data.connection.host}`);
-//     });
-// };
-
-// module.exports = connectDatabase;
 
 
 const mongoose = require("mongoose");
@@ -32,7 +18,7 @@ const connectDatabase = () => {
           "Please go to Network Access in your MongoDB Atlas dashboard and add your current IP."
         );
       }
-      process.exit(1); // Exit process if DB fails
+      process.exit(1); 
     });
 };
 
