@@ -103,7 +103,7 @@ const AllEvents = () => {
     name: item.name,
     price: "$" + item.discountPrice,
     stock: item.stock,
-    sold: item.sold_out,
+    sold: item.sold_out ?? item.soldOut ?? 0,
   })) || [];
 
   return (

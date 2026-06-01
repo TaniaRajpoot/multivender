@@ -1,3 +1,10 @@
+//config - MUST BE FIRST before any middleware that uses env vars
+if (process.env.NODE_ENV != "PRODUCTION") {
+  require("dotenv").config({
+    path: "backend/config/.env",
+  });
+}
+
 const express = require("express");
 const ErrorHandler = require("./middleware/error");
 const app = express();
@@ -7,21 +14,24 @@ const cors = require("cors");
 
 app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
+const isDev = process.env.NODE_ENV !== "PRODUCTION";
+
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL || "http://localhost:5173"],
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+      if (isDev && /^http:\/\/localhost(:\d+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+      const allowed = process.env.FRONTEND_URL || "http://localhost:5173";
+      if (origin === allowed) return callback(null, true);
+      callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
 
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
-
-//config
-if (process.env.NODE_ENV != "PRODUCTION") {
-  require("dotenv").config({
-    path: "backend/config/.env",
-  });
-}
 
 //import routes
 const user = require("./controller/user");

@@ -5,86 +5,58 @@ import { MdOutlineLocalOffer } from "react-icons/md";
 import { RxDashboard } from "react-icons/rx";
 import { VscNewFile } from "react-icons/vsc";
 import { CiMoneyBill, CiSettings } from "react-icons/ci";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { HiOutlineReceiptRefund, HiOutlineLogout } from "react-icons/hi";
 import { BiMessageSquareDetail } from "react-icons/bi";
 import { useDispatch } from "react-redux";
 import { logoutSeller } from "../../../redux/actions/seller";
+import { ui } from "../../../styles/theme";
 
 const ShopDashboardSidebar = ({ active }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const logoutHandler = () => {
     dispatch(logoutSeller());
-    window.location.reload();
+    window.location.href = "/shop-login";
   };
+
   const menuItems = [
-    { id: 1, label: "Dashboard", icon: RxDashboard, path: "/dashboard" },
-    { id: 2, label: "All Orders", icon: FiShoppingBag, path: "/dashboard-orders" },
-    { id: 3, label: "All Products", icon: FiPackage, path: "/dashboard-products" },
-    { id: 4, label: "Create Product", icon: AiOutlineFolderAdd, path: "/dashboard-create-product" },
-    { id: 5, label: "All Events", icon: MdOutlineLocalOffer, path: "/dashboard-events" },
-    { id: 6, label: "Create Event", icon: VscNewFile, path: "/dashboard-create-event" },
-    { id: 7, label: "Withdraw Money", icon: CiMoneyBill, path: "/dashboard-withdraw-money" },
-    { id: 8, label: "Shop Inbox", icon: BiMessageSquareDetail, path: "/dashboard-messages" },
-    { id: 9, label: "Discount Codes", icon: AiOutlineGift, path: "/dashboard-coupons" },
-    { id: 10, label: "Refunds", icon: HiOutlineReceiptRefund, path: "/dashboard-refunds" },
-    { id: 11, label: "Settings", icon: CiSettings, path: "/settings" },
+    { id: 1, label: "Overview", path: "/dashboard", icon: RxDashboard },
+    { id: 2, label: "Orders", path: "/dashboard-orders", icon: FiShoppingBag },
+    { id: 3, label: "Products", path: "/dashboard-products", icon: FiPackage },
+    { id: 4, label: "Add product", path: "/dashboard-create-product", icon: AiOutlineFolderAdd },
+    { id: 5, label: "Events", path: "/dashboard-events", icon: MdOutlineLocalOffer },
+    { id: 6, label: "Create event", path: "/dashboard-create-event", icon: VscNewFile },
+    { id: 7, label: "Payments", path: "/dashboard-withdraw-money", icon: CiMoneyBill },
+    { id: 8, label: "Messages", path: "/dashboard-messages", icon: BiMessageSquareDetail },
+    { id: 9, label: "Discount codes", path: "/dashboard-coupons", icon: AiOutlineGift },
+    { id: 10, label: "Refunds", path: "/dashboard-refunds", icon: HiOutlineReceiptRefund },
+    { id: 11, label: "Shop settings", path: "/settings", icon: CiSettings },
   ];
 
   return (
-    <div className="w-full min-h-screen bg-white shadow-sm border-r sticky top-0 left-0 z-10 md:p-4 overflow-y-auto">
-      <div className="hidden md:block mb-8 pl-4 pt-8">
-        <p className="text-[10px] font-black text-[#16697A]/60 uppercase tracking-[0.4em]">Shop Dashboard</p>
-      </div>
-
-      <nav className="space-y-2 pt-8 md:pt-0">
-        {menuItems.map((item) => (
-          <Link key={item.id} to={item.path} className="block group">
-            <div className={`
-              flex items-center md:gap-4 px-4 py-3 rounded-2xl transition-all duration-300 group
-              ${active === item.id
-                ? "bg-[#16697A] text-white shadow-xl translate-x-1"
-                : "text-[#16697A] hover:bg-[#EDE7E3]/50"
-              }
-            `}>
-              <div className={`
-                p-2 rounded-xl transition-all duration-300
-                ${active === item.id ? "bg-[#FFA62B] text-white rotate-6" : "text-[#489FB5] group-hover:text-[#16697A]"}
-              `}>
-                <item.icon size={20} />
-              </div>
-              <span className={`
-                hidden md:block text-[13px] font-black uppercase tracking-widest transition-all
-                ${active === item.id ? "text-white" : "text-[#16697A]/60"}
-              `}>
-                {item.label}
-              </span>
-              {active === item.id && (
-                <div className="hidden md:block ml-auto w-1 h-6 bg-[#FFA62B] rounded-full shadow-glow" />
-              )}
-            </div>
-          </Link>
-        ))}
+    <div className={`${ui.card} min-h-[calc(100vh-120px)] p-4 sticky top-24`}>
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4 px-2">Shop menu</p>
+      <nav className="space-y-1">
+        {menuItems.map((item) => {
+          const isActive = active === item.id || location.pathname === item.path;
+          return (
+            <Link key={item.id} to={item.path} className={isActive ? ui.sidebarLinkActive : ui.sidebarLink}>
+              <item.icon size={20} />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
       </nav>
-
-      <div className="w-full flex items-center md:gap-4 px-4 py-3 rounded-2xl transition-all duration-300 cursor-pointer text-red-500 hover:bg-red-50 mt-4 group" onClick={logoutHandler}>
-        <div className="p-2 rounded-xl text-red-400 group-hover:scale-110 transition-transform">
-          <HiOutlineLogout size={20} />
-        </div>
-        <span className="hidden md:block text-[13px] font-black uppercase tracking-widest">
-          Log Out
-        </span>
-      </div>
-
-      <div className="hidden md:block pt-20 mt-8 border-t border-[#16697A]/10">
-        <div className="bg-[#EDE7E3]/60 rounded-3xl p-6 border border-white text-center">
-          <div className="w-12 h-12 bg-[#FFA62B]/20 flex items-center justify-center rounded-2xl mx-auto mb-4 text-[#FFA62B]">
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1a1 1 0 112 0v1a1 1 0 11-2 0zM13.536 14.95a1 1 0 011.414-1.414l.707.707a1 1 0 01-1.414 1.414l-.707-.707zM16.343 16.343a1 1 0 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414z" /></svg>
-          </div>
-          <p className="text-[10px] font-black text-[#16697A]/40 uppercase tracking-widest leading-relaxed">Store Secured</p>
-        </div>
-      </div>
+      <button
+        type="button"
+        onClick={logoutHandler}
+        className="flex items-center gap-3 w-full mt-6 rounded-lg px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50"
+      >
+        <HiOutlineLogout size={20} />
+        Log out
+      </button>
     </div>
   );
 };

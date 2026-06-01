@@ -1,16 +1,13 @@
 import React from "react";
-import Header from "../components/Layout/Header";
-import Footer from "../components/Layout/Footer";
 import TrackOrder from "../components/profile/TrackOrder.jsx";
+import StoreLayout from "../components/ui/StoreLayout";
 
-const TrackOrderPage = () => {
-  return (
-    <div>
-      <Header />
+const TrackOrderPage = () => (
+  <StoreLayout>
+    <div className="max-w-6xl mx-auto px-4 py-10">
       <TrackOrder />
-      <Footer />
     </div>
-  );
-};
+  </StoreLayout>
+);
 
 export default TrackOrderPage;

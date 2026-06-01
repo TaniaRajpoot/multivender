@@ -1,20 +1,11 @@
 import React from "react";
-import DashboardSidebar from "../../components/Shop/Layout/DashboardSideBar";
-import DashboardHeader from "../../components/Shop/Layout/DashboardHeader";
-import WithDrawMoney from "../../components/Shop/WithDrawMoney";
-const ShopWithDrawMoneyPage = () => {
-  return (
-    <div>
-      <DashboardHeader />
-      <div className="flex items-start justify-between w-full">
-        <div className="w-[80px] md:w-[330px] sticky top-0 z-20">
-          <DashboardSidebar active={7} />
-        </div>
-        <WithDrawMoney />
-      </div>
+import ShopLayout from "../../components/ui/ShopLayout";
+import WithdrawMoney from "../../components/Shop/WithdrawMoney";
 
-    </div>
-  );
-};
+const ShopWithDrawMoneyPage = () => (
+  <ShopLayout sidebarActive={7}>
+    <WithdrawMoney />
+  </ShopLayout>
+);
 
 export default ShopWithDrawMoneyPage;

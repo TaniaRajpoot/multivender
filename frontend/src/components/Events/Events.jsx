@@ -21,10 +21,11 @@ const Events = () => {
   }, [allEvents]);
 
   return (
-    <div className="bg-[#EDE7E3] min-h-screen font-Inter">
-      <div className="max-w-[1400px] mx-auto py-10 px-4 md:px-8">
-        <div className="text-center mb-8 animate-in slide-in-from-top-8 duration-700">
-          <h2 className="text-3xl md:text-5xl font-[700] text-[#16697A] tracking-tighter leading-none italic font-display">Events</h2>
+    <div className="bg-gray-50 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-semibold text-gray-900">Special offers & events</h2>
+          <p className="text-gray-600 mt-2 text-sm">Limited-time deals from our sellers</p>
         </div>
 
         {isLoading ? (

@@ -6,6 +6,7 @@ import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
 import CheckoutSteps from "./CheckoutSteps";
+import { ui } from "../../styles/theme";
 
 const Checkout = () => {
   const { user } = useSelector((state) => state.user);
@@ -41,31 +42,67 @@ const Checkout = () => {
   const shipping = subTotalPrice * 0.1;
   const totalPrice = couponCodeData ? (subTotalPrice + shipping - discountPrice).toFixed(2) : (subTotalPrice + shipping).toFixed(2);
 
+  const normalizeId = (id) => {
+    if (id == null) return "";
+    if (typeof id === "object") return String(id._id || id.$oid || id);
+    return String(id);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const name = couponCode;
+    const code = couponCode?.trim();
+    if (!code) {
+      toast.error("Please enter a coupon code");
+      return;
+    }
     try {
-      const res = await axios.get(`${server}/coupon/get-coupon-value/${name}`);
-      if (res.data.couponCode !== null) {
-        let shopId = res.data.couponCode?.shopId || res.data.couponCode?.shop;
-        if (shopId && typeof shopId === 'object' && shopId.$oid) shopId = shopId.$oid;
-        const couponCodeValue = res.data.couponCode?.value;
-        const isCouponValid = cart && cart.filter((item) => {
-          const itemShopId = typeof item.shopId === 'object' && item.shopId.$oid ? item.shopId.$oid : item.shopId;
-          return itemShopId === shopId;
-        });
-        if (isCouponValid.length === 0) {
-          toast.error("Coupon code is not valid for items in your cart");
-        } else {
-          const eligiblePrice = isCouponValid.reduce((acc, item) => acc + item.qty * item.discountPrice, 0);
-          const discountAmount = (eligiblePrice * couponCodeValue) / 100;
-          setDiscountPrice(discountAmount);
-          setCouponCodeData(res.data.couponCode);
-          toast.success(`Coupon applied! You saved ${discountAmount.toFixed(2)}`);
-        }
-      } else {
+      const res = await axios.get(`${server}/coupon/get-coupon-value/${encodeURIComponent(code)}`);
+      const coupon = res.data.couponCode;
+      if (!coupon) {
         toast.error("Coupon code doesn't exist!");
+        return;
       }
+
+      const shopId = normalizeId(coupon.shopId || coupon.shop);
+      const couponCodeValue = coupon.value;
+      const selectedProduct = coupon.selectedProduct;
+
+      let eligibleItems =
+        cart?.filter((item) => normalizeId(item.shopId) === shopId) || [];
+
+      if (selectedProduct) {
+        eligibleItems = eligibleItems.filter((item) => item.name === selectedProduct);
+      }
+
+      if (eligibleItems.length === 0) {
+        toast.error(
+          selectedProduct
+            ? "Coupon is not valid for the selected product in your cart"
+            : "Coupon code is not valid for items in your cart"
+        );
+        return;
+      }
+
+      const eligiblePrice = eligibleItems.reduce(
+        (acc, item) => acc + item.qty * item.discountPrice,
+        0
+      );
+
+      const minAmount = coupon.minAmmount ?? coupon.minAmount;
+      const maxAmount = coupon.maxAmmount ?? coupon.maxAmount;
+      if (minAmount != null && eligiblePrice < minAmount) {
+        toast.error(`Minimum order amount of $${minAmount} required for this coupon`);
+        return;
+      }
+      if (maxAmount != null && eligiblePrice > maxAmount) {
+        toast.error(`Maximum order amount of $${maxAmount} for this coupon exceeded`);
+        return;
+      }
+
+      const discountAmount = (eligiblePrice * couponCodeValue) / 100;
+      setDiscountPrice(discountAmount);
+      setCouponCodeData(coupon);
+      toast.success(`Coupon applied! You saved $${discountAmount.toFixed(2)}`);
       setCouponCode("");
     } catch (error) {
       toast.error(error.response?.data?.message || "Error applying coupon code");
@@ -74,7 +111,7 @@ const Checkout = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#EDE7E3] pb-20">
+    <div className="w-full min-h-screen bg-gray-50 pb-20">
       <CheckoutSteps active={1} />
       <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-24">
         <div className="flex flex-col lg:flex-row gap-12 mt-8">
@@ -113,53 +150,48 @@ const Checkout = () => {
 
 const ShippingInfo = ({ user, country, setCountry, state, setState, city, setCity, userInfo, setUserInfo, address1, setAddress1, address2, setAddress2, zipCode, setZipCode }) => {
   return (
-    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 md:p-12 border border-white shadow-soft">
-      <div className="flex items-center gap-4 mb-10">
-        <div className="w-10 h-10 bg-[#16697A] rounded-xl flex items-center justify-center text-white">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-        </div>
-        <h2 className="text-2xl font-[700] text-[#16697A] tracking-tight font-display italic">Shipping Address</h2>
-      </div>
+    <div className="bg-white rounded-xl border border-gray-200 p-6 md:p-8 shadow-sm">
+      <h2 className="text-xl font-semibold text-gray-900 mb-6">Delivery address</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-2">
-          <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1 font-sans">Name on Card</label>
-          <input type="text" value={user?.name} readOnly className="w-full bg-[#EDE7E3]/30 border border-transparent rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner font-sans" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className={ui.label}>Full name</label>
+          <input type="text" value={user?.name} readOnly className={`${ui.input} bg-gray-50`} />
         </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1">Email Address</label>
-          <input type="email" value={user?.email} readOnly className="w-full bg-[#EDE7E3]/30 border border-transparent rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner font-sans" />
+        <div>
+          <label className={ui.label}>Email</label>
+          <input type="email" value={user?.email} readOnly className={`${ui.input} bg-gray-50`} />
         </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.2em] ml-1">Phone Number</label>
-          <input type="text" value={user?.phoneNumber} readOnly className="w-full bg-[#EDE7E3]/30 border border-transparent rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner font-sans" />
+        <div>
+          <label className={ui.label}>Phone</label>
+          <input type="text" value={user?.phoneNumber} readOnly className={`${ui.input} bg-gray-50`} />
         </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.2em] ml-1">Zip Code</label>
-          <input type="number" value={zipCode} onChange={(e) => setZipCode(e.target.value)} placeholder="e.g. 10001" className="w-full bg-[#EDE7E3]/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner transition-all outline-none font-sans" />
+        <div>
+          <label className={ui.label}>Zip code</label>
+          <input type="number" value={zipCode} onChange={(e) => setZipCode(e.target.value)} placeholder="e.g. 10001" className={ui.input} />
         </div>
 
-        <div className="space-y-2">
-          <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1 font-sans">Country</label>
-          <select className="w-full bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-6 py-4 font-bold text-[#16697A] shadow-inner outline-none appearance-none" value={country} onChange={(e) => { setCountry(e.target.value); setState(""); setCity(""); }}>
+        <div>
+          <label className={ui.label}>Country</label>
+          <select className={ui.select} value={country} onChange={(e) => { setCountry(e.target.value); setState(""); setCity(""); }}>
             <option value="">Select Country</option>
             {Country && Country.getAllCountries().map((item) => (
               <option key={item.isoCode} value={item.isoCode}>{item.name}</option>
             ))}
           </select>
         </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1 font-sans">State/Province</label>
-          <select className="w-full bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-6 py-4 font-bold text-[#16697A] shadow-inner outline-none appearance-none" value={state} onChange={(e) => { setState(e.target.value); setCity(""); }}>
+        <div>
+          <label className={ui.label}>State / province</label>
+          <select className={ui.select} value={state} onChange={(e) => { setState(e.target.value); setCity(""); }}>
             <option value="">Select State</option>
             {State && State.getStatesOfCountry(country).map((item) => (
               <option key={item.isoCode} value={item.isoCode}>{item.name}</option>
             ))}
           </select>
         </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1 font-sans">City</label>
-          <select className="w-full bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-6 py-4 font-bold text-[#16697A] shadow-inner outline-none appearance-none" value={city} onChange={(e) => setCity(e.target.value)}>
+        <div>
+          <label className={ui.label}>City</label>
+          <select className={ui.select} value={city} onChange={(e) => setCity(e.target.value)}>
             <option value="">Select City</option>
             {City && City.getCitiesOfState(country, state).map((item) => (
               <option key={item.name} value={item.name}>{item.name}</option>
@@ -167,29 +199,44 @@ const ShippingInfo = ({ user, country, setCountry, state, setState, city, setCit
           </select>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.2em] ml-1">Primary Address</label>
-          <input type="text" required value={address1} onChange={(e) => setAddress1(e.target.value)} placeholder="Building, Street Name" className="w-full bg-[#EDE7E3]/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner transition-all outline-none font-sans" />
+        <div>
+          <label className={ui.label}>Street address</label>
+          <input type="text" required value={address1} onChange={(e) => setAddress1(e.target.value)} placeholder="Building, street" className={ui.input} />
         </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.2em] ml-1">Secondary Address</label>
-          <input type="text" value={address2} onChange={(e) => setAddress2(e.target.value)} placeholder="Apartment, Studio, Suite" className="w-full bg-[#EDE7E3]/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner transition-all outline-none font-sans" />
+        <div>
+          <label className={ui.label}>Apartment, suite (optional)</label>
+          <input type="text" value={address2} onChange={(e) => setAddress2(e.target.value)} placeholder="Apt, floor" className={ui.input} />
         </div>
       </div>
 
-      <div className="mt-10 pt-8 border-t border-[#16697A]/10">
-        <h5 className="text-[#489FB5] font-black text-xs uppercase tracking-widest cursor-pointer hover:text-[#FFA62B] transition-colors inline-flex items-center gap-2" onClick={() => setUserInfo(!userInfo)}>
-          {userInfo ? "− Hide Saved Addresses" : "+ Use A Saved Address"}
-        </h5>
+      <div className="mt-8 pt-6 border-t border-gray-200">
+        <button
+          type="button"
+          className="text-sm font-medium text-teal-700 hover:underline"
+          onClick={() => setUserInfo(!userInfo)}
+        >
+          {userInfo ? "Hide saved addresses" : "Use a saved address"}
+        </button>
 
         {userInfo && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 animate-in slide-in-from-top duration-500">
-            {user && user.addresses.map((item, index) => (
-              <div key={index} onClick={() => { setAddress1(item.address1); setAddress2(item.address2); setZipCode(item.zipCode); setCountry(item.country); setState(item.state || ""); setCity(item.city); }}
-                className="p-5 bg-white rounded-2xl border-2 border-transparent hover:border-[#16697A] cursor-pointer group transition-all shadow-sm">
-                <h2 className="font-black text-[#16697A] group-hover:text-[#489FB5]">{item.addressType}</h2>
-                <p className="text-xs text-[#6B7280] font-bold mt-1 truncate">{item.address1}</p>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+            {user?.addresses?.map((item, index) => (
+              <button
+                key={index}
+                type="button"
+                onClick={() => {
+                  setAddress1(item.address1);
+                  setAddress2(item.address2);
+                  setZipCode(item.zipCode);
+                  setCountry(item.country);
+                  setState(item.state || "");
+                  setCity(item.city);
+                }}
+                className="p-4 text-left rounded-xl border border-gray-200 hover:border-teal-600 bg-white"
+              >
+                <p className="font-medium text-gray-900">{item.addressType}</p>
+                <p className="text-xs text-gray-500 mt-1 truncate">{item.address1}</p>
+              </button>
             ))}
           </div>
         )}
@@ -200,59 +247,48 @@ const ShippingInfo = ({ user, country, setCountry, state, setState, city, setCit
 
 const CartData = ({ handleSubmit, totalPrice, shipping, subTotalPrice, couponCode, setCouponCode, discountPrice, paymentSubmit }) => {
   return (
-    <div className="space-y-8">
-      <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 md:p-10 border border-white shadow-soft">
-        <h3 className="text-xl font-[700] text-[#16697A] mb-8 tracking-tight font-display italic">Order Summary</h3>
-
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em]">Subtotal</span>
-            <span className="text-lg font-[700] text-[#16697A] font-sans">${subTotalPrice.toFixed(2)}</span>
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">Order summary</h3>
+        <div className="space-y-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Items subtotal</span>
+            <span className="font-semibold text-gray-900">${subTotalPrice.toFixed(2)}</span>
           </div>
-
-          <div className="flex justify-between items-center">
-            <span className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em]">Shipping</span>
-            <span className="text-lg font-[700] text-[#16697A] font-sans">${shipping.toFixed(2)}</span>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Shipping (est.)</span>
+            <span className="font-semibold text-gray-900">${shipping.toFixed(2)}</span>
           </div>
-
-          <div className="flex justify-between items-center pb-4 border-b border-[#16697A]/10">
-            <span className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em]">Discount</span>
-            <span className="text-lg font-[700] text-green-600 font-sans">
+          <div className="flex justify-between border-b border-gray-100 pb-3">
+            <span className="text-gray-600">Discount</span>
+            <span className="font-semibold text-green-600">
               {discountPrice > 0 ? `-$${discountPrice.toFixed(2)}` : "$0.00"}
             </span>
           </div>
-
-          <div className="flex justify-between items-center pt-2">
-            <span className="text-[12px] font-[700] text-[#16697A] uppercase tracking-[0.2em] font-sans">Total</span>
-            <span className="text-3xl font-[700] text-[#16697A] tracking-tighter font-display italic font-sans">${totalPrice}</span>
+          <div className="flex justify-between pt-2 text-base">
+            <span className="font-semibold text-gray-900">Total to pay</span>
+            <span className="text-xl font-bold text-gray-900">${totalPrice}</span>
           </div>
         </div>
-
-        <div className="mt-10">
-          <label className="block text-[10px] font-black text-[#489FB5] uppercase tracking-widest mb-3 ml-1">Promotional Code</label>
-          <div className="flex gap-3">
-            <input type="text" className="flex-1 bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-5 py-4 font-bold text-sm text-[#16697A] shadow-inner outline-none transition-all focus:bg-white" placeholder="ENTER CODE" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
-            <button type="submit" onClick={handleSubmit} className="px-8 bg-[#16697A] text-white font-[700] text-[11px] rounded-2xl hover:bg-[#FFA62B] transition-all shadow-lg uppercase tracking-widest font-sans">Apply</button>
+        <div className="mt-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">Discount code</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 outline-none"
+              placeholder="Enter code"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+            />
+            <button type="button" onClick={handleSubmit} className="rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800">
+              Apply
+            </button>
           </div>
         </div>
       </div>
-
-      <button onClick={paymentSubmit} className="group relative w-full h-24 flex items-center justify-center bg-[#16697A] text-[#EDE7E3] font-[700] text-lg rounded-[32px] hover:bg-[#FFA62B] transition-all duration-500 shadow-2xl overflow-hidden transform hover:-translate-y-2 font-sans uppercase tracking-[0.2em] text-[15px]">
-        <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-        <span className="relative z-10 flex items-center gap-4">
-          Go to Payment
-          <svg className="w-5 h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-        </span>
+      <button type="button" onClick={paymentSubmit} className="w-full rounded-lg bg-teal-700 py-4 text-base font-semibold text-white hover:bg-teal-800 shadow-sm">
+        Continue to payment →
       </button>
-
-      <div className="flex flex-col items-center gap-4 opacity-40 grayscale group hover:grayscale-0 hover:opacity-100 transition-all duration-700">
-        <p className="text-[10px] font-black tracking-[0.3em] uppercase text-[#16697A]">Global Payment Partners</p>
-        <div className="flex gap-6 items-center grayscale">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" className="h-4 object-contain" alt="Visa" />
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" className="h-6 object-contain" alt="Mastercard" />
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/1200px-PayPal.svg.png" className="h-5 object-contain" alt="Paypal" />
-        </div>
-      </div>
     </div>
   );
 };

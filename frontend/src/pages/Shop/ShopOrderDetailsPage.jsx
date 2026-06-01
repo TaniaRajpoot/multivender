@@ -1,16 +1,11 @@
 import React from "react";
-import DashboardHeader from "../../components/Shop/Layout/DashboardHeader.jsx";
-import Footer from "../../components/Layout/Footer.jsx";
-import OrderDetails from "../../components/Shop/OrderDetails.jsx";
+import ShopLayout from "../../components/ui/ShopLayout";
+import OrderDetails from "../../components/Shop/OrderDetails";
 
-const ShopOrderDetails = () => {
-  return (
-    <div>
-      <DashboardHeader />
-      <OrderDetails />
-      <Footer />
-    </div>
-  );
-};
+const ShopOrderDetailsPage = () => (
+  <ShopLayout sidebarActive={2}>
+    <OrderDetails />
+  </ShopLayout>
+);
 
-export default ShopOrderDetails;
+export default ShopOrderDetailsPage;

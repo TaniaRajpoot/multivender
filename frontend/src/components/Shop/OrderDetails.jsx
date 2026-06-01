@@ -8,6 +8,7 @@ import { getAllOrdersOfShop } from "../../redux/actions/order";
 import { server } from "../../server";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Loader from "../Layout/Loader";
 
 const OrderDetails = () => {
   const { orders, isLoading } = useSelector((state) => state.order);
@@ -22,9 +23,15 @@ const OrderDetails = () => {
     if (seller?._id) {
       dispatch(getAllOrdersOfShop(seller._id));
     }
-  }, [dispatch, seller]);
+  }, [dispatch, seller?._id]);
 
-  const order = orders?.find((item) => item._id === id);
+  const order = orders?.find((item) => String(item._id) === String(id));
+
+  useEffect(() => {
+    if (order?.status) {
+      setStatus(order.status);
+    }
+  }, [order]);
 
   const orderUpdateHandler = async () => {
     try {
@@ -34,6 +41,7 @@ const OrderDetails = () => {
         { withCredentials: true }
       );
       toast.success("Order status updated!");
+      dispatch(getAllOrdersOfShop(seller._id));
       navigate("/dashboard-orders");
     } catch (error) {
       toast.error(error?.response?.data?.message || "Something went wrong!");
@@ -49,12 +57,28 @@ const OrderDetails = () => {
       );
       toast.success("Refund status updated!");
       dispatch(getAllOrdersOfShop(seller._id));
+      navigate("/dashboard-refunds");
     } catch (error) {
       toast.error(error?.response?.data?.message || "Something went wrong!");
     }
   };
 
-  if (!order) return <h2 className="text-center mt-20">Loading order details...</h2>;
+  if (isLoading) return <Loader />;
+
+  if (!order) {
+    return (
+      <div className={`py-20 text-center ${styles.section}`}>
+        <h2 className="text-2xl font-black text-[#16697A] mb-4">Order not found</h2>
+        <p className="text-[#6B7280] mb-8">This order may have been removed or you do not have access.</p>
+        <Link
+          to="/dashboard-refunds"
+          className="inline-block px-8 py-4 bg-[#16697A] text-white font-bold rounded-2xl hover:bg-[#FFA62B] transition-all"
+        >
+          Back to Refunds
+        </Link>
+      </div>
+    );
+  }
 
   const statusOptions = order?.status === "Processing refund" || order?.status === "Refund Success"
     ? ["Processing refund", "Refund Success"]
@@ -63,16 +87,16 @@ const OrderDetails = () => {
     );
 
   return (
-    <div className={`py-8 min-h-screen ${styles.section}`}>
-      <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 border border-white shadow-soft">
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 md:p-8 shadow-sm">
         <div className="w-full flex items-center justify-between pb-8 border-b border-[#16697A]/10">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-[#16697A] rounded-2xl flex items-center justify-center text-white shadow-lg">
               <BsFillBagFill size={24} />
             </div>
             <div>
-              <h1 className={`${styles.heading} !pb-0`}>Order Details</h1>
-              <p className="text-[12px] font-bold text-[#16697A]/60 uppercase tracking-widest mt-1">Manage single order flow</p>
+              <h1 className="text-2xl font-semibold text-gray-900">Order details</h1>
+              <p className="text-sm text-gray-600 mt-1">Update status and review items</p>
             </div>
           </div>
           <Link to="/dashboard-orders">

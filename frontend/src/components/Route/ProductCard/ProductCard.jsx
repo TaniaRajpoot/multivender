@@ -73,16 +73,13 @@ const ProductCard = ({ data, isEvent }) => {
 
   return (
     <>
-      <div className="group relative w-full h-[400px] bg-white border border-[#16697A]/5 rounded-[32px] p-4 transition-all duration-700 hover:shadow-3xl hover:shadow-[#16697A]/10 hover:-translate-y-2 overflow-hidden">
-        {/* Badge / Status */}
+      <div className="group relative w-full bg-white border border-gray-200 rounded-xl p-4 transition hover:shadow-md overflow-hidden">
         {data?.discountPrice < data?.originalPrice && (
-          <div className="absolute top-6 left-6 z-10 px-4 py-1.5 bg-[#FFA62B] text-white text-[9px] font-[700] uppercase tracking-[0.2em] rounded-full shadow-lg shadow-orange-200">
-            Save
+          <div className="absolute top-4 left-4 z-10 px-2 py-1 bg-orange-500 text-white text-xs font-semibold rounded-md">
+            Sale
           </div>
         )}
-
-        {/* Image Container */}
-        <div className="relative w-full h-[180px] rounded-[28px] overflow-hidden mb-4 bg-[#EDE7E3]/40">
+        <div className="relative w-full h-44 rounded-lg overflow-hidden mb-3 bg-gray-100">
           <Link
             to={isEvent ? `/product/${data._id}?isEvent=true` : `/product/${data._id}`}
           >
@@ -168,7 +165,7 @@ const ProductCard = ({ data, isEvent }) => {
 
                 <div className="text-right">
                   <span className="text-[10px] font-[700] text-[#FFA62B] uppercase tracking-widest font-sans">
-                    {data?.sold_out || 0} SOLD
+                    {data?.sold_out ?? data?.soldOut ?? 0} SOLD
                   </span>
                 </div>
               </div>

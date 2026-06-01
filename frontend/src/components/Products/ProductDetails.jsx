@@ -96,7 +96,7 @@ const ProductDetails = ({ data }) => {
   };
 
   return (
-    <div className="bg-[#EDE7E3] min-h-screen pb-10">
+    <div className="bg-gray-50 min-h-screen pb-10">
       {data ? (
         <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-24">
           <div className="w-full py-8 md:py-16">
@@ -110,7 +110,7 @@ const ProductDetails = ({ data }) => {
                       alt={data.name}
                       className="w-full h-full object-contain p-12 mix-blend-multiply group-hover:scale-110 transition-transform duration-1000"
                     />
-                    <div className="absolute top-8 left-8 bg-[#FFA62B] text-white px-5 py-2 rounded-2xl text-[10px] font-[700] shadow-xl uppercase tracking-widest font-sans">
+                    <div className="absolute top-8 left-8 bg-teal-600 text-white px-5 py-2 rounded-2xl text-[10px] font-[700] shadow-xl uppercase tracking-widest font-sans">
                       New Arrival
                     </div>
                   </div>
@@ -121,7 +121,7 @@ const ProductDetails = ({ data }) => {
                         key={index}
                         onClick={() => setSelect(index)}
                         className={`relative h-24 w-24 min-w-[96px] rounded-3xl overflow-hidden transition-all duration-300 ${select === index
-                          ? "ring-4 ring-[#16697A] ring-offset-4 ring-offset-[#EDE7E3] scale-105"
+                          ? "ring-4 ring-teal-700 ring-offset-4 ring-offset-gray-50 scale-105"
                           : "opacity-60 hover:opacity-100 hover:scale-105"
                           }`}
                       >
@@ -135,28 +135,28 @@ const ProductDetails = ({ data }) => {
 
               {/* Right Side: Information & Interactions */}
               <div className="w-full lg:w-1/2 flex flex-col pt-4">
-                <div className="flex items-center gap-2 mb-6 uppercase tracking-[0.3em] font-black text-[#489FB5] text-xs">
+                <div className="flex items-center gap-2 mb-6 uppercase tracking-[0.3em] font-black text-teal-600 text-xs">
                   <span>Shop</span>
-                  <span className="w-1 h-1 bg-[#FFA62B] rounded-full" />
+                  <span className="w-1 h-1 bg-teal-600 rounded-full" />
                   <span>{data.category}</span>
                 </div>
 
-                <h1 className="text-3xl md:text-4xl font-[700] text-[#16697A] leading-tight mb-6 font-display italic">
+                <h1 className="text-3xl md:text-4xl font-[700] text-teal-800 leading-tight mb-6 font-display italic">
                   {data.name}
                 </h1>
 
                 <div className="flex items-center gap-8 mb-10">
                   <div className="flex flex-col">
-                    <span className="text-4xl font-black text-[#16697A]">${data.discountPrice}</span>
+                    <span className="text-4xl font-black text-teal-800">${data.discountPrice}</span>
                     {data.originalPrice && (
                       <span className="text-[#9CA3AF] line-through font-bold mt-1">${data.originalPrice}</span>
                     )}
                   </div>
-                  <div className="h-12 w-[1px] bg-[#16697A]/10" />
+                  <div className="h-12 w-[1px] bg-teal-700/10" />
                   <div className="flex flex-col">
                     <div className="flex items-center gap-1">
                       <Ratings rating={data.ratings || 4.5} />
-                      <span className="text-[#16697A] font-[600] text-sm ml-2 font-sans">({data.reviews?.length || 0})</span>
+                      <span className="text-teal-800 font-[600] text-sm ml-2 font-sans">({data.reviews?.length || 0})</span>
                     </div>
                   </div>
                 </div>
@@ -198,23 +198,23 @@ const ProductDetails = ({ data }) => {
                 {/* Interaction Section */}
                 <div className="bg-white/40 backdrop-blur-md border border-white rounded-[40px] p-8 md:p-10 mb-12 shadow-soft">
                   <div className="flex flex-wrap items-center gap-6 mb-8">
-                    <div className="flex items-center bg-[#EDE7E3] p-1.5 rounded-2xl shadow-inner border border-white/50">
+                    <div className="flex items-center bg-gray-100 p-1.5 rounded-2xl shadow-inner border border-white/50">
                       <button
-                        className="w-12 h-12 flex items-center justify-center text-[#16697A] hover:bg-white hover:rounded-xl hover:shadow-soft transition-all text-xl font-black"
+                        className="w-12 h-12 flex items-center justify-center text-teal-800 hover:bg-white hover:rounded-xl hover:shadow-soft transition-all text-xl font-black"
                         onClick={decrementCount}
                       > - </button>
-                      <span className="w-16 text-center text-[#16697A] font-black text-lg">{count}</span>
+                      <span className="w-16 text-center text-teal-800 font-black text-lg">{count}</span>
                       <button
-                        className="w-12 h-12 flex items-center justify-center text-[#16697A] hover:bg-white hover:rounded-xl hover:shadow-soft transition-all text-xl font-black"
+                        className="w-12 h-12 flex items-center justify-center text-teal-800 hover:bg-white hover:rounded-xl hover:shadow-soft transition-all text-xl font-black"
                         onClick={incrementCount}
                       > + </button>
                     </div>
-                    <p className="text-[#6B7280] text-sm font-bold italic ml-2">Only <span className="text-[#FFA62B]">{data.stock} units</span> left in stock</p>
+                    <p className="text-[#6B7280] text-sm font-bold italic ml-2">Only <span className="text-teal-600">{data.stock} units</span> left in stock</p>
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
                     <button
-                      className="flex-1 h-20 flex items-center justify-center gap-4 bg-[#16697A] text-[#EDE7E3] font-[700] text-lg rounded-3xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl hover:shadow-[#FFA62B]/20 transform hover:-translate-y-1 font-sans uppercase tracking-widest text-sm"
+                      className="flex-1 h-20 flex items-center justify-center gap-4 bg-teal-700 text-gray-100 font-[700] text-lg rounded-3xl hover:bg-teal-600 transition-all duration-500 shadow-xl hover:shadow-[teal-600]/20 transform hover:-translate-y-1 font-sans uppercase tracking-widest text-sm"
                       onClick={() => addToCartHandler(data._id)}
                     >
                       <AiOutlineShoppingCart size={24} />
@@ -222,7 +222,7 @@ const ProductDetails = ({ data }) => {
                     </button>
                     <button
                       onClick={() => click ? removeFromWishlistHandler(data) : addToWishlistHandler(data)}
-                      className={`h-20 w-20 flex items-center justify-center rounded-3xl transition-all duration-500 shadow-xl transform hover:-translate-y-1 ${click ? "bg-[#FFA62B] text-white" : "bg-white text-[#16697A] hover:text-[#FFA62B]"
+                      className={`h-20 w-20 flex items-center justify-center rounded-3xl transition-all duration-500 shadow-xl transform hover:-translate-y-1 ${click ? "bg-teal-600 text-white" : "bg-white text-teal-800 hover:text-teal-600"
                         }`}
                     >
                       {click ? <AiFillHeart size={28} /> : <AiOutlineHeart size={28} />}
@@ -242,13 +242,13 @@ const ProductDetails = ({ data }) => {
                       <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm" />
                     </div>
                     <div>
-                      <h4 className="font-[700] text-[#16697A] text-lg group-hover:text-[#489FB5] transition-colors">{data?.shop?.name}</h4>
+                      <h4 className="font-[700] text-teal-800 text-lg group-hover:text-teal-600 transition-colors">{data?.shop?.name}</h4>
                       <p className="text-xs font-[600] text-[#6B7280] font-sans">Store • {averageRating.toFixed(1)}/5 Stars</p>
                     </div>
                   </Link>
                   <button
                     onClick={handleMessageSubmit}
-                    className="w-14 h-14 bg-[#16697A] text-white rounded-2xl flex items-center justify-center hover:bg-[#489FB5] transition-all shadow-lg"
+                    className="w-14 h-14 bg-teal-700 text-white rounded-2xl flex items-center justify-center hover:bg-teal-600 transition-all shadow-lg"
                   >
                     <AiOutlineMessage size={24} />
                   </button>
@@ -282,17 +282,17 @@ const ProductsDetailsInfo = ({ data, products, totalReviewsLength, averageRating
 
   return (
     <div className="mt-20">
-      <div className="flex flex-wrap gap-8 md:gap-16 border-b border-[#16697A]/10 pb-4 mb-12">
+      <div className="flex flex-wrap gap-8 md:gap-16 border-b border-teal-800/10 pb-4 mb-12">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActive(tab.id)}
-            className={`relative py-2 text-lg font-[700] transition-all font-sans uppercase tracking-[0.1em] ${active === tab.id ? "text-[#16697A]" : "text-[#6B7280]/60 hover:text-[#16697A]"
+            className={`relative py-2 text-lg font-[700] transition-all font-sans uppercase tracking-[0.1em] ${active === tab.id ? "text-teal-800" : "text-[#6B7280]/60 hover:text-teal-800"
               }`}
           >
             {tab.label}
             {active === tab.id && (
-              <div className="absolute -bottom-4 left-0 w-full h-1 bg-[#FFA62B] rounded-full animate-in slide-in-from-left duration-300" />
+              <div className="absolute -bottom-4 left-0 w-full h-1 bg-teal-600 rounded-full animate-in slide-in-from-left duration-300" />
             )}
           </button>
         ))}
@@ -315,7 +315,7 @@ const ProductsDetailsInfo = ({ data, products, totalReviewsLength, averageRating
                   <div className="flex items-center gap-4 mb-6">
                     <img src={getImageUrl(item.user.avatar)} alt="" className="w-14 h-14 rounded-2xl object-cover shadow-md" />
                     <div>
-                      <h4 className="font-[700] text-[#16697A] font-sans">{item.user?.name}</h4>
+                      <h4 className="font-[700] text-teal-800 font-sans">{item.user?.name}</h4>
                       <Ratings rating={item?.rating} />
                     </div>
                   </div>
@@ -325,7 +325,7 @@ const ProductsDetailsInfo = ({ data, products, totalReviewsLength, averageRating
               ))
             ) : (
               <div className="col-span-full py-20 text-center">
-                <h4 className="text-xl font-[600] text-[#16697A] font-sans">No Reviews for this product!</h4>
+                <h4 className="text-xl font-[600] text-teal-800 font-sans">No Reviews for this product!</h4>
               </div>
             )}
           </div>
@@ -333,7 +333,7 @@ const ProductsDetailsInfo = ({ data, products, totalReviewsLength, averageRating
 
         {active === 3 && (
           <div className="flex flex-col lg:flex-row gap-12 animate-in fade-in duration-700">
-            <div className="w-full lg:w-[40%] bg-[#16697A] rounded-[48px] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
+            <div className="w-full lg:w-[40%] bg-teal-700 rounded-[48px] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl" />
               <div className="relative z-10">
                 <img src={getImageUrl(data?.shop?.avatar)} alt="" className="w-32 h-32 rounded-[32px] object-cover mb-8 border-4 border-white/20 shadow-2xl" />
@@ -354,18 +354,18 @@ const ProductsDetailsInfo = ({ data, products, totalReviewsLength, averageRating
                   </div>
                   <div>
                     <p className="text-[10px] font-black opacity-60 uppercase tracking-widest mb-1">Rating</p>
-                    <p className="font-black text-[#FFA62B]">{averageRating.toFixed(1)}/5</p>
+                    <p className="font-black text-teal-600">{averageRating.toFixed(1)}/5</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="flex-1 bg-white/40 backdrop-blur-md rounded-[48px] p-10 md:p-16 border border-white shadow-soft flex flex-col justify-center">
-              <h3 className="text-2xl font-[700] text-[#16697A] mb-6 font-display italic">Shop Info</h3>
+              <h3 className="text-2xl font-[700] text-teal-800 mb-6 font-display italic">Shop Info</h3>
               <p className="text-[#6B7280] text-lg leading-relaxed font-[500] mb-12 font-sans">
                 {data?.shop?.description}
               </p>
-              <Link to={`/shop/preview/${data?.shop._id}`} className="inline-flex items-center justify-center h-20 px-12 bg-[#16697A] text-[#EDE7E3] font-[700] rounded-3xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl self-start font-sans uppercase tracking-widest text-sm">
+              <Link to={`/shop/preview/${data?.shop._id}`} className="inline-flex items-center justify-center h-20 px-12 bg-teal-700 text-gray-100 font-[700] rounded-3xl hover:bg-teal-600 transition-all duration-500 shadow-xl self-start font-sans uppercase tracking-widest text-sm">
                 Visit Shop
               </Link>
             </div>

@@ -9,6 +9,7 @@ import Loader from "../Layout/Loader";
 import { server } from "../../server";
 import { toast } from "react-toastify";
 import { getAllProductsShop } from "../../redux/actions/product";
+import { getAllEventsShop } from "../../redux/actions/event";
 import { FiX } from "react-icons/fi";
 
 const AllCoupons = () => {
@@ -23,11 +24,13 @@ const AllCoupons = () => {
 
   const dispatch = useDispatch();
   const { seller } = useSelector((state) => state.seller);
-  const products = useSelector((state) => state.products?.products || []);
+  const products = useSelector((state) => state.product?.products || []);
+  const events = useSelector((state) => state.events?.events || []);
 
   useEffect(() => {
     if (seller?._id) {
       dispatch(getAllProductsShop(seller._id));
+      dispatch(getAllEventsShop(seller._id));
     }
   }, [dispatch, seller]);
 
@@ -39,7 +42,7 @@ const AllCoupons = () => {
         const res = await axios.get(`${server}/coupon/get-coupon/${seller._id}`, { withCredentials: true });
         setCoupons(res.data.couponCodes);
       } catch (err) {
-        toast.error("Failed to fetch privilege codes");
+        toast.error("Could not load discount codes");
       } finally {
         setIsLoading(false);
       }
@@ -48,20 +51,20 @@ const AllCoupons = () => {
   }, [seller]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Authorize permanent termination of this privilege code?")) return;
+    if (!window.confirm("Delete this discount code?")) return;
     try {
       await axios.delete(`${server}/coupon/delete-coupon/${id}`, { withCredentials: true });
-      toast.success("Privilege code terminated");
+      toast.success("Discount code deleted");
       setCoupons((prev) => prev.filter((coupon) => coupon._id !== id));
     } catch (err) {
-      toast.error("Termination failed");
+      toast.error("Could not delete code");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !value) {
-      toast.error("Required parameters missing.");
+      toast.error("Please enter a code name and discount percentage.");
       return;
     }
     try {
@@ -69,7 +72,7 @@ const AllCoupons = () => {
         name,
         minAmount: minAmount || null,
         maxAmount: maxAmount || null,
-        selectedProducts: selectedProduct || null,
+        selectedProduct: selectedProduct || null,
         value: Number(value),
         shopId: seller._id,
       }, { withCredentials: true });
@@ -83,17 +86,16 @@ const AllCoupons = () => {
       setSelectedProduct("");
       setValue("");
     } catch (err) {
-      toast.error("Synchronization error.");
+      toast.error(err.response?.data?.message || "Failed to create coupon code");
     }
   };
 
   const columns = [
-    { field: "id", headerName: "CODE ID", minWidth: 150, flex: 0.7, headerClassName: "grid-header" },
-    { field: "name", headerName: "DESIGNATION", minWidth: 180, flex: 1.2, headerClassName: "grid-header" },
-    { field: "price", headerName: "DISCOUNT VAL.", minWidth: 100, flex: 0.5, headerClassName: "grid-header" },
+    { field: "name", headerName: "Code name", minWidth: 180, flex: 1.2, headerClassName: "grid-header" },
+    { field: "price", headerName: "Discount", minWidth: 100, flex: 0.5, headerClassName: "grid-header" },
     {
       field: "Delete",
-      headerName: "PURGE",
+      headerName: "Remove",
       flex: 0.5,
       sortable: false,
       headerClassName: "grid-header",
@@ -112,80 +114,64 @@ const AllCoupons = () => {
   })) || [];
 
   return (
-    <div className="w-full px-4 md:px-12 py-10 font-Inter animate-in fade-in duration-1000">
+    <div className="p-4 sm:p-6">
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="max-w-[1600px] mx-auto space-y-8">
-
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-white/40 backdrop-blur-xl p-10 rounded-[48px] border border-white shadow-soft">
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-[#16697A] rounded-2xl flex items-center justify-center text-white">
-                  <AiOutlineGift size={20} />
-                </div>
-                <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.4em]">Incentive Architecture</p>
-              </div>
-              <h1 className="text-2xl font-black text-[#16697A] tracking-tighter italic uppercase">Privilege Codes</h1>
+              <h1 className="text-2xl font-semibold text-gray-900">Discount codes</h1>
+              <p className="text-sm text-gray-600 mt-1">Create codes customers can use at checkout.</p>
             </div>
-            <button onClick={() => setOpen(true)} className="px-8 py-4 bg-[#16697A] text-white font-black rounded-2xl hover:bg-[#FFA62B] transition-all transform hover:scale-105 shadow-xl flex items-center gap-3 uppercase tracking-widest text-[10px]">
-              <AiOutlinePlus size={18} /> Generate New Code
+            <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-teal-800">
+              <AiOutlinePlus size={18} /> New code
             </button>
           </div>
 
-          <div className="bg-white/70 backdrop-blur-2xl rounded-[48px] border border-white shadow-2xl overflow-hidden p-6 md:p-10">
-            <style>
-              {`
-                .grid-header {
-                  background-color: transparent !important;
-                  color: #16697A !important;
-                  font-weight: 900 !important;
-                  text-transform: uppercase !important;
-                  letter-spacing: 0.1em !important;
-                  font-size: 11px !important;
-                }
-                .MuiDataGrid-root { border: none !important; font-family: 'Inter', sans-serif !important; }
-                .MuiDataGrid-cell { border-bottom: 1px solid #EDE7E3 !important; color: #489FB5 !important; font-weight: 700 !important; display: flex !important; align-items: center !important; }
-                .MuiDataGrid-columnHeaders { border-bottom: 2px solid #16697A !important; }
-                .MuiDataGrid-row:hover { background-color: #EDE7E3 !important; }
-              `}
-            </style>
-            <div className="w-full">
-              <DataGrid rows={rows} columns={columns} pageSize={10} disableSelectionOnClick autoHeight />
-            </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+            <DataGrid rows={rows} columns={columns} pageSize={10} disableRowSelectionOnClick autoHeight />
           </div>
 
           {open && (
-            <div className="fixed inset-0 bg-[#16697A]/20 backdrop-blur-lg z-[10000] flex items-center justify-center p-4">
-              <div className="w-full max-w-xl bg-white rounded-[56px] shadow-3xl p-10 md:p-16 relative animate-in zoom-in duration-300">
-                <button onClick={() => setOpen(false)} className="absolute top-10 right-10 w-12 h-12 bg-[#EDE7E3] text-[#16697A] rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all">
-                  <RxCross1 size={24} />
+            <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+              <div className="w-full max-w-lg bg-white rounded-xl shadow-lg p-6 relative">
+                <button type="button" onClick={() => setOpen(false)} className="absolute top-4 right-4 text-gray-500 hover:text-gray-800" aria-label="Close">
+                  <RxCross1 size={22} />
                 </button>
+                <h2 className="text-xl font-semibold text-gray-900 mb-1">Create discount code</h2>
+                <p className="text-sm text-gray-600 mb-6">Customers enter this code on the checkout page.</p>
 
-                <div className="text-center mb-10">
-                  <p className="text-[10px] font-black text-[#FFA62B] uppercase tracking-[0.4em] mb-2">New Protocol</p>
-                  <h2 className="text-2xl font-black text-[#16697A] tracking-tighter italic uppercase">Code Generation</h2>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <FormInput label="Designation (Name)" value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. SUMMER_ELITE_20" />
-                  <FormInput label="Discount Magnitude (%)" type="number" value={value} onChange={(e) => setValue(e.target.value)} required placeholder="Magnitude (0-100)" />
-
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <FormInput label="Code name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. SAVE20" />
+                  <FormInput label="Discount (%)" type="number" min="1" max="100" value={value} onChange={(e) => setValue(e.target.value)} required placeholder="20" />
                   <div className="grid grid-cols-2 gap-4">
-                    <FormInput label="Min Threshold ($)" type="number" value={minAmount} onChange={(e) => setMinAmount(e.target.value)} placeholder="0.00" />
-                    <FormInput label="Max Ceiling ($)" type="number" value={maxAmount} onChange={(e) => setMaxAmount(e.target.value)} placeholder="0.00" />
+                    <FormInput label="Min order ($)" type="number" value={minAmount} onChange={(e) => setMinAmount(e.target.value)} placeholder="Optional" />
+                    <FormInput label="Max order ($)" type="number" value={maxAmount} onChange={(e) => setMaxAmount(e.target.value)} placeholder="Optional" />
                   </div>
-
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1">Asset Applicability</label>
-                    <select value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)} className="w-full bg-[#EDE7E3]/60 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-bold text-[#16697A] outline-none shadow-inner transition-all appearance-none">
-                      <option value="">Choose Applicable Asset</option>
-                      {products?.map((i) => <option value={i.name} key={i._id}>{i.name}</option>)}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Apply to (optional)</label>
+                    <select value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 outline-none">
+                      <option value="">All products in your shop</option>
+                      {products?.length > 0 && (
+                        <optgroup label="Products">
+                          {products.map((i) => (
+                            <option value={i.name} key={`product-${i._id}`}>{i.name}</option>
+                          ))}
+                        </optgroup>
+                      )}
+                      {events?.length > 0 && (
+                        <optgroup label="Events">
+                          {events.map((i) => (
+                            <option value={i.name} key={`event-${i._id}`}>{i.name}</option>
+                          ))}
+                        </optgroup>
+                      )}
                     </select>
+                    <p className="text-xs text-gray-500 mt-1">Leave empty to allow the code on any item from your shop.</p>
                   </div>
-
-                  <button type="submit" className="w-full py-6 bg-[#16697A] text-white font-black rounded-[32px] hover:bg-[#FFA62B] transition-all transform hover:scale-105 shadow-2xl uppercase tracking-[0.3em] text-sm md:mt-4">
-                    Authorize Synchronization
+                  <button type="submit" className="w-full rounded-lg bg-teal-700 py-3 text-sm font-semibold text-white hover:bg-teal-800">
+                    Save code
                   </button>
                 </form>
               </div>
@@ -198,9 +184,9 @@ const AllCoupons = () => {
 };
 
 const FormInput = ({ label, ...props }) => (
-  <div className="space-y-2">
-    <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1">{label}</label>
-    <input {...props} className="w-full bg-[#EDE7E3]/60 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-bold text-[#16697A] outline-none shadow-inner transition-all placeholder:text-[#16697A]/20" />
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
+    <input {...props} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 outline-none" />
   </div>
 );
 

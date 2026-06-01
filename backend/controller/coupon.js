@@ -12,12 +12,12 @@ router.post(
   isSeller,
   catchAsyncError(async (req, res, next) => {
     try {
-      const { name, value, minAmount, maxAmount, selectedProducts } = req.body;
+      const { name, value, minAmount, maxAmount, selectedProduct } = req.body;
 
       // Check if coupon already exists for this shop
       const existingCoupon = await CouponCode.find({
-        name,
-        shop: req.seller._id,
+        name: name.trim(),
+        $or: [{ shop: req.seller._id }, { shopId: String(req.seller._id) }],
       });
 
       if (existingCoupon.length !== 0) {
@@ -26,12 +26,13 @@ router.post(
 
       // Create coupon with seller's shop id
       const couponCode = await CouponCode.create({
-        name,
+        name: name.trim(),
         value,
-        minAmount: minAmount || null,
-        maxAmount: maxAmount || null,
-        selectedProducts: selectedProducts || [],
-        shop: req.seller._id, // ✅ fixed: assign shop from logged-in seller
+        minAmmount: minAmount || null,
+        maxAmmount: maxAmount || null,
+        selectedProduct: selectedProduct || null,
+        shop: req.seller._id,
+        shopId: String(req.seller._id),
       });
 
       res.status(201).json({
@@ -50,7 +51,9 @@ router.get(
   isSeller,
   catchAsyncError(async (req, res, next) => {
     try {
-      const couponCodes = await CouponCode.find({ shop: req.params.shopId });
+      const couponCodes = await CouponCode.find({
+        $or: [{ shop: req.params.shopId }, { shopId: req.params.shopId }],
+      });
       res.status(200).json({
         success: true,
         couponCodes,
@@ -88,15 +91,20 @@ router.get(
   "/get-coupon-value/:name",
   catchAsyncError(async (req, res, next) => {
     try {
-      const couponCode = await CouponCode.findOne({ name: req.params.name });
+      const couponCode = await CouponCode.findOne({
+        name: { $regex: new RegExp(`^${req.params.name.trim()}$`, "i") },
+      });
 
       if (!couponCode) {
         return next(new ErrorHandler("Coupon code not found", 404));
       }
 
+      const coupon = couponCode.toObject();
+      coupon.shopId = coupon.shopId || String(coupon.shop?._id || coupon.shop || "");
+
       res.status(200).json({
         success: true,
-        couponCode,
+        couponCode: coupon,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));

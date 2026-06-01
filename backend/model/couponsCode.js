@@ -17,8 +17,11 @@ const couponCodeSchema = new mongoose.Schema({
     type: Number,
   },
   shop: {
-    type: Object,
+    type: mongoose.Schema.Types.Mixed,
     required: true,
+  },
+  shopId: {
+    type: String,
   },
   selectedProduct: {
     type: String,

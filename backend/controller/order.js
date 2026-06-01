@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncError = require("../middleware/catchAsyncErrors");
 const router = express.Router();
@@ -8,12 +9,60 @@ const Shop = require("../model/shop");
 const Event = require("../model/event");
 const { isAuthenticated, isAdmin, isSeller } = require("../middleware/auth");
 
+async function updateInventoryOnPurchase(id, qty) {
+  const product = await Product.findById(id);
+  if (product) {
+    if (product.stock < qty) {
+      throw new Error(`Insufficient stock for ${product.name}`);
+    }
+    product.stock -= qty;
+    product.soldOut = (product.soldOut || 0) + qty;
+    await product.save({ validateBeforeSave: false });
+    return;
+  }
+
+  const event = await Event.findById(id);
+  if (event) {
+    if (event.stock < qty) {
+      throw new Error(`Insufficient stock for ${event.name}`);
+    }
+    event.stock -= qty;
+    event.sold_out = (event.sold_out || 0) + qty;
+    await event.save({ validateBeforeSave: false });
+    return;
+  }
+
+  throw new Error("Product or event not found");
+}
+
+async function restoreInventoryOnRefund(id, qty) {
+  const product = await Product.findById(id);
+  if (product) {
+    product.stock += qty;
+    product.soldOut = Math.max(0, (product.soldOut || 0) - qty);
+    await product.save({ validateBeforeSave: false });
+    return;
+  }
+
+  const event = await Event.findById(id);
+  if (event) {
+    event.stock += qty;
+    event.sold_out = Math.max(0, (event.sold_out || 0) - qty);
+    await event.save({ validateBeforeSave: false });
+  }
+}
+
 //create Order (User)
 router.post(
   "/create-order",
   catchAsyncError(async (req, res, next) => {
     try {
       const { cart, shippingAddress, user, totalPrice, paymentInfo } = req.body;
+
+      for (const item of cart) {
+        await updateInventoryOnPurchase(item._id, item.qty);
+      }
+
       //   group cart items by shopId
       const shopItemsMap = new Map();
 
@@ -74,13 +123,20 @@ router.get(
   `/get-seller-all-orders/:shopId`,
   catchAsyncError(async (req, res, next) => {
     try {
-      const orders = await Order.find({
-        "cart.shopId": req.params.shopId,
-      }).sort({
+      const shopId = req.params.shopId;
+      const shopFilters = [{ "cart.shopId": shopId }];
+      if (mongoose.Types.ObjectId.isValid(shopId)) {
+        shopFilters.push({ "cart.shopId": new mongoose.Types.ObjectId(shopId) });
+      }
+
+      const orders = await Order.find({ $or: shopFilters }).sort({
         createdAt: -1,
       });
-      if (!orders) {
-        return next(new ErrorHandler("No Order Found", 404));
+      if (!orders || orders.length === 0) {
+        return res.status(200).json({
+          success: true,
+          orders: [],
+        });
       }
       res.status(200).json({
         success: true,
@@ -104,38 +160,12 @@ router.put(
         return next(new ErrorHandler("Order Not Found", 400));
       }
 
-      // Helper function to update product stock and sales
-      async function updateOrder(id, qty) {
-        // Try updating Product model
-        const product = await Product.findById(id);
-        if (product) {
-          product.stock -= qty;
-          product.sold_out += qty;
-          await product.save({ validateBeforeSave: false });
-        }
-
-        // Also try updating Event model (in case it's an event product)
-        const event = await Event.findById(id);
-        if (event) {
-          event.stock -= qty;
-          event.sold_out += qty;
-          await event.save({ validateBeforeSave: false });
-        }
-      }
-
       // Helper function to update seller balance
       async function updateSellerInfo(amount) {
-        const seller = await Shop.findById(req.seller.id);
+        const seller = await Shop.findById(req.seller._id);
         if (seller) {
           seller.availableBalance = (seller.availableBalance || 0) + amount;
           await seller.save();
-        }
-      }
-
-      // Update product stock when transferred to delivery
-      if (req.body.status === "Transferred to delivery partner") {
-        for (const item of order.cart) {
-          await updateOrder(item._id, item.qty);
         }
       }
 
@@ -198,19 +228,9 @@ router.put(
         return next(new ErrorHandler("Order not found", 400));
       }
 
-      // Helper function to update product stock (restore stock on refund)
-      async function updateOrder(id, qty) {
-        const product = await Product.findById(id);
-        if (product) {
-          product.stock += qty; // Add back to stock
-          product.sold_out -= qty; // Reduce sold_out count
-          await product.save({ validateBeforeSave: false });
-        }
-      }
-
       // Helper function to update seller balance (deduct refunded amount)
       async function updateSellerBalance(amount) {
-        const seller = await Shop.findById(req.seller.id);
+        const seller = await Shop.findById(req.seller._id);
         if (seller) {
           seller.availableBalance = (seller.availableBalance || 0) - amount;
           await seller.save();
@@ -220,7 +240,7 @@ router.put(
       // Update product stock if refund is successful
       if (req.body.status === "Refund Success") {
         for (const item of order.cart) {
-          await updateOrder(item._id, item.qty);
+          await restoreInventoryOnRefund(item._id, item.qty);
         }
 
         // Deduct the refunded amount from seller's balance

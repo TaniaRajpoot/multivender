@@ -1,27 +1,26 @@
-import React, { useState } from 'react'
-import Header from '../components/Layout/Header'
-import styles from '../styles/styles'
-import ProfileSideBar from "../components/Profile/ProfileSideBar"
-import ProfileContent from "../components/Profile/ProfileContent"
-
+import React, { useState } from "react";
+import StoreLayout from "../components/ui/StoreLayout";
+import ProfileSideBar from "../components/Profile/ProfileSideBar";
+import ProfileContent from "../components/Profile/ProfileContent";
+import { ui } from "../styles/theme";
 
 const ProfilePage = () => {
-    const [active, setActive] = useState(1);
+  const [active, setActive] = useState(1);
 
-
-    return (
-        <div>
-            <Header />
-            <div className={`${styles.section} flex bg-[#EDE7E3]/30 py-4 md:py-12 min-h-screen px-2 md:px-0`}>
-                <div className='w-[64px] 800px:w-[330px] sticky top-24 h-fit'>
-                    <ProfileSideBar active={active} setActive={setActive} />
-                </div>
-                <div className='flex-1 ml-2 800px:ml-10'>
-                    <ProfileContent active={active} />
-                </div>
-            </div>
+  return (
+    <StoreLayout showFooter={false}>
+      <div className={`${ui.container} py-8`}>
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="w-full md:w-72 shrink-0">
+            <ProfileSideBar active={active} setActive={setActive} />
+          </div>
+          <div className={`flex-1 min-w-0 ${ui.card} ${ui.cardPadding}`}>
+            <ProfileContent active={active} />
+          </div>
         </div>
-    )
-}
+      </div>
+    </StoreLayout>
+  );
+};
 
-export default ProfilePage
+export default ProfilePage;

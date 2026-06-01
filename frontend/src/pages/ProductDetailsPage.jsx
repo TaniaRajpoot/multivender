@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Header from "../components/Layout/Header";
-import Footer from "../components/Layout/Footer";
 import ProductDetails from "../components/Products/ProductDetails";
-import { useParams, useSearchParams } from "react-router-dom";
-import { productData } from "../static/data";
 import SuggestedProduct from "../components/Products/SuggestedProduct";
+import StoreLayout from "../components/ui/StoreLayout";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ProductDetailsPage = () => {
@@ -15,26 +13,22 @@ const ProductDetailsPage = () => {
   const eventData = searchParams.get("isEvent");
   const [data, setData] = useState(null);
 
-
   useEffect(() => {
     if (eventData !== null) {
-      const event = allEvents && allEvents.find((i) => i._id === id);
+      const event = allEvents?.find((i) => i._id === id);
       setData(event);
     } else {
-      const product = allProducts && allProducts.find((i) => i._id === id);
+      const product = allProducts?.find((i) => i._id === id);
       setData(product);
     }
+    window.scrollTo(0, 0);
   }, [allProducts, allEvents, id, eventData]);
-  window.scrollTo(0, 0);
-return (
-    <div>
-      <Header />
-      <br />
+
+  return (
+    <StoreLayout>
       <ProductDetails data={data} />
-      {!eventData && <>{data && <SuggestedProduct data={data} />}</>}
-      <br />
-      <Footer />
-    </div>
+      {!eventData && data && <SuggestedProduct data={data} />}
+    </StoreLayout>
   );
 };
 

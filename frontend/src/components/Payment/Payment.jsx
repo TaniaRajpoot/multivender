@@ -12,6 +12,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import CheckoutSteps from "../Checkout/CheckoutSteps";
+import { ui } from "../../styles/theme";
 
 const Payment = () => {
   const [orderData, setOrderData] = useState(null);
@@ -30,9 +31,7 @@ const Payment = () => {
     }
   }, [navigate]);
 
-  const paymentData = {
-    amount: Math.round(orderData?.totalPrice * 100),
-  };
+  const paymentData = { amount: Math.round(orderData?.totalPrice * 100) };
 
   const order = {
     cart: orderData?.cart,
@@ -59,19 +58,17 @@ const Payment = () => {
 
       if (result.error) {
         toast.error(result.error.message);
-      } else {
-        if (result.paymentIntent.status === "succeeded") {
-          const orderWithPayment = {
-            ...order,
-            paymentInfo: { id: result.paymentIntent.id, status: result.paymentIntent.status, type: "Credit Card" },
-          };
-          await axios.post(`${server}/order/create-order`, orderWithPayment, config);
-          localStorage.setItem("cartItems", JSON.stringify([]));
-          localStorage.setItem("latestOrder", JSON.stringify([]));
-          navigate("/order/success");
-          toast.success("Order Placed Successfully!");
-          setTimeout(() => window.location.reload(), 1000);
-        }
+      } else if (result.paymentIntent.status === "succeeded") {
+        const orderWithPayment = {
+          ...order,
+          paymentInfo: { id: result.paymentIntent.id, status: result.paymentIntent.status, type: "Credit Card" },
+        };
+        await axios.post(`${server}/order/create-order`, orderWithPayment, config);
+        localStorage.setItem("cartItems", JSON.stringify([]));
+        localStorage.setItem("latestOrder", JSON.stringify([]));
+        navigate("/order/success");
+        toast.success("Order placed successfully!");
+        setTimeout(() => window.location.reload(), 1000);
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message);
@@ -82,13 +79,12 @@ const Payment = () => {
     e.preventDefault();
     const config = { headers: { "Content-Type": "application/json" } };
     const orderWithPayment = { ...order, paymentInfo: { type: "Cash On Delivery" } };
-
     try {
       await axios.post(`${server}/order/create-order`, orderWithPayment, config);
       localStorage.setItem("cartItems", JSON.stringify([]));
       localStorage.setItem("latestOrder", JSON.stringify([]));
       navigate("/order/success");
-      toast.success("Order Placed Successfully!");
+      toast.success("Order placed successfully!");
       setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       toast.error(error.response?.data?.message || "Order failed");
@@ -98,154 +94,126 @@ const Payment = () => {
   if (!orderData) return null;
 
   return (
-    <div className="w-full min-h-screen bg-[#EDE7E3] pb-20">
+    <div className="min-h-screen bg-gray-50 pb-16">
       <CheckoutSteps active={2} />
-      <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-24">
-        <div className="flex flex-col lg:flex-row gap-12 mt-8">
-          <div className="w-full lg:w-[65%]">
-            <PaymentInfo
-              user={user}
-              paymentHandler={paymentHandler}
-              cashOnDeliveryHandler={cashOnDeliveryHandler}
-            />
+      <div className={`${ui.containerWide} mt-8`}>
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="w-full lg:w-2/3">
+            <PaymentInfo user={user} paymentHandler={paymentHandler} cashOnDeliveryHandler={cashOnDeliveryHandler} />
           </div>
-          <div className="w-full lg:w-[35%]">
-            <CartData orderData={orderData} />
+          <div className="w-full lg:w-1/3">
+            <OrderSummary orderData={orderData} />
           </div>
         </div>
       </div>
     </div>
   );
+};
+
+const stripeInputStyle = {
+  base: { fontSize: "16px", color: "#1f2937", "::placeholder": { color: "#9ca3af" } },
+  invalid: { color: "#dc2626" },
 };
 
 const PaymentInfo = ({ user, paymentHandler, cashOnDeliveryHandler }) => {
-  const [select, setSelect] = useState(1);
-
-  const inputStyle = {
-    base: {
-      fontSize: "18px",
-      color: "#16697A",
-      fontWeight: "700",
-      letterSpacing: "0.025em",
-      "::placeholder": { color: "#9CA3AF", fontWeight: "400" },
-    },
-    invalid: { color: "#ef4444" },
-  };
+  const [method, setMethod] = useState("card");
 
   return (
-    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 md:p-12 border border-white shadow-soft">
-      <div className="flex items-center gap-4 mb-12">
-        <div className="w-10 h-10 bg-[#16697A] rounded-xl flex items-center justify-center text-white">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-        </div>
-        <h2 className="text-2xl font-[700] text-[#16697A] tracking-tight font-display italic">Payment Method</h2>
-      </div>
+    <div className={`${ui.card} ${ui.cardPadding}`}>
+      <h2 className={ui.titleSm}>Payment method</h2>
+      <p className={ui.subtitle}>Choose how you want to pay for this order.</p>
 
-      <div className="space-y-6">
-        {/* Credit/Debit Card Selection */}
-        <div
-          onClick={() => setSelect(1)}
-          className={`p-8 rounded-[32px] border-2 transition-all cursor-pointer relative overflow-hidden group ${select === 1 ? "bg-white border-[#16697A] shadow-xl" : "bg-[#EDE7E3]/30 border-transparent hover:bg-white/50"
-            }`}
+      <div className="mt-6 space-y-4">
+        <label
+          className={`block p-4 rounded-xl border-2 cursor-pointer transition ${
+            method === "card" ? "border-teal-600 bg-teal-50/50" : "border-gray-200 hover:border-gray-300"
+          }`}
         >
-          <div className="flex items-center gap-4 relative z-10">
-            <div className={`w-6 h-6 rounded-full border-4 transition-all ${select === 1 ? "border-[#16697A] bg-[#FFA62B]" : "border-[#16697A]/20"
-              }`} />
-            <h4 className="text-[17px] font-[700] text-[#16697A] font-sans">Pay with Debit/Credit Card</h4>
+          <div className="flex items-center gap-3">
+            <input type="radio" name="pay" checked={method === "card"} onChange={() => setMethod("card")} className="text-teal-700" />
+            <span className="font-medium text-gray-900">Debit or credit card</span>
           </div>
-
-          {select === 1 && (
-            <div className="mt-10 space-y-8 animate-in fade-in slide-in-from-top duration-500">
-              <div className="space-y-2">
-                <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1 font-sans">Name on Card</label>
-                <input readOnly value={user?.name} className="w-full bg-[#EDE7E3]/30 border border-transparent rounded-2xl px-6 py-4 font-[500] text-[#16697A] shadow-inner font-sans" />
+          {method === "card" && (
+            <div className="mt-6 space-y-4 pl-7">
+              <div>
+                <label className={ui.label}>Name on card</label>
+                <input readOnly value={user?.name || ""} className={`${ui.input} bg-gray-50`} />
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1 font-sans">Exp Date</label>
-                  <div className="bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-6 py-4 shadow-inner"><CardExpiryElement options={{ style: inputStyle }} /></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={ui.label}>Expiry</label>
+                  <div className={ui.input}>
+                    <CardExpiryElement options={{ style: stripeInputStyle }} />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1 font-sans">CVC</label>
-                  <div className="bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-6 py-4 shadow-inner"><CardCvcElement options={{ style: inputStyle }} /></div>
+                <div>
+                  <label className={ui.label}>CVC</label>
+                  <div className={ui.input}>
+                    <CardCvcElement options={{ style: stripeInputStyle }} />
+                  </div>
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <label className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.2em] ml-1 font-sans">Card Number</label>
-                <div className="bg-[#EDE7E3]/50 border border-transparent rounded-2xl px-6 py-4 shadow-inner"><CardNumberElement options={{ style: inputStyle }} /></div>
+              <div>
+                <label className={ui.label}>Card number</label>
+                <div className={ui.input}>
+                  <CardNumberElement options={{ style: stripeInputStyle }} />
+                </div>
               </div>
-
-              <button onClick={paymentHandler} className="w-full h-20 bg-[#16697A] text-[#EDE7E3] font-[700] uppercase tracking-widest text-[13px] rounded-3xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl transform hover:-translate-y-1 font-sans">
-                Submit Payment
+              <button type="button" onClick={paymentHandler} className={`${ui.btnPrimary} w-full`}>
+                Pay now
               </button>
             </div>
           )}
-        </div>
+        </label>
 
-        {/* Cash on Delivery Selection */}
-        <div
-          onClick={() => setSelect(2)}
-          className={`p-8 rounded-[32px] border-2 transition-all cursor-pointer relative overflow-hidden group ${select === 2 ? "bg-white border-[#16697A] shadow-xl" : "bg-[#EDE7E3]/30 border-transparent hover:bg-white/50"
-            }`}
+        <label
+          className={`block p-4 rounded-xl border-2 cursor-pointer transition ${
+            method === "cod" ? "border-teal-600 bg-teal-50/50" : "border-gray-200 hover:border-gray-300"
+          }`}
         >
-          <div className="flex items-center gap-4 relative z-10">
-            <div className={`w-6 h-6 rounded-full border-4 transition-all ${select === 2 ? "border-[#16697A] bg-[#FFA62B]" : "border-[#16697A]/20"
-              }`} />
-            <h4 className="text-[17px] font-[700] text-[#16697A] font-sans">Cash on Delivery</h4>
+          <div className="flex items-center gap-3">
+            <input type="radio" name="pay" checked={method === "cod"} onChange={() => setMethod("cod")} className="text-teal-700" />
+            <span className="font-medium text-gray-900">Cash on delivery</span>
           </div>
-
-          {select === 2 && (
-            <div className="mt-10 animate-in fade-in slide-in-from-top duration-500">
-              <button onClick={cashOnDeliveryHandler} className="w-full h-20 bg-[#16697A] text-white font-[700] uppercase tracking-widest text-[13px] rounded-3xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl transform hover:-translate-y-1 font-sans">
-                Confirm
+          {method === "cod" && (
+            <div className="mt-4 pl-7">
+              <p className="text-sm text-gray-600 mb-4">Pay when your order arrives at your door.</p>
+              <button type="button" onClick={cashOnDeliveryHandler} className={`${ui.btnPrimary} w-full`}>
+                Place order
               </button>
             </div>
           )}
-        </div>
+        </label>
       </div>
     </div>
   );
 };
 
-const CartData = ({ orderData }) => {
-  return (
-    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 md:p-10 border border-white shadow-soft sticky top-8">
-      <h3 className="text-xl font-[700] text-[#16697A] mb-8 tracking-tight font-display italic">Order Summary</h3>
-
-      <div className="space-y-4">
-        <div className="flex justify-between items-center text-[10px] font-[700] text-[#6B7280] uppercase tracking-[0.2em] font-sans">
-          <span>Subtotal</span>
-          <span className="text-[#16697A] text-lg font-[700] font-sans">${orderData?.subTotalPrice?.toFixed(2)}</span>
-        </div>
-
-        <div className="flex justify-between items-center text-[10px] font-[700] text-[#6B7280] uppercase tracking-[0.2em] font-sans">
-          <span>Shipping</span>
-          <span className="text-[#16697A] text-lg font-[700] font-sans">${orderData?.shipping?.toFixed(2)}</span>
-        </div>
-
-        {orderData?.discountPrice > 0 && (
-          <div className="flex justify-between items-center text-[10px] font-[700] text-[#6B7280] uppercase tracking-[0.2em] font-sans">
-            <span>Discount</span>
-            <span className="text-green-600 text-lg font-[700] font-sans">-${orderData.discountPrice.toFixed(2)}</span>
-          </div>
-        )}
-
-        <div className="flex justify-between items-center pt-6 border-t border-[#16697A]/10 mt-6 font-sans">
-          <span className="text-[12px] font-[700] text-[#16697A] uppercase tracking-[0.2em]">Total</span>
-          <span className="text-3xl font-[700] text-[#16697A] tracking-tighter font-display italic">${orderData?.totalPrice}</span>
-        </div>
+const OrderSummary = ({ orderData }) => (
+  <div className={`${ui.card} ${ui.cardPadding} sticky top-24`}>
+    <h3 className={ui.sectionTitle}>Order summary</h3>
+    <dl className="mt-4 space-y-3 text-sm">
+      <div className="flex justify-between">
+        <dt className="text-gray-600">Subtotal</dt>
+        <dd className="font-medium">${orderData?.subTotalPrice?.toFixed(2)}</dd>
       </div>
-
-      <div className="mt-12 pt-8 border-t border-[#16697A]/10 text-center">
-        <p className="text-[10px] font-[700] text-[#9CA3AF] uppercase tracking-[0.3em] mb-4 font-sans">Secured by Stripe</p>
-        <div className="flex justify-center gap-4 opacity-40">
-          {/* icons... */}
-        </div>
+      <div className="flex justify-between">
+        <dt className="text-gray-600">Shipping</dt>
+        <dd className="font-medium">${orderData?.shipping?.toFixed(2)}</dd>
       </div>
-    </div>
-  );
-};
+      {orderData?.discountPrice > 0 && (
+        <div className="flex justify-between text-green-700">
+          <dt>Discount</dt>
+          <dd className="font-medium">-${orderData.discountPrice.toFixed(2)}</dd>
+        </div>
+      )}
+      <div className="flex justify-between pt-3 border-t border-gray-200 text-base">
+        <dt className="font-semibold text-gray-900">Total</dt>
+        <dd className="font-semibold text-teal-800">${orderData?.totalPrice}</dd>
+      </div>
+    </dl>
+    <p className={`${ui.hint} text-center mt-6`}>Payments secured by Stripe</p>
+  </div>
+);
 
 export default Payment;

@@ -1,14 +1,11 @@
-import React from 'react'
-import Events from '../components/Events/Events' // Import Events, not EventCard!
-import Header from '../components/Layout/Header'
+import React from "react";
+import StoreLayout from "../components/ui/StoreLayout";
+import Events from "../components/Events/Events";
 
-const EventsPage = () => {
-  return (
-    <div>
-      <Header activeHeading={4} />
-      <Events />
-    </div>
-  )
-}
+const EventsPage = () => (
+  <StoreLayout activeHeading={4}>
+    <Events />
+  </StoreLayout>
+);
 
-export default EventsPage
+export default EventsPage;

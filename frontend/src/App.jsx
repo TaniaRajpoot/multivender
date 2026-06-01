@@ -186,6 +186,14 @@ const AppRoutes = () => {
           }
         />
         <Route
+          path="/dashboard-order/:id"
+          element={
+            <SellerProtectedRoute>
+              <OrderDetails />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
           path="/order/:id"
           element={
             <SellerProtectedRoute>
@@ -325,7 +333,7 @@ const AppRoutes = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="dark"
+        theme="light"
       />
     </>
   );

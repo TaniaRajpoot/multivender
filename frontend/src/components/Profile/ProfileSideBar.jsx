@@ -1,10 +1,7 @@
 import React from "react";
 import { AiOutlineLogin, AiOutlineMessage } from "react-icons/ai";
 import { RiLockPasswordFill } from "react-icons/ri";
-import {
-  MdOutlineAdminPanelSettings,
-  MdOutlineTrackChanges,
-} from "react-icons/md";
+import { MdOutlineAdminPanelSettings, MdOutlineTrackChanges } from "react-icons/md";
 import { server } from "../../server";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -14,6 +11,7 @@ import { HiOutlineReceiptRefund, HiOutlineShoppingBag } from "react-icons/hi";
 import { RxPerson } from "react-icons/rx";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { ui } from "../../styles/theme";
 
 const ProfileSideBar = ({ active, setActive }) => {
   const { user } = useSelector((state) => state.user);
@@ -22,10 +20,8 @@ const ProfileSideBar = ({ active, setActive }) => {
 
   const logOutHandler = async () => {
     try {
-      const res = await axios.get(`${server}/user/logout`, {
-        withCredentials: true,
-      });
-      toast.success(res.data.message);
+      const res = await axios.get(`${server}/user/logout`, { withCredentials: true });
+      toast.success(res.data.message || "Logged out");
       dispatch({ type: "LogoutSuccess" });
       navigate("/login");
     } catch (error) {
@@ -34,61 +30,46 @@ const ProfileSideBar = ({ active, setActive }) => {
   };
 
   const navItems = [
-    { id: 1, label: "Profile", icon: RxPerson },
-    { id: 2, label: "Orders", icon: HiOutlineShoppingBag },
+    { id: 1, label: "My profile", icon: RxPerson },
+    { id: 2, label: "My orders", icon: HiOutlineShoppingBag },
     { id: 3, label: "Refunds", icon: HiOutlineReceiptRefund },
-    { id: 4, label: "Inbox", icon: AiOutlineMessage, path: "/inbox" },
-    { id: 5, label: "Track Order", icon: MdOutlineTrackChanges },
-    { id: 6, label: "Change Password", icon: RiLockPasswordFill },
-    { id: 7, label: "Addresses", icon: TbAddressBook },
+    { id: 4, label: "Messages", icon: AiOutlineMessage, path: "/inbox" },
+    { id: 5, label: "Track order", icon: MdOutlineTrackChanges },
+    { id: 6, label: "Change password", icon: RiLockPasswordFill },
+    { id: 7, label: "Saved addresses", icon: TbAddressBook },
   ];
 
   return (
-    <div className="w-full bg-white/40 backdrop-blur-xl rounded-[40px] p-6 md:p-8 border border-white shadow-soft sticky top-24">
-      <div className="space-y-2">
+    <div className={`${ui.card} p-4 sticky top-24`}>
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 px-2">Account menu</p>
+      <div className="space-y-1">
         {navItems.map((item) => (
-          <div
+          <button
             key={item.id}
-            className={`w-full flex cursor-pointer items-center p-4 rounded-2xl transition-all duration-300 group ${active === item.id
-              ? "bg-[#16697A] text-white shadow-xl translate-x-2"
-              : "text-[#16697A] hover:bg-white hover:shadow-soft"
-              }`}
+            type="button"
+            className={active === item.id ? ui.sidebarLinkActive + " w-full text-left" : ui.sidebarLink + " w-full text-left"}
             onClick={() => {
               setActive(item.id);
               if (item.path) navigate(item.path);
             }}
           >
-            <item.icon size={22} className={`${active === item.id ? "text-[#FFA62B]" : "text-[#489FB5] group-hover:text-[#16697A]"} transition-colors`} />
-            <span className={`hidden 800px:block pl-4 text-sm font-[600] font-sans ${active === item.id ? "text-white" : "text-[#16697A]/60"}`}>
-              {item.label}
-            </span>
-            {active === item.id && (
-              <div className="ml-auto w-1.5 h-1.5 bg-[#FFA62B] rounded-full shadow-glow" />
-            )}
-          </div>
+            <item.icon size={20} className="shrink-0" />
+            <span>{item.label}</span>
+          </button>
         ))}
 
-        {user && user.role === "Admin" && (
-          <Link to="/admin/dashboard" className="block">
-            <div className="w-full flex cursor-pointer items-center p-4 rounded-2xl text-[#16697A] hover:bg-white transition-all group">
-              <MdOutlineAdminPanelSettings size={22} className="text-[#489FB5] group-hover:text-[#16697A]" />
-              <span className="pl-4 text-sm font-[600] font-sans text-[#16697A]/60 group-hover:text-[#16697A]">
-                Admin Dashboard
-              </span>
-            </div>
+        {user?.role === "Admin" && (
+          <Link to="/admin/dashboard" className={ui.sidebarLink}>
+            <MdOutlineAdminPanelSettings size={20} />
+            <span>Admin panel</span>
           </Link>
         )}
 
-        <div className="pt-8 mt-8 border-t border-[#16697A]/10">
-          <div
-            className="w-full flex cursor-pointer items-center p-4 rounded-2xl text-red-500 hover:bg-red-50 transition-all group"
-            onClick={logOutHandler}
-          >
-            <AiOutlineLogin size={22} />
-            <span className="pl-4 text-sm font-[600] font-sans opacity-70 group-hover:opacity-100">
-              Log out
-            </span>
-          </div>
+        <div className="border-t border-gray-200 mt-4 pt-4">
+          <button type="button" onClick={logOutHandler} className="flex items-center gap-3 w-full rounded-lg px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50">
+            <AiOutlineLogin size={20} />
+            Log out
+          </button>
         </div>
       </div>
     </div>

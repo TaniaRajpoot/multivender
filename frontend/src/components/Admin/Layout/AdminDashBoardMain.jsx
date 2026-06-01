@@ -11,7 +11,7 @@ import { FiUsers, FiShoppingBag, FiLayers } from "react-icons/fi";
 
 const AdminDashBoardMain = () => {
   const dispatch = useDispatch();
-  const { adminOrders, isLoading } = useSelector((state) => state.order);
+  const { adminOrders, adminOrderLoading } = useSelector((state) => state.order);
   const { sellers } = useSelector((state) => state.seller);
 
   useEffect(() => {
@@ -48,13 +48,13 @@ const AdminDashBoardMain = () => {
   const adminEarning = adminOrders?.reduce((acc, item) => acc + item.totalPrice * 0.1, 0) || 0;
   const adminBalance = adminEarning.toFixed(2);
 
-  if (isLoading) return <Loader />;
+  if (adminOrderLoading) return <Loader />;
 
   return (
-    <div className="w-full p-4 md:p-6 lg:p-10 bg-[#EDE7E3]/50 min-h-screen">
+    <div className="w-full space-y-6">
       <div className="mb-6 md:mb-10">
-        <h3 className="text-2xl md:text-3xl font-black text-[#16697A] tracking-tighter">Admin Dashboard</h3>
-        <p className="text-[#489FB5] text-[10px] font-black uppercase tracking-[0.3em] mt-1">Overview</p>
+        <h3 className="text-2xl font-semibold text-gray-900">Admin overview</h3>
+        <p className="text-sm text-gray-600 mt-1">Manage the whole marketplace from here.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10 mb-10">

@@ -35,14 +35,14 @@ const AllUsers = () => {
   };
 
   const columns = [
-    { field: "id", headerName: "User ID", flex: 0.7, minWidth: 150 },
-    { field: "name", headerName: "Name", flex: 0.7, minWidth: 150 },
-    { field: "email", headerName: "Email", type: "email", flex: 0.7, minWidth: 200 },
-    { field: "role", headerName: "Role", flex: 0.5, minWidth: 100 },
-    { field: "joinedAt", headerName: "joinedAt", flex: 0.5, minWidth: 120 },
+    { field: "id", headerName: "User ID", flex: 0.7, minWidth: 150, headerClassName: "grid-header" },
+    { field: "name", headerName: "Name", flex: 0.7, minWidth: 150, headerClassName: "grid-header" },
+    { field: "email", headerName: "Email", type: "email", flex: 0.7, minWidth: 200, headerClassName: "grid-header" },
+    { field: "role", headerName: "Role", flex: 0.5, minWidth: 100, headerClassName: "grid-header" },
+    { field: "joinedAt", headerName: "Joined", flex: 0.5, minWidth: 120, headerClassName: "grid-header" },
     {
       field: "action",
-      headerName: "Delete User",
+      headerName: "Delete",
       flex: 0.5,
       minWidth: 120,
       renderCell: (params) => (

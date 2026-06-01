@@ -1,21 +1,11 @@
 import React from "react";
-import DashboardHeader from "../../components/Shop/Layout/DashboardHeader";
-import DashboardSideBar from "../../components/Shop/Layout/DashboardSideBar";
+import ShopLayout from "../../components/ui/ShopLayout";
 import CreateEvent from "../../components/Shop/CreateEvent";
-const ShopCreateEvents = () => {
-  return (
-    <div>
-      <DashboardHeader />
-      <div className="flex items-start justify-between w-full">
-        <div className="w-[80px] md:w-[330px] sticky top-0 z-20">
-          <DashboardSideBar active={6} />
-        </div>
-        <div className="w-full justify-center flex">
-          <CreateEvent />
-        </div>
-      </div>
-    </div>
-  );
-};
+
+const ShopCreateEvents = () => (
+  <ShopLayout sidebarActive={6}>
+    <CreateEvent />
+  </ShopLayout>
+);
 
 export default ShopCreateEvents;

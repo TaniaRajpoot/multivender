@@ -1,96 +1,55 @@
 import React, { useEffect, useState } from "react";
-import Header from "../components/Layout/Header";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../components/Route/ProductCard/ProductCard";
 import { useSelector } from "react-redux";
+import StoreLayout from "../components/ui/StoreLayout";
+import { ui } from "../styles/theme";
 
 const ProductsPage = () => {
-  const [SearchParams] = useSearchParams();
-  const { allProducts } = useSelector((state => state.product));
-  const categoryData = SearchParams.get("category");
+  const [searchParams] = useSearchParams();
+  const { allProducts } = useSelector((state) => state.product);
+  const categoryData = searchParams.get("category");
   const [data, setData] = useState([]);
   const [sortType, setSortType] = useState("");
 
   useEffect(() => {
-    let d = [];
-    if (categoryData === null) {
-      d = allProducts && [...allProducts];
-    } else {
-      d = allProducts && [...allProducts].filter((i) => i.category === categoryData);
-    }
-
-    if (d) {
-      if (sortType === "Price: Low to High") {
-        d.sort((a, b) => a.discountPrice - b.discountPrice);
-      } else if (sortType === "Price: High to Low") {
-        d.sort((a, b) => b.discountPrice - a.discountPrice);
-      } else {
-        d.sort((a, b) => b.sold_out - a.sold_out);
-      }
-    }
+    let d = categoryData ? allProducts?.filter((i) => i.category === categoryData) || [] : [...(allProducts || [])];
+    if (sortType === "Price: Low to High") d.sort((a, b) => a.discountPrice - b.discountPrice);
+    else if (sortType === "Price: High to Low") d.sort((a, b) => b.discountPrice - a.discountPrice);
+    else d.sort((a, b) => (b.sold_out ?? b.soldOut ?? 0) - (a.sold_out ?? a.soldOut ?? 0));
     setData(d);
     window.scrollTo(0, 0);
   }, [allProducts, categoryData, sortType]);
 
   return (
-    <div className="min-h-screen bg-[#EDE7E3]">
-      <Header activeHeading={3} />
-
-      {/* Page Header */}
-      <div className="w-full bg-[#16697A] py-10 md:py-14 relative overflow-hidden shadow-inner">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFA62B]/10 rounded-full -translate-x-1/2 translate-y-1/2 blur-3xl" />
-
-        <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-20 relative z-10 text-center">
-          <h1 className="text-4xl md:text-5xl font-[700] text-white tracking-tight font-display italic">
-            {categoryData ? categoryData : "Products"}
-          </h1>
+    <StoreLayout activeHeading={3}>
+      <div className="bg-teal-800 text-white py-10">
+        <div className={`${ui.container} text-center`}>
+          <h1 className="text-3xl font-semibold">{categoryData || "All products"}</h1>
         </div>
       </div>
-
-      {/* Product Grid Section */}
-      <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-24 py-16 md:py-24">
-        <div className="flex justify-between items-center mb-12 border-b border-[#16697A]/10 pb-8">
-          <p className="text-[#16697A] font-[600] font-sans">
-            Showing <span className="text-[#FFA62B]">{data ? data.length : 0}</span> results
+      <div className={`${ui.container} ${ui.section}`}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-200">
+          <p className="text-sm text-gray-600">
+            Showing <strong>{data.length}</strong> products
           </p>
-          <div className="flex gap-4">
-            <select
-              value={sortType}
-              onChange={(e) => setSortType(e.target.value)}
-              className="bg-white/50 backdrop-blur-md border border-[#16697A]/10 rounded-xl px-6 py-3 text-sm font-[600] text-[#16697A] focus:outline-none shadow-sm font-sans cursor-pointer hover:bg-white transition-colors"
-            >
-              <option value="">Popularity</option>
-              <option value="Price: Low to High">Price: Low to High</option>
-              <option value="Price: High to Low">Price: High to Low</option>
-            </select>
-          </div>
+          <select value={sortType} onChange={(e) => setSortType(e.target.value)} className={ui.select + " w-full sm:w-48"}>
+            <option value="">Most popular</option>
+            <option value="Price: Low to High">Price: low to high</option>
+            <option value="Price: High to Low">Price: high to low</option>
+          </select>
         </div>
-
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {data &&
-            data.map((i, index) => {
-              return <ProductCard data={i} key={index} />;
-            })}
-        </div>
-
-        {data && data.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-32 text-center">
-            <div className="w-32 h-32 bg-white/40 backdrop-blur-md rounded-[40px] flex items-center justify-center mb-8 shadow-soft">
-              <svg className="w-16 h-16 text-[#16697A]/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-[700] text-[#16697A] mb-4 font-display italic">
-              No products found!
-            </h1>
-            <p className="text-[#6B7280] font-[500] max-w-sm font-sans">
-              We couldn't find any products in this category at the moment.
-            </p>
+        {data.length ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {data.map((i, index) => (
+              <ProductCard data={i} key={i._id || index} />
+            ))}
           </div>
+        ) : (
+          <p className={ui.empty}>No products in this category.</p>
         )}
       </div>
-    </div>
+    </StoreLayout>
   );
 };
 

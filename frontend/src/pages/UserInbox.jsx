@@ -3,14 +3,14 @@ import Header from "../components/Layout/Header";
 import { useSelector } from "react-redux";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
-import { backend_url, server } from "../server";
+import { backend_url, server, socket_server } from "../server";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineArrowRight, AiOutlineSend, AiOutlinePaperClip } from "react-icons/ai";
 import { TfiGallery } from "react-icons/tfi";
 import { BsArrowLeft } from "react-icons/bs";
 
-const ENDPOINT = "https://tania-socket-working.onrender.com";
+const ENDPOINT = socket_server;
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const UserInboxPage = () => {
@@ -144,10 +144,11 @@ const UserInboxPage = () => {
   }, [messages]);
 
   return (
-    <div className="bg-[#EDE7E3] min-h-screen font-Inter">
+    <div className="bg-gray-50 min-h-screen">
       <Header />
-      <div className="max-w-[1400px] mx-auto py-4 md:py-10 px-2 md:px-8">
-        <div className="h-[85vh] md:h-[80vh] bg-white/40 backdrop-blur-2xl rounded-[32px] md:rounded-[48px] shadow-3xl border border-white overflow-hidden flex relative">
+      <div className="max-w-6xl mx-auto py-6 px-4">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-4">Messages</h1>
+        <div className="h-[75vh] bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex relative">
 
           {/* Sidebar: Conversation List */}
           <div className={`
@@ -155,8 +156,8 @@ const UserInboxPage = () => {
              ${open ? "hidden md:flex" : "flex"}
           `}>
             <div className="p-4 md:p-8 border-b border-white">
-              <h2 className="text-xl md:text-2xl font-black text-[#16697A] tracking-tighter italic uppercase">CHANNELS</h2>
-              <p className="text-[9px] md:text-[10px] font-black text-[#489FB5] uppercase tracking-[0.2em] md:tracking-[0.4em] mt-1">Merchant Comms Hub</p>
+              <h2 className="text-lg font-semibold text-gray-900">Conversations</h2>
+              <p className="text-xs text-gray-500 mt-1">Chat with sellers</p>
             </div>
             <div className="flex-1 overflow-y-auto custom-scrollbar">
               {conversations.map((item, index) => (

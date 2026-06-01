@@ -1,22 +1,11 @@
 import React from "react";
-import DashboardHeader from "../../components/Shop/Layout/DashboardHeader";
-import DashboardSidebar from "../../components/Shop/Layout/DashboardSideBar";
-import CreateProduct from "../../components/Shop/CreateProduct.jsx";
+import ShopLayout from "../../components/ui/ShopLayout";
+import CreateProduct from "../../components/Shop/CreateProduct";
 
-const ShopCreateProduct = () => {
-  return (
-    <div>
-      <DashboardHeader />
-      <div className="flex items-start w-full">
-        <div className="w-[80px] md:w-[330px] sticky top-0 z-20">
-          <DashboardSidebar active={4} />
-        </div>
-        <div className="flex-1 flex justify-center">
-          <CreateProduct />
-        </div>
-      </div>
-    </div>
-  );
-};
+const ShopCreateProduct = () => (
+  <ShopLayout sidebarActive={4}>
+    <CreateProduct />
+  </ShopLayout>
+);
 
 export default ShopCreateProduct;
