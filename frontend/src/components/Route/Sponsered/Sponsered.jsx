@@ -3,11 +3,11 @@ import SectionTitle from "../../ui/SectionTitle";
 import { ui } from "../../../styles/theme";
 
 const brands = [
-  { name: "Sony", src: "https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png" },
-  { name: "Dell", src: "https://logos-world.net/wp-content/uploads/2020/08/Dell-Logo.png" },
-  { name: "Lenovo", src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Lenovo_logo_2015.svg/2560px-Lenovo_logo_2015.svg.png" },
-  { name: "Apple", src: "https://www.vectorlogo.zone/logos/apple/apple-ar21.png" },
-  { name: "Samsung", src: "https://logos-world.net/wp-content/uploads/2020/04/Samsung-Logo.png" },
+  { name: "Sony", src: "https://cdn.worldvectorlogo.com/logos/sony.svg" },
+  { name: "Dell", src: "https://cdn.worldvectorlogo.com/logos/dell.svg" },
+  { name: "Lenovo", src: "https://cdn.worldvectorlogo.com/logos/lenovo.svg" },
+  { name: "Apple", src: "https://cdn.worldvectorlogo.com/logos/apple.svg" },
+  { name: "Samsung", src: "https://cdn.worldvectorlogo.com/logos/samsung.svg" },
 ];
 
 const Sponsered = () => (
@@ -15,9 +15,15 @@ const Sponsered = () => (
     <div className={ui.container}>
       <SectionTitle title="Trusted brands" subtitle="We work with well-known partners." />
       <div className={`${ui.card} ${ui.cardPadding}`}>
-        <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16 opacity-70">
+        <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16">
           {brands.map((b) => (
-            <img key={b.name} src={b.src} alt={b.name} className="h-8 md:h-10 object-contain grayscale hover:grayscale-0 transition" />
+            <img
+              key={b.name}
+              src={b.src}
+              alt={b.name}
+              className="h-10 md:h-12 object-contain grayscale hover:grayscale-0 transition"
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/logo.png"; }}
+            />
           ))}
         </div>
       </div>

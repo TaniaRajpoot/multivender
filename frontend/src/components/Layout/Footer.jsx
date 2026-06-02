@@ -25,7 +25,7 @@ const Footer = () => {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 border-t border-gray-100">
         <div>
-          <img src="/logo.png" alt="MultiVendor Shop" className="w-24 mb-4" />
+          <img src="/logo.png" alt="Crown Market" className="w-28 mb-4" />
           <p className="text-sm leading-relaxed">A simple marketplace to buy from many sellers in one place.</p>
           <div className="flex gap-4 mt-4 text-gray-500">
             <AiFillFacebook size={22} className="hover:text-teal-700 cursor-pointer" />
@@ -70,7 +70,7 @@ const Footer = () => {
       </div>
 
       <div className="border-t border-gray-100 py-6 text-center text-xs text-gray-500">
-        © {new Date().getFullYear()} MultiVendor Shop. All rights reserved.
+        © {new Date().getFullYear()} Crown Market. All rights reserved.
       </div>
     </footer>
   );

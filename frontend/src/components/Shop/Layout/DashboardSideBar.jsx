@@ -16,8 +16,8 @@ const ShopDashboardSidebar = ({ active }) => {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  const logoutHandler = () => {
-    dispatch(logoutSeller());
+  const logoutHandler = async () => {
+    await dispatch(logoutSeller());
     window.location.href = "/shop-login";
   };
 

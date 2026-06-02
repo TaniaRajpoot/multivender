@@ -23,7 +23,11 @@ const DashboardHero = () => {
     }
   }, [dispatch, seller?._id]);
 
-  const availableBalance = seller?.availableBalance?.toFixed(2) || "0.00";
+  const deliveredOrder = orders && orders.filter((item) => item.status === "Delivered");
+  const totalEarningWithoutTax = deliveredOrder && deliveredOrder.reduce((acc, item) => acc + item.totalPrice, 0);
+  const serviceCharge = totalEarningWithoutTax * 0.1;
+  const earning = totalEarningWithoutTax - serviceCharge;
+  const availableBalance = (seller?.availableBalance || earning || 0).toFixed(2);
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 180, flex: 0.8, headerClassName: "grid-header" },
@@ -45,8 +49,15 @@ const DashboardHero = () => {
     },
   ];
 
+  const sortedOrders = orders ? [...orders].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    if (dateA === dateB) return String(b._id).localeCompare(String(a._id));
+    return dateB - dateA;
+  }) : [];
+
   const rows =
-    orders?.map((item) => ({
+    sortedOrders.map((item) => ({
       id: item._id,
       itemsQty: item.cart?.reduce((acc, i) => acc + i.qty, 0) || 0,
       total: `$${item.totalPrice}`,

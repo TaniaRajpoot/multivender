@@ -4,8 +4,10 @@ import { Link, useParams } from "react-router-dom";
 import Loader from "../Layout/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
+import { logoutSeller } from "../../redux/actions/seller";
 import { server } from "../../server";
 import { toast } from "react-toastify";
+import { ui } from "../../styles/theme";
 
 const ShopInfo = ({ isOwner }) => {
   const [data, setData] = useState({});
@@ -15,23 +17,25 @@ const ShopInfo = ({ isOwner }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllProductsShop(id));
-    setIsLoading(true);
-    axios
-      .get(`${server}/shop/get-shop-info/${id}`)
-      .then((res) => {
-        setData(res.data.shop);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-      });
+    if (id) {
+      dispatch(getAllProductsShop(id));
+      setIsLoading(true);
+      axios
+        .get(`${server}/shop/get-shop-info/${id}`)
+        .then((res) => {
+          setData(res.data.shop);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+        });
+    }
   }, [dispatch, id]);
 
   const logoutHandler = async () => {
-    dispatch(logoutSeller());
+    await dispatch(logoutSeller());
     toast.success("Logout successful");
-    window.location.reload();
+    window.location.href = "/shop-login";
   };
 
   const totalReviewsLength = products?.reduce((acc, product) => acc + (product.reviews?.length || 0), 0) || 0;
@@ -43,58 +47,56 @@ const ShopInfo = ({ isOwner }) => {
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="bg-white/40 backdrop-blur-md rounded-[48px] border border-white p-8 md:p-10 shadow-soft sticky top-24">
-          <div className="w-full pb-6 border-b border-[#16697A]/10">
-            <div className="w-full flex items-center justify-center">
-              <div className="relative group">
-                <img
-                  src={data.avatar?.url || "/placeholder.png"}
-                  alt="profile"
-                  className="w-40 h-40 object-cover rounded-[40px] shadow-2xl border-4 border-white transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white shadow-lg" />
-              </div>
+        <div className={`${ui.card} ${ui.cardPadding} space-y-6 sticky top-24`}>
+          <div className="flex flex-col items-center text-center pb-6 border-b border-gray-200">
+            <div className="relative group mb-4">
+              <img
+                src={data.avatar?.url || "/placeholder.png"}
+                alt="profile"
+                className="w-28 h-28 object-cover rounded-xl border border-gray-200 shadow-sm"
+              />
+              <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white" />
             </div>
-            <h3 className="text-center mt-4 text-2xl font-[700] text-[#16697A] tracking-tight font-display italic">{data.name}</h3>
-            <p className="text-center mt-4 text-[#6B7280] font-[500] leading-relaxed px-2 font-sans">
-              {data.description}
-            </p>
+            <h3 className="text-lg font-semibold text-gray-900">{data.name}</h3>
+            {data.description && (
+              <p className="text-xs text-gray-500 mt-2 line-clamp-3 px-2 leading-relaxed">
+                {data.description}
+              </p>
+            )}
           </div>
 
-          <div className="space-y-8 pt-6">
+          <div className="space-y-4">
             <div>
-              <h5 className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.3em] mb-2 font-sans">Address</h5>
-              <h4 className="text-[#16697A] font-[600] text-sm leading-snug font-sans">{data.address}</h4>
+              <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Address</span>
+              <span className="text-sm font-medium text-gray-700 mt-0.5 block">{data.address}</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <h5 className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.3em] mb-2 font-sans">Total Products</h5>
-                <h4 className="text-[#16697A] font-[700] font-sans">{products?.length || 0}</h4>
+                <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Products</span>
+                <span className="text-sm font-semibold text-gray-900 mt-0.5 block">{products?.length || 0}</span>
               </div>
               <div>
-                <h5 className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.3em] mb-2 font-sans">Joined On</h5>
-                <h4 className="text-[#16697A] font-[700] font-sans">{data?.createdAt?.slice(0, 10)}</h4>
+                <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Joined On</span>
+                <span className="text-sm font-semibold text-gray-900 mt-0.5 block">{data?.createdAt?.slice(0, 10)}</span>
               </div>
             </div>
 
             <div>
-              <h5 className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.3em] mb-2 font-sans">Shop Ratings</h5>
-              <div className="flex items-center gap-2">
-                <span className="text-[#FFA62B] text-lg font-[700] font-sans">{averageRating}/5</span>
-              </div>
+              <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Shop Rating</span>
+              <span className="text-sm font-semibold text-teal-700 mt-0.5 block">{averageRating} / 5.0</span>
             </div>
 
             {isOwner && (
-              <div className="space-y-4 pt-6">
-                <Link to="/settings">
-                  <button className="w-full h-14 bg-[#16697A] text-[#EDE7E3] font-[700] uppercase tracking-[0.1em] text-[13px] rounded-2xl hover:bg-[#FFA62B] transition-all shadow-lg font-sans">
-                    Go Dashboard
+              <div className="space-y-2 pt-4 border-t border-gray-200">
+                <Link to="/settings" className="block w-full">
+                  <button className={`${ui.btnPrimary} w-full py-2.5`}>
+                    Shop Settings
                   </button>
                 </Link>
                 <button
                   onClick={logoutHandler}
-                  className="w-full h-14 border border-[#16697A]/10 text-[#16697A]/60 font-[700] uppercase tracking-[0.1em] text-[13px] rounded-2xl hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all font-sans"
+                  className={`${ui.btnDanger} w-full py-2.5 bg-red-50 text-red-600 border border-red-100 hover:bg-red-500 hover:text-white transition`}
                 >
                   Log Out
                 </button>

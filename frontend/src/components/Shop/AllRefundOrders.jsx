@@ -37,7 +37,14 @@ const AllRefundOrders = () => {
     },
   ];
 
-  const rows = refundOrders.map((item) => ({
+  const sortedRefundOrders = refundOrders.sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    if (dateA === dateB) return String(b._id).localeCompare(String(a._id));
+    return dateB - dateA;
+  });
+
+  const rows = sortedRefundOrders.map((item) => ({
     id: item._id,
     itemsQty: item.cart?.length || 0,
     total: `$${item.totalPrice}`,

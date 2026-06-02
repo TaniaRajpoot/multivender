@@ -23,8 +23,15 @@ const AdminDashboardOrdersPage = () => {
     { field: "createdAt", headerName: "Date", minWidth: 110, flex: 0.5, headerClassName: "grid-header" },
   ];
 
+  const sortedAdminOrders = adminOrders ? [...adminOrders].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    if (dateA === dateB) return String(b._id).localeCompare(String(a._id));
+    return dateB - dateA;
+  }) : [];
+
   const rows =
-    adminOrders?.map((item) => ({
+    sortedAdminOrders.map((item) => ({
       id: item._id,
       itemsQty: item?.cart?.reduce((acc, i) => acc + i?.qty, 0) || 0,
       total: `$${item.totalPrice}`,

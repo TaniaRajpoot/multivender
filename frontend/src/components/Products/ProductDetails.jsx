@@ -19,6 +19,7 @@ import axios from "axios";
 import { server } from "../../server";
 import CountDown from "../Events/CountDown";
 import { useSearchParams } from "react-router-dom";
+import { ui } from "../../styles/theme";
 
 const ProductDetails = ({ data }) => {
   const [searchParams] = useSearchParams();
@@ -84,12 +85,12 @@ const ProductDetails = ({ data }) => {
 
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
-      const groupTitle = data._id + user._id;
+      const groupTitle = data.shop._id + user._id;
       const userId = user._id;
       const sellerId = data.shop._id;
       axios.post(`${server}/conversation/create-new-converation`, { groupTitle, userId, sellerId })
         .then((res) => { navigate(`/inbox?/${res.data.conversation._id}`); })
-        .catch((error) => { toast.error(error.response.data?.message); });
+        .catch((error) => { toast.error(error.response?.data?.message || "Failed to create conversation"); });
     } else {
       toast.error("Please Login To Create A Conversation!");
     }
@@ -98,159 +99,147 @@ const ProductDetails = ({ data }) => {
   return (
     <div className="bg-gray-50 min-h-screen pb-10">
       {data ? (
-        <div className="max-w-7xl mx-auto px-4 md:px-12 lg:px-24">
-          <div className="w-full py-8 md:py-16">
-            <div className="flex flex-col lg:flex-row gap-16 xl:gap-24">
-              {/* Left Side: Professional Image Gallery */}
+        <div className={ui.containerWide}>
+          <div className="w-full py-8 md:py-12">
+            <div className="flex flex-col lg:flex-row gap-8 xl:gap-12">
+              {/* Left Side: Product Images */}
               <div className="w-full lg:w-1/2">
                 <div className="sticky top-24">
-                  <div className="relative aspect-square w-full bg-white/40 backdrop-blur-md rounded-[48px] overflow-hidden shadow-soft group">
+                  <div className={`${ui.card} relative aspect-square overflow-hidden mb-4 group`}>
                     <img
                       src={getImageUrl(data.images?.[select])}
                       alt={data.name}
-                      className="w-full h-full object-contain p-12 mix-blend-multiply group-hover:scale-110 transition-transform duration-1000"
+                      className="w-full h-full object-contain p-8 group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-8 left-8 bg-teal-600 text-white px-5 py-2 rounded-2xl text-[10px] font-[700] shadow-xl uppercase tracking-widest font-sans">
+                    <div className="absolute top-4 left-4 bg-teal-600 text-white px-3 py-1 rounded-md text-xs font-semibold shadow-sm uppercase tracking-wide">
                       New Arrival
                     </div>
                   </div>
 
-                  <div className="flex gap-4 mt-8 px-2 overflow-x-auto pb-4 scrollbar-hide">
+                  <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                     {data.images.map((i, index) => (
                       <button
                         key={index}
                         onClick={() => setSelect(index)}
-                        className={`relative h-24 w-24 min-w-[96px] rounded-3xl overflow-hidden transition-all duration-300 ${select === index
-                          ? "ring-4 ring-teal-700 ring-offset-4 ring-offset-gray-50 scale-105"
-                          : "opacity-60 hover:opacity-100 hover:scale-105"
+                        className={`relative h-20 w-20 min-w-[80px] rounded-lg overflow-hidden transition-all duration-300 border-2 ${select === index
+                          ? "border-teal-600"
+                          : "border-gray-200 hover:border-gray-300"
                           }`}
                       >
-                        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
-                        <img src={getImageUrl(i)} alt="" className="h-full w-full object-contain mix-blend-multiply p-2" />
+                        <img src={getImageUrl(i)} alt="" className="h-full w-full object-contain p-2" />
                       </button>
                     ))}
                   </div>
                 </div>
               </div>
 
-              {/* Right Side: Information & Interactions */}
-              <div className="w-full lg:w-1/2 flex flex-col pt-4">
-                <div className="flex items-center gap-2 mb-6 uppercase tracking-[0.3em] font-black text-teal-600 text-xs">
+              {/* Right Side: Information */}
+              <div className="w-full lg:w-1/2 flex flex-col">
+                <div className="flex items-center gap-2 mb-4 text-sm font-semibold text-teal-600 uppercase tracking-wider">
                   <span>Shop</span>
-                  <span className="w-1 h-1 bg-teal-600 rounded-full" />
+                  <span className="w-1.5 h-1.5 bg-teal-600 rounded-full" />
                   <span>{data.category}</span>
                 </div>
 
-                <h1 className="text-3xl md:text-4xl font-[700] text-teal-800 leading-tight mb-6 font-display italic">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight mb-4">
                   {data.name}
                 </h1>
 
-                <div className="flex items-center gap-8 mb-10">
-                  <div className="flex flex-col">
-                    <span className="text-4xl font-black text-teal-800">${data.discountPrice}</span>
+                <div className="flex items-center gap-6 mb-6">
+                  <div className="flex items-end gap-3">
+                    <span className="text-3xl font-bold text-gray-900">${data.discountPrice}</span>
                     {data.originalPrice && (
-                      <span className="text-[#9CA3AF] line-through font-bold mt-1">${data.originalPrice}</span>
+                      <span className="text-lg text-gray-400 line-through font-medium pb-1">${data.originalPrice}</span>
                     )}
                   </div>
-                  <div className="h-12 w-[1px] bg-teal-700/10" />
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-1">
-                      <Ratings rating={data.ratings || 4.5} />
-                      <span className="text-teal-800 font-[600] text-sm ml-2 font-sans">({data.reviews?.length || 0})</span>
-                    </div>
+                  <div className="w-px h-8 bg-gray-200" />
+                  <div className="flex items-center gap-2">
+                    <Ratings rating={data.ratings || 4.5} />
+                    <span className="text-gray-600 font-medium text-sm">({data.reviews?.length || 0} Reviews)</span>
                   </div>
                 </div>
 
-                <p className="text-[#6B7280] text-lg leading-relaxed mb-10 font-medium">
+                <p className="text-gray-600 leading-relaxed mb-8">
                   {data.description}
                 </p>
 
                 {isEvent && (
-                  <div className="mt-8 mb-8 p-6 bg-[#FFF5F5] border border-[#FED7D7] rounded-3xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                    <div className="relative z-10">
-                      <div className="flex items-center gap-3 mb-4">
-                        <span className="flex h-2 w-2 rounded-full bg-red-500 animate-ping" />
-                        <p className="text-[11px] font-black text-[#E53E3E] uppercase tracking-[0.3em]">🚀 Limited Time Event!</p>
-                      </div>
+                  <div className="mb-8 p-5 bg-red-50 border border-red-100 rounded-xl relative overflow-hidden">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="flex h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                      <p className="text-xs font-bold text-red-600 uppercase tracking-wider">Limited Time Event</p>
+                    </div>
 
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-red-100 pb-6 mb-6">
-                        <div className="space-y-1">
-                          <p className="text-[10px] font-bold text-red-500/60 uppercase tracking-widest">Starts:</p>
-                          <p className="text-sm font-black text-[#0D1A12]">{data.start_Date ? new Date(data.start_Date).toLocaleDateString() : '01/01/2025'}</p>
-                        </div>
-                        <div className="space-y-1 md:text-right">
-                          <p className="text-[10px] font-bold text-red-500/60 uppercase tracking-widest">Ends:</p>
-                          <p className="text-sm font-black text-[#0D1A12]">{data.Finish_Date ? new Date(data.Finish_Date).toLocaleDateString() : '31/12/2025'}</p>
-                        </div>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-red-100 pb-4 mb-4">
+                      <div>
+                        <p className="text-xs font-semibold text-red-500 uppercase">Starts</p>
+                        <p className="text-sm font-bold text-gray-900">{data.start_Date ? new Date(data.start_Date).toLocaleDateString() : '01/01/2025'}</p>
                       </div>
+                      <div>
+                        <p className="text-xs font-semibold text-red-500 uppercase">Ends</p>
+                        <p className="text-sm font-bold text-gray-900">{data.Finish_Date ? new Date(data.Finish_Date).toLocaleDateString() : '31/12/2025'}</p>
+                      </div>
+                    </div>
 
-                      <div className="text-center">
-                        <p className="text-[10px] font-bold text-red-500/60 uppercase tracking-[0.4em] mb-4">Time Remaining</p>
-                        <div className="deadline-timer">
-                          <CountDown data={data} isDeadline={true} />
-                        </div>
-                      </div>
+                    <div className="text-center">
+                      <p className="text-xs font-bold text-red-500 uppercase mb-2">Time Remaining</p>
+                      <CountDown data={data} isDeadline={true} />
                     </div>
                   </div>
                 )}
 
                 {/* Interaction Section */}
-                <div className="bg-white/40 backdrop-blur-md border border-white rounded-[40px] p-8 md:p-10 mb-12 shadow-soft">
-                  <div className="flex flex-wrap items-center gap-6 mb-8">
-                    <div className="flex items-center bg-gray-100 p-1.5 rounded-2xl shadow-inner border border-white/50">
+                <div className={`${ui.card} ${ui.cardPadding} mb-8`}>
+                  <div className="flex flex-wrap items-center gap-6 mb-6">
+                    <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg p-1">
                       <button
-                        className="w-12 h-12 flex items-center justify-center text-teal-800 hover:bg-white hover:rounded-xl hover:shadow-soft transition-all text-xl font-black"
+                        className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-white hover:shadow-sm rounded-md transition font-medium"
                         onClick={decrementCount}
                       > - </button>
-                      <span className="w-16 text-center text-teal-800 font-black text-lg">{count}</span>
+                      <span className="w-12 text-center text-gray-900 font-semibold">{count}</span>
                       <button
-                        className="w-12 h-12 flex items-center justify-center text-teal-800 hover:bg-white hover:rounded-xl hover:shadow-soft transition-all text-xl font-black"
+                        className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-white hover:shadow-sm rounded-md transition font-medium"
                         onClick={incrementCount}
                       > + </button>
                     </div>
-                    <p className="text-[#6B7280] text-sm font-bold italic ml-2">Only <span className="text-teal-600">{data.stock} units</span> left in stock</p>
+                    <p className="text-gray-500 text-sm font-medium">Only <span className="text-teal-600 font-semibold">{data.stock} units</span> left in stock</p>
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
                     <button
-                      className="flex-1 h-20 flex items-center justify-center gap-4 bg-teal-700 text-gray-100 font-[700] text-lg rounded-3xl hover:bg-teal-600 transition-all duration-500 shadow-xl hover:shadow-[teal-600]/20 transform hover:-translate-y-1 font-sans uppercase tracking-widest text-sm"
+                      className={`${ui.btnPrimary} flex-1 py-3 text-base`}
                       onClick={() => addToCartHandler(data._id)}
                     >
-                      <AiOutlineShoppingCart size={24} />
-                      <span>Add to cart</span>
+                      <AiOutlineShoppingCart size={20} />
+                      Add to cart
                     </button>
                     <button
                       onClick={() => click ? removeFromWishlistHandler(data) : addToWishlistHandler(data)}
-                      className={`h-20 w-20 flex items-center justify-center rounded-3xl transition-all duration-500 shadow-xl transform hover:-translate-y-1 ${click ? "bg-teal-600 text-white" : "bg-white text-teal-800 hover:text-teal-600"
-                        }`}
+                      className="h-[46px] w-[46px] flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition sm:flex-none"
                     >
-                      {click ? <AiFillHeart size={28} /> : <AiOutlineHeart size={28} />}
+                      {click ? <AiFillHeart size={24} className="text-red-500" /> : <AiOutlineHeart size={24} className="text-gray-600" />}
                     </button>
                   </div>
                 </div>
 
                 {/* Seller Mini Card */}
-                <div className="flex items-center justify-between p-6 bg-white/20 rounded-[32px] border border-white/40 group hover:bg-white/40 transition-all duration-500">
+                <div className={`${ui.card} flex items-center justify-between p-4 hover:border-teal-200 transition-colors`}>
                   <Link to={`/shop/preview/${data.shop?._id}`} className="flex items-center gap-4">
-                    <div className="relative">
-                      <img
-                        className="w-16 h-16 rounded-2xl object-cover shadow-lg border-2 border-white"
-                        src={getImageUrl(data?.shop?.avatar)}
-                        alt={data?.shop?.name}
-                      />
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm" />
-                    </div>
+                    <img
+                      className="w-14 h-14 rounded-full object-cover border border-gray-200"
+                      src={getImageUrl(data?.shop?.avatar)}
+                      alt={data?.shop?.name}
+                    />
                     <div>
-                      <h4 className="font-[700] text-teal-800 text-lg group-hover:text-teal-600 transition-colors">{data?.shop?.name}</h4>
-                      <p className="text-xs font-[600] text-[#6B7280] font-sans">Store • {averageRating.toFixed(1)}/5 Stars</p>
+                      <h4 className="font-semibold text-gray-900 text-base group-hover:text-teal-600">{data?.shop?.name}</h4>
+                      <p className="text-xs font-medium text-gray-500">Store • {averageRating.toFixed(1)}/5 Stars</p>
                     </div>
                   </Link>
                   <button
                     onClick={handleMessageSubmit}
-                    className="w-14 h-14 bg-teal-700 text-white rounded-2xl flex items-center justify-center hover:bg-teal-600 transition-all shadow-lg"
+                    className="w-10 h-10 bg-teal-50 text-teal-700 rounded-full flex items-center justify-center hover:bg-teal-100 transition-colors"
                   >
-                    <AiOutlineMessage size={24} />
+                    <AiOutlineMessage size={20} />
                   </button>
                 </div>
               </div>
@@ -276,97 +265,86 @@ const ProductsDetailsInfo = ({ data, products, totalReviewsLength, averageRating
 
   const tabs = [
     { id: 1, label: "Product Details" },
-    { id: 2, label: `Product Reviews` },
+    { id: 2, label: "Product Reviews" },
     { id: 3, label: "Seller Information" },
   ];
 
   return (
-    <div className="mt-20">
-      <div className="flex flex-wrap gap-8 md:gap-16 border-b border-teal-800/10 pb-4 mb-12">
+    <div className="mt-16">
+      <div className="flex border-b border-gray-200 mb-8 overflow-x-auto scrollbar-hide">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActive(tab.id)}
-            className={`relative py-2 text-lg font-[700] transition-all font-sans uppercase tracking-[0.1em] ${active === tab.id ? "text-teal-800" : "text-[#6B7280]/60 hover:text-teal-800"
+            className={`whitespace-nowrap py-4 px-6 text-sm font-semibold border-b-2 transition-colors ${active === tab.id
+                ? "border-teal-600 text-teal-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
           >
             {tab.label}
-            {active === tab.id && (
-              <div className="absolute -bottom-4 left-0 w-full h-1 bg-teal-600 rounded-full animate-in slide-in-from-left duration-300" />
-            )}
           </button>
         ))}
       </div>
 
-      <div className="min-h-[400px]">
+      <div className="min-h-[300px]">
         {active === 1 && (
-          <div className="bg-white/40 backdrop-blur-md rounded-[48px] p-10 md:p-16 border border-white shadow-soft animate-in fade-in duration-700">
-            <p className="text-[#6B7280] text-lg leading-relaxed whitespace-pre-line font-[500] font-sans">
+          <div className={`${ui.card} ${ui.cardPadding} animate-in fade-in duration-300`}>
+            <p className="text-gray-600 leading-relaxed whitespace-pre-line text-sm sm:text-base">
               {data.description}
             </p>
           </div>
         )}
 
         {active === 2 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in duration-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-300">
             {data && data.reviews && data.reviews.length > 0 ? (
               data.reviews.map((item, index) => (
-                <div className="bg-white/40 backdrop-blur-md rounded-[40px] p-8 border border-white shadow-soft transition-all hover:scale-[1.02]" key={index}>
-                  <div className="flex items-center gap-4 mb-6">
-                    <img src={getImageUrl(item.user.avatar)} alt="" className="w-14 h-14 rounded-2xl object-cover shadow-md" />
+                <div className={`${ui.card} ${ui.cardPadding}`} key={index}>
+                  <div className="flex items-center gap-4 mb-4">
+                    <img src={getImageUrl(item.user.avatar)} alt="" className="w-12 h-12 rounded-full object-cover border border-gray-200" />
                     <div>
-                      <h4 className="font-[700] text-teal-800 font-sans">{item.user?.name}</h4>
+                      <h4 className="font-semibold text-gray-900 text-sm">{item.user?.name}</h4>
                       <Ratings rating={item?.rating} />
                     </div>
                   </div>
-                  <p className="text-[#6B7280] font-[500] leading-relaxed italic font-sans">"{item.comment}"</p>
-                  <p className="text-[10px] font-[700] text-[#9CA3AF] uppercase tracking-widest mt-6 font-sans">Verified Purchase • 2 days ago</p>
+                  <p className="text-gray-600 text-sm italic">"{item.comment}"</p>
                 </div>
               ))
             ) : (
-              <div className="col-span-full py-20 text-center">
-                <h4 className="text-xl font-[600] text-teal-800 font-sans">No Reviews for this product!</h4>
+              <div className="col-span-full py-16 text-center text-gray-500">
+                No Reviews for this product yet.
               </div>
             )}
           </div>
         )}
 
         {active === 3 && (
-          <div className="flex flex-col lg:flex-row gap-12 animate-in fade-in duration-700">
-            <div className="w-full lg:w-[40%] bg-teal-700 rounded-[48px] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl" />
-              <div className="relative z-10">
-                <img src={getImageUrl(data?.shop?.avatar)} alt="" className="w-32 h-32 rounded-[32px] object-cover mb-8 border-4 border-white/20 shadow-2xl" />
-                <h2 className="text-4xl font-black mb-2">{data.shop.name}</h2>
-                <p className="text-[#82C0CC] font-bold mb-8">Official Partner Store</p>
-                <div className="grid grid-cols-2 gap-6 mt-12">
-                  <div>
-                    <p className="text-[10px] font-black opacity-60 uppercase tracking-widest mb-1">Joined</p>
-                    <p className="font-black">{data.shop?.createdAt?.slice(0, 4)}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black opacity-60 uppercase tracking-widest mb-1">Products</p>
-                    <p className="font-black">{products?.length || 0}+</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black opacity-60 uppercase tracking-widest mb-1">Satisfaction</p>
-                    <p className="font-black">98.5%</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black opacity-60 uppercase tracking-widest mb-1">Rating</p>
-                    <p className="font-black text-teal-600">{averageRating.toFixed(1)}/5</p>
-                  </div>
-                </div>
+          <div className="flex flex-col lg:flex-row gap-6 animate-in fade-in duration-300">
+            <div className={`${ui.card} w-full lg:w-1/3 p-6 flex flex-col items-center text-center`}>
+              <img src={getImageUrl(data?.shop?.avatar)} alt="" className="w-24 h-24 rounded-full object-cover mb-4 border border-gray-200" />
+              <h2 className="text-xl font-bold text-gray-900 mb-1">{data.shop.name}</h2>
+              <p className="text-teal-600 text-sm font-medium mb-6">Verified Partner</p>
+              <div className="w-full flex justify-between text-left text-sm mb-6 pb-6 border-b border-gray-100">
+                <div className="text-gray-500">Joined On</div>
+                <div className="font-semibold text-gray-900">{data.shop?.createdAt?.slice(0, 4)}</div>
+              </div>
+              <div className="w-full flex justify-between text-left text-sm mb-6 pb-6 border-b border-gray-100">
+                <div className="text-gray-500">Products</div>
+                <div className="font-semibold text-gray-900">{products?.length || 0}</div>
+              </div>
+              <div className="w-full flex justify-between text-left text-sm mb-6">
+                <div className="text-gray-500">Avg Rating</div>
+                <div className="font-semibold text-gray-900">{averageRating.toFixed(1)}/5</div>
               </div>
             </div>
 
-            <div className="flex-1 bg-white/40 backdrop-blur-md rounded-[48px] p-10 md:p-16 border border-white shadow-soft flex flex-col justify-center">
-              <h3 className="text-2xl font-[700] text-teal-800 mb-6 font-display italic">Shop Info</h3>
-              <p className="text-[#6B7280] text-lg leading-relaxed font-[500] mb-12 font-sans">
-                {data?.shop?.description}
+            <div className={`${ui.card} w-full lg:w-2/3 p-6 lg:p-8 flex flex-col justify-center`}>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">About the Shop</h3>
+              <p className="text-gray-600 text-sm leading-relaxed mb-8">
+                {data?.shop?.description || "This seller has not provided a description yet."}
               </p>
-              <Link to={`/shop/preview/${data?.shop._id}`} className="inline-flex items-center justify-center h-20 px-12 bg-teal-700 text-gray-100 font-[700] rounded-3xl hover:bg-teal-600 transition-all duration-500 shadow-xl self-start font-sans uppercase tracking-widest text-sm">
-                Visit Shop
+              <Link to={`/shop/preview/${data?.shop._id}`} className={ui.btnPrimary}>
+                Visit Shop Profile
               </Link>
             </div>
           </div>

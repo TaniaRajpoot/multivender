@@ -67,9 +67,9 @@ const Header = ({ activeHeading }) => {
       {/* Desktop top bar */}
       <div className="hidden md:block bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-6">
-          <Link to="/" className="flex items-center gap-2 shrink-0">
-            <img src="/logo.png" alt="Shop" className="h-9" />
-            <span className="font-bold text-lg text-teal-800">MultiVendor</span>
+          <Link to="/" className="flex items-center gap-3 shrink-0">
+            <img src="/logo.png" alt="Crown Market" className="h-12 w-auto" />
+            <span className="font-bold text-2xl text-teal-800">Crown Market</span>
           </Link>
 
           <div className="flex-1 max-w-xl relative">
@@ -141,12 +141,12 @@ const Header = ({ activeHeading }) => {
       {sticky && <div className="hidden md:block h-12" />}
 
       {/* Mobile header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 h-14 bg-teal-700 text-white flex items-center justify-between px-4 shadow">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 h-16 bg-teal-700 text-white flex items-center justify-between px-4 shadow">
         <button type="button" onClick={() => setSidebarOpen(true)} aria-label="Menu">
           <BiMenuAltLeft size={26} />
         </button>
         <Link to="/">
-          <img src="/logo.png" alt="" className="h-8" />
+          <img src="/logo.png" alt="Crown Market" className="h-10 w-auto" />
         </Link>
         <button type="button" onClick={() => setOpenCart(true)} className="relative" aria-label="Cart">
           <AiOutlineShoppingCart size={24} />

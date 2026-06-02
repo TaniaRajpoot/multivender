@@ -13,12 +13,16 @@ const DashboardHeader = () => {
           <span className="hidden sm:inline">Back to store</span>
         </Link>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-600 hidden sm:inline">
-            {seller?.name || "Seller"}
-          </span>
-          {seller?.avatar?.url && (
-            <img src={seller.avatar.url} alt="" className="w-9 h-9 rounded-full object-cover border border-gray-200" />
-          )}
+          <Link to={`/shop/${seller?._id}`} className="flex items-center gap-3 hover:opacity-80 transition-all">
+            <span className="text-sm font-medium text-gray-600 hidden sm:inline">
+              {seller?.name || "Seller"}
+            </span>
+            <img 
+              src={seller?.avatar?.url || seller?.avatar || "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"} 
+              alt="Shop Profile" 
+              className="w-9 h-9 rounded-full object-cover border border-gray-200 shadow-sm" 
+            />
+          </Link>
         </div>
       </div>
     </header>

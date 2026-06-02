@@ -3,12 +3,12 @@ import Header from "../components/Layout/Header";
 import { useSelector } from "react-redux";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
-import { backend_url, server, socket_server } from "../server";
+import { server, socket_server } from "../server";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { AiOutlineArrowRight, AiOutlineSend, AiOutlinePaperClip } from "react-icons/ai";
-import { TfiGallery } from "react-icons/tfi";
+import { useNavigate, useLocation } from "react-router-dom";
+import { AiOutlineSend, AiOutlinePaperClip } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
+import { ui } from "../styles/theme";
 
 const ENDPOINT = socket_server;
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
@@ -25,8 +25,22 @@ const UserInboxPage = () => {
   const [activeStatus, setActiveStatus] = useState(false);
   const [images, setImages] = useState(null);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (conversations.length > 0) {
+      const queryId = location.search.replace("?/", "");
+      if (queryId) {
+        const chat = conversations.find((c) => c._id === queryId);
+        if (chat) {
+          setCurrentChat(chat);
+          setOpen(true);
+        }
+      }
+    }
+  }, [conversations, location.search]);
 
   useEffect(() => {
     socketId.on("getMessage", (data) => {
@@ -80,6 +94,20 @@ const UserInboxPage = () => {
     const chatMember = chat.members.find((member) => member !== user?._id);
     return onlineUsers.some((u) => u.userId === chatMember);
   };
+
+  useEffect(() => {
+    if (currentChat) {
+      setActiveStatus(onlineCheck(currentChat));
+      const fetchUserData = async () => {
+        const shopId = currentChat.members.find((m) => m !== user?._id);
+        try {
+          const res = await axios.get(`${server}/shop/get-shop-info/${shopId}`);
+          setUserData(res.data.shop);
+        } catch (error) { console.log(error); }
+      };
+      fetchUserData();
+    }
+  }, [onlineUsers, currentChat, user]);
 
   useEffect(() => {
     const getMessage = async () => {
@@ -144,20 +172,22 @@ const UserInboxPage = () => {
   }, [messages]);
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className={ui.page}>
       <Header />
-      <div className="max-w-6xl mx-auto py-6 px-4">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-4">Messages</h1>
+      <div className={`${ui.container} py-6`}>
+        <div className="mb-4">
+          <h1 className={ui.title}>Inbox</h1>
+          <p className={ui.subtitle}>Chat with sellers and track your conversations</p>
+        </div>
+        
         <div className="h-[75vh] bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex relative">
-
           {/* Sidebar: Conversation List */}
           <div className={`
-             w-full md:w-[400px] flex flex-col border-r border-white bg-white/20 transition-all duration-500
+             w-full md:w-[350px] flex flex-col border-r border-gray-200 bg-gray-50/50 transition-all duration-300
              ${open ? "hidden md:flex" : "flex"}
           `}>
-            <div className="p-4 md:p-8 border-b border-white">
-              <h2 className="text-lg font-semibold text-gray-900">Conversations</h2>
-              <p className="text-xs text-gray-500 mt-1">Chat with sellers</p>
+            <div className="p-4 border-b border-gray-200 bg-white">
+              <h2 className="text-sm font-semibold text-gray-800 uppercase tracking-wider">Conversations</h2>
             </div>
             <div className="flex-1 overflow-y-auto custom-scrollbar">
               {conversations.map((item, index) => (
@@ -176,8 +206,8 @@ const UserInboxPage = () => {
                 />
               ))}
               {conversations.length === 0 && (
-                <div className="p-12 text-center">
-                  <p className="text-xs font-bold text-[#6B7280] uppercase tracking-widest opacity-50">No Active Transmissions</p>
+                <div className={ui.empty}>
+                  No active chats
                 </div>
               )}
             </div>
@@ -185,81 +215,79 @@ const UserInboxPage = () => {
 
           {/* Main: Message Area */}
           <div className={`
-             flex-1 flex flex-col bg-white/10 transition-all duration-500
+             flex-1 flex flex-col bg-white transition-all duration-300
              ${open ? "flex" : "hidden md:flex"}
           `}>
             {currentChat ? (
               <>
                 {/* Chat Header */}
-                <div className="h-20 md:h-24 px-4 md:px-8 border-b border-white flex items-center justify-between backdrop-blur-md">
-                  <div className="flex items-center gap-4">
-                    <button onClick={() => setOpen(false)} className="md:hidden w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center text-[#16697A]">
-                      <BsArrowLeft size={20} />
+                <div className="h-16 px-6 border-b border-gray-200 flex items-center justify-between bg-white">
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => setOpen(false)} className="md:hidden p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 transition">
+                      <BsArrowLeft size={18} />
                     </button>
                     <div className="relative">
-                      <img src={userData?.avatar?.url} alt="" className="w-12 h-12 rounded-[18px] object-cover ring-2 ring-white shadow-md" />
-                      {activeStatus && <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 border-2 border-white rounded-full" />}
+                      <img src={userData?.avatar?.url || "/placeholder.png"} alt="" className="w-10 h-10 rounded-lg object-cover border border-gray-200" />
+                      {activeStatus && <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full animate-pulse" />}
                     </div>
                     <div>
-                      <h3 className="font-black text-[#16697A] tracking-tight">{userData?.name}</h3>
-                      <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-widest">{activeStatus ? "Authorized & Active" : "Standby Mode"}</p>
+                      <h3 className="font-semibold text-sm text-gray-900 leading-tight">{userData?.name}</h3>
+                      <p className="text-xs text-gray-500">{activeStatus ? "Active now" : "Offline"}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Messages Scroll Area */}
-                <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50 custom-scrollbar">
                   {messages.map((item, index) => (
                     <MessageBubble
                       key={index}
                       item={item}
                       me={user?._id}
                       userData={userData}
-                      isImage={!!item.images}
                     />
                   ))}
                   <div ref={scrollRef} />
                 </div>
 
                 {/* Input Area */}
-                <div className="p-8 relative">
+                <div className="p-4 bg-white border-t border-gray-200 relative">
                   {images && (
-                    <div className="absolute bottom-full left-8 mb-4 animate-in slide-in-from-bottom-2 duration-300">
-                      <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white w-32 aspect-square">
+                    <div className="absolute bottom-full left-4 mb-3 animate-in slide-in-from-bottom-2 duration-200">
+                      <div className="relative rounded-lg overflow-hidden shadow-md border border-gray-200 w-24 aspect-square">
                         <img src={images} alt="Preview" className="w-full h-full object-cover" />
-                        <button onClick={() => setImages(null)} className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center">×</button>
+                        <button onClick={() => setImages(null)} className="absolute top-1 right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-bold transition">×</button>
                       </div>
                     </div>
                   )}
-                  <form onSubmit={sendMessageHandler} className="bg-white/80 backdrop-blur-xl rounded-[32px] border border-white p-2 flex items-center shadow-xl">
-                    <label className="w-14 h-14 flex items-center justify-center text-[#16697A] hover:bg-[#EDE7E3] rounded-2xl cursor-pointer transition-colors">
-                      <AiOutlinePaperClip size={24} />
+                  <form onSubmit={sendMessageHandler} className="bg-white border border-gray-300 rounded-lg p-1.5 flex items-center shadow-sm focus-within:border-teal-600 focus-within:ring-2 focus-within:ring-teal-600/20 transition">
+                    <label className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-teal-700 hover:bg-gray-100 rounded-lg cursor-pointer transition">
+                      <AiOutlinePaperClip size={20} />
                       <input type="file" className="hidden" onChange={handleImageUpload} accept="image/*" />
                     </label>
                     <input
                       type="text"
-                      placeholder="Transmit high-priority data..."
+                      placeholder="Type a message..."
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
-                      className="flex-1 px-4 py-2 font-bold text-[#16697A] placeholder:text-[#16697A]/20 outline-none bg-transparent"
+                      className="flex-1 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 outline-none bg-transparent"
                     />
-                    <button type="submit" className={`p-4 rounded-2xl transition-all duration-300 ${newMessage.trim() || images ? 'bg-[#16697A] text-white shadow-lg rotate-[360deg]' : 'text-[#6B7280] bg-transparent opacity-20 cursor-not-allowed'}`}>
-                      <AiOutlineSend size={24} />
+                    <button type="submit" className={`p-2.5 rounded-lg transition ${newMessage.trim() || images ? 'bg-teal-700 text-white hover:bg-teal-800 shadow-sm' : 'text-gray-400 bg-transparent cursor-not-allowed opacity-50'}`}>
+                      <AiOutlineSend size={18} />
                     </button>
                   </form>
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center p-12 animate-in fade-in zoom-in duration-700">
-                <div className="w-24 h-24 bg-[#EDE7E3] rounded-[40px] flex items-center justify-center text-[#16697A]/20 mb-8 transform rotate-12">
-                  <AiOutlineSend size={48} />
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+                <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600 mb-4">
+                  <AiOutlineSend size={32} />
                 </div>
-                <h2 className="text-xl font-black text-[#16697A] tracking-tighter italic">SECURE COMMS IDLE</h2>
-                <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.4em] mt-2">Select a channel to begin transmission</p>
+                <h2 className="text-base font-semibold text-gray-800">Your Chat Messages</h2>
+                <p className="text-xs text-gray-500 mt-1 max-w-[280px]">Select a seller from the conversations list to begin chatting.</p>
               </div>
             )}
           </div>
-
         </div>
       </div>
     </div>
@@ -290,53 +318,53 @@ const ConversationCard = ({ data, me, online, active, onClick, setUserData, setA
     <div
       onClick={onCardClick}
       className={`
-        px-8 py-6 flex items-center gap-4 cursor-pointer transition-all duration-500 relative group
-        ${active ? "bg-white/60 shadow-inner" : "hover:bg-white/30"}
+        px-6 py-4 flex items-center gap-3 cursor-pointer border-b border-gray-150 relative transition
+        ${active ? "bg-teal-50/50" : "bg-white hover:bg-gray-50/50"}
       `}
     >
-      {active && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-12 bg-[#FFA62B] rounded-r-full" />}
-      <div className="relative">
-        <img src={shop?.avatar?.url} alt="" className="w-14 h-14 rounded-[20px] object-cover ring-2 ring-white shadow-md transform group-hover:scale-105 transition-transform" />
-        <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-4 border-white ${online ? 'bg-green-400' : 'bg-[#c7b9b9]'}`} />
+      {active && <div className="absolute left-0 top-0 bottom-0 w-1 bg-teal-700" />}
+      <div className="relative flex-shrink-0">
+        <img src={shop?.avatar?.url || "/placeholder.png"} alt="" className="w-11 h-11 rounded-lg object-cover border border-gray-200" />
+        <div className={`absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white ${online ? 'bg-green-500' : 'bg-gray-300'}`} />
       </div>
       <div className="flex-1 min-w-0">
-        <h4 className="font-black text-[#16697A] tracking-tight truncate uppercase">{shop?.name}</h4>
-        <p className="text-xs font-bold text-[#6B7280] truncate mt-0.5 opacity-60 italic">
-          {data.lastMessageId === me ? 'Sent: ' : ''}{data.lastMessage}
+        <h4 className="text-sm font-semibold text-gray-800 truncate">{shop?.name}</h4>
+        <p className="text-xs text-gray-500 truncate mt-0.5">
+          {data.lastMessageId === me ? 'You: ' : ''}{data.lastMessage}
         </p>
       </div>
-      <div className="text-[10px] font-black text-[#82C0CC] uppercase tracking-tighter">
+      <div className="text-[10px] text-gray-400 whitespace-nowrap self-start mt-0.5">
         {format(data.updatedAt).split(' ')[0]}
       </div>
     </div>
   );
 };
 
-const MessageBubble = ({ item, me, userData, isImage }) => {
+const MessageBubble = ({ item, me, userData }) => {
   const isMe = item.sender === me;
   return (
-    <div className={`flex w-full mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500 ${isMe ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex w-full mb-3 ${isMe ? 'justify-end' : 'justify-start'}`}>
       {!isMe && (
-        <img src={userData?.avatar?.url} className="w-8 h-8 rounded-xl object-cover mr-3 shadow-md border-2 border-white self-end" alt="" />
+        <img src={userData?.avatar?.url || "/placeholder.png"} className="w-7 h-7 rounded-lg object-cover mr-2 self-end border border-gray-200 shadow-sm" alt="" />
       )}
-      <div className={`max-w-[85%] md:max-w-[70%] space-y-1`}>
+      <div className="max-w-[75%] space-y-1">
         {item.images && (
-          <div className="rounded-[24px] overflow-hidden border-4 border-white shadow-2xl mb-2">
-            <img src={item.images?.url || item.images} alt="" className="w-full max-h-80 object-cover" />
+          <div className="rounded-lg overflow-hidden border border-gray-200 shadow-sm mb-1 bg-white">
+            <img src={item.images?.url || item.images} alt="" className="w-full max-h-60 object-cover" />
           </div>
         )}
         {item.text && (
           <div className={`
-                p-5 rounded-[24px] shadow-sm transform transition-all
-                ${isMe ?
-              'bg-[#16697A] text-white rounded-tr-none translate-x-1' :
-              'bg-white text-[#16697A] rounded-tl-none border border-white'
+            px-4 py-2.5 rounded-xl shadow-sm text-sm leading-relaxed
+            ${isMe ?
+              'bg-teal-700 text-white rounded-tr-none' :
+              'bg-white text-gray-800 rounded-tl-none border border-gray-200'
             }
-             `}>
-            <p className="text-sm font-bold leading-relaxed">{item.text}</p>
+          `}>
+            <p className="font-medium whitespace-pre-wrap">{item.text}</p>
           </div>
         )}
-        <p className={`text-[9px] font-black text-[#6B7280] uppercase tracking-[0.2em] px-2 ${isMe ? 'text-right' : 'text-left'}`}>
+        <p className={`text-[10px] text-gray-400 px-1 mt-0.5 ${isMe ? 'text-right' : 'text-left'}`}>
           {format(item.createdAt)}
         </p>
       </div>

@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button } from "@mui/material";
 import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
 import { RxCross1 } from "react-icons/rx";
-import styles from "../../styles/styles";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
 import { getAllSellers } from "../../redux/actions/seller";
 import { Link } from "react-router-dom";
-
+import ListPage from "../ui/ListPage";
+import { ui } from "../../styles/theme";
 
 const AllSellers = () => {
   const dispatch = useDispatch();
@@ -39,33 +38,34 @@ const AllSellers = () => {
   const columns = [
     { field: "id", headerName: "Seller ID", flex: 0.7, minWidth: 150 },
     { field: "name", headerName: "Name", flex: 0.7, minWidth: 150 },
-    { field: "email", headerName: "Email", type: "email", flex: 0.7, minWidth: 200 },
-    { field: "address", headerName: "Seller Address", flex: 0.7, minWidth: 200 },
-    { field: "joinedAt", headerName: "joinedAt", flex: 0.5, minWidth: 120 },
+    { field: "email", headerName: "Email", flex: 0.7, minWidth: 200 },
+    { field: "address", headerName: "Address", flex: 0.7, minWidth: 200 },
+    { field: "joinedAt", headerName: "Joined", flex: 0.5, minWidth: 120 },
     {
       field: "preview",
-      headerName: "Preview Shop",
+      headerName: "Preview",
       flex: 0.5,
-      minWidth: 120,
+      minWidth: 100,
+      sortable: false,
       renderCell: (params) => (
-        <Link to={`/shop/preview/${params.id}`}>
-          <div className="w-10 h-10 rounded-xl bg-[#EDE7E3] text-[#16697A] flex items-center justify-center hover:bg-[#16697A] hover:text-white transition-all transform hover:scale-110">
-            <AiOutlineEye size={20} />
-          </div>
+        <Link to={`/shop/preview/${params.id}`} className="text-teal-700 text-sm font-medium hover:underline flex items-center gap-1">
+          <AiOutlineEye size={16} /> View
         </Link>
       ),
     },
     {
       field: "action",
-      headerName: "Delete Seller",
+      headerName: "Delete",
       flex: 0.5,
-      minWidth: 120,
+      minWidth: 100,
+      sortable: false,
       renderCell: (params) => (
-        <Button onClick={() => setUserId(params.id) || setOpen(true)}>
-          <div className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all transform hover:rotate-12">
-            <AiOutlineDelete size={20} />
-          </div>
-        </Button>
+        <button
+          onClick={() => { setUserId(params.id); setOpen(true); }}
+          className="text-red-600 text-sm font-medium hover:underline flex items-center gap-1"
+        >
+          <AiOutlineDelete size={16} /> Delete
+        </button>
       ),
     },
   ];
@@ -79,49 +79,47 @@ const AllSellers = () => {
   })) || [];
 
   return (
-    <div className="w-full min-h-[85vh] p-4 md:p-8 bg-[#EDE7E3]/30">
-      <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom duration-700">
-        <div className="flex items-center gap-4 mb-8 ml-2">
-          <div className="w-2 h-8 bg-[#FFA62B] rounded-full" />
-          <h3 className="text-2xl font-black text-[#16697A] tracking-tighter uppercase italic">All Seller</h3>
-        </div>
+    <div className="p-4 sm:p-6">
+      <ListPage title="All sellers" subtitle="View and manage registered seller accounts.">
+        <DataGrid
+          rows={row}
+          columns={columns}
+          pageSize={10}
+          disableRowSelectionOnClick
+          autoHeight
+        />
+      </ListPage>
 
-        <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 border border-white shadow-soft custom-scrollbar overflow-x-auto">
-          <DataGrid
-            rows={row}
-            columns={columns}
-            pageSize={10}
-            disableRowSelectionOnClick
-            autoHeight
-            className="border-none! font-sans"
-            sx={{
-              "& .MuiDataGrid-main": { borderRadius: "32px", overflow: "hidden" },
-              "& .MuiDataGrid-columnHeaders": { backgroundColor: "#EDE7E3", color: "#16697A", fontWeight: "900", textTransform: "uppercase", fontSize: "11px", letterSpacing: "0.1em", border: "none" },
-              "& .MuiDataGrid-cell": { borderBottom: "1px solid #EDE7E3", color: "#6B7280", fontWeight: "600", fontSize: "13px" },
-              "& .MuiDataGrid-footerContainer": { borderTop: "none" },
-            }}
-          />
-        </div>
-      </div>
-
+      {/* Delete Confirm Modal */}
       {open && (
-        <div className="fixed inset-0 z-[999] bg-[#0F4D58]/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white/90 backdrop-blur-2xl rounded-[40px] p-8 md:p-12 border border-white shadow-2xl animate-in zoom-in duration-300">
-            <div className="flex justify-end mb-4">
-              <button onClick={() => setOpen(false)} className="w-10 h-10 bg-[#EDE7E3] text-[#16697A] rounded-xl flex items-center justify-center hover:rotate-90 transition-all">
-                <RxCross1 size={20} />
-              </button>
-            </div>
-            <h3 className="text-xl text-center mb-10 font-black text-[#16697A] tracking-tighter italic">
-              Are you sure you wanna delete this user?
-            </h3>
-            <div className="flex gap-4">
-              <button onClick={() => setOpen(false)} className="flex-1 h-14 border-2 border-[#16697A] text-[#16697A] font-black rounded-2xl hover:bg-[#16697A] hover:text-white transition-all uppercase tracking-widest text-xs">
-                cancel
-              </button>
-              <button onClick={() => setOpen(false) || handleDelete(userId)} className="flex-1 h-14 bg-[#16697A] text-white font-black rounded-2xl hover:bg-red-500 transition-all shadow-lg uppercase tracking-widest text-xs">
-                confirm
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className={`w-full max-w-sm ${ui.card} ${ui.cardPadding} relative`}>
+            <button
+              onClick={() => setOpen(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+            >
+              <RxCross1 size={18} />
+            </button>
+            <div className="text-center py-4">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AiOutlineDelete size={24} className="text-red-600" />
+              </div>
+              <h3 className="text-base font-semibold text-gray-900 mb-1">Delete seller?</h3>
+              <p className="text-sm text-gray-500 mb-6">This action cannot be undone. The seller account will be permanently removed.</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setOpen(false)}
+                  className={`${ui.btnSecondary} flex-1`}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => { setOpen(false); handleDelete(userId); }}
+                  className={`${ui.btnDanger} flex-1`}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -129,4 +127,5 @@ const AllSellers = () => {
     </div>
   );
 };
+
 export default AllSellers;

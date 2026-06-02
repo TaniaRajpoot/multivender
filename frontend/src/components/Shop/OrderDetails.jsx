@@ -1,6 +1,4 @@
-
 import React, { useEffect, useState } from "react";
-import styles from "../../styles/styles";
 import { BsFillBagFill } from "react-icons/bs";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +7,7 @@ import { server } from "../../server";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../Layout/Loader";
+import { ui } from "../../styles/theme";
 
 const OrderDetails = () => {
   const { orders, isLoading } = useSelector((state) => state.order);
@@ -67,14 +66,14 @@ const OrderDetails = () => {
 
   if (!order) {
     return (
-      <div className={`py-20 text-center ${styles.section}`}>
-        <h2 className="text-2xl font-black text-[#16697A] mb-4">Order not found</h2>
-        <p className="text-[#6B7280] mb-8">This order may have been removed or you do not have access.</p>
+      <div className="py-20 text-center max-w-xl mx-auto space-y-4">
+        <h2 className="text-xl font-semibold text-gray-900">Order not found</h2>
+        <p className="text-sm text-gray-500">This order may have been removed or you do not have access.</p>
         <Link
-          to="/dashboard-refunds"
-          className="inline-block px-8 py-4 bg-[#16697A] text-white font-bold rounded-2xl hover:bg-[#FFA62B] transition-all"
+          to="/dashboard-orders"
+          className={ui.btnPrimary}
         >
-          Back to Refunds
+          Back to Orders
         </Link>
       </div>
     );
@@ -87,129 +86,123 @@ const OrderDetails = () => {
     );
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-xl border border-gray-200 p-6 md:p-8 shadow-sm">
-        <div className="w-full flex items-center justify-between pb-8 border-b border-[#16697A]/10">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[#16697A] rounded-2xl flex items-center justify-center text-white shadow-lg">
-              <BsFillBagFill size={24} />
+    <div className="space-y-6 max-w-5xl mx-auto">
+      <div className={`${ui.card} ${ui.cardPadding} space-y-6`}>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-teal-50 text-teal-700 rounded-lg flex items-center justify-center shrink-0">
+              <BsFillBagFill size={20} />
             </div>
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Order details</h1>
-              <p className="text-sm text-gray-600 mt-1">Update status and review items</p>
+              <h1 className="text-lg font-semibold text-gray-900">Order details</h1>
+              <p className="text-xs text-gray-500 mt-0.5">Review items and update shipping status</p>
             </div>
           </div>
-          <Link to="/dashboard-orders">
-            <div className={`${styles.button} !my-0`}>
-              Order List
-            </div>
+          <Link to="/dashboard-orders" className={ui.btnSecondary}>
+            Back to Orders
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8">
-          <div className="bg-[#EDE7E3]/40 rounded-3xl p-6 border border-white/50">
-            <h5 className="text-[10px] font-black text-[#16697A]/40 uppercase tracking-[0.3em] mb-2">Order Identification</h5>
-            <p className="text-lg font-black text-[#16697A]">#{order._id}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Order ID</span>
+            <span className="text-sm font-semibold text-gray-900 mt-1 block">#{order._id}</span>
           </div>
-          <div className="bg-[#EDE7E3]/40 rounded-3xl p-6 border border-white/50">
-            <h5 className="text-[10px] font-black text-[#16697A]/40 uppercase tracking-[0.3em] mb-2">Placement Date</h5>
-            <p className="text-lg font-black text-[#16697A]">{new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Order Date</span>
+            <span className="text-sm font-semibold text-gray-900 mt-1 block">
+              {new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </span>
           </div>
         </div>
 
         {/* Order Items */}
-        <div className="mb-10">
-          <h4 className="text-[14px] font-black text-[#16697A] uppercase tracking-widest mb-6 px-2">Purchased Items</h4>
-          <div className="space-y-4">
+        <div className="space-y-4">
+          <h4 className="text-sm font-semibold text-gray-900">Purchased Items</h4>
+          <div className="space-y-3">
             {order.cart?.map((item, idx) => (
-              <div key={idx} className="group bg-white/50 hover:bg-white rounded-3xl p-4 flex items-center gap-6 border border-transparent hover:border-[#16697A]/10 transition-all duration-300">
-                <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-md group-hover:scale-105 transition-transform duration-500">
+              <div key={idx} className="bg-gray-50/50 hover:bg-gray-50 rounded-xl p-4 flex items-center gap-4 border border-gray-100 transition">
+                <div className="w-14 h-14 rounded-lg overflow-hidden border border-gray-200 shrink-0">
                   <img src={item.images[0]?.url} alt="" className="w-full h-full object-cover" />
                 </div>
-                <div className="flex-1">
-                  <h5 className="text-[16px] font-black text-[#16697A] uppercase tracking-wide mb-1">{item.name}</h5>
-                  <p className="text-[14px] font-bold text-[#489FB5]">
-                    US${item.discountPrice} <span className="text-[#16697A]/30 mx-2">x</span> {item.qty}
+                <div className="flex-1 min-w-0">
+                  <h5 className="text-sm font-semibold text-gray-900 truncate">{item.name}</h5>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    ${item.discountPrice} x {item.qty}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[16px] font-black text-[#FFA62B]">US${(item.discountPrice * item.qty).toFixed(2)}</p>
+                  <p className="text-sm font-bold text-gray-900">${(item.discountPrice * item.qty).toFixed(2)}</p>
                 </div>
               </div>
             ))}
           </div>
-          <div className="mt-6 flex justify-end px-6">
+          <div className="flex justify-end pt-2">
             <div className="text-right">
-              <p className="text-[10px] font-black text-[#16697A]/40 uppercase tracking-widest mb-1">Grand Total</p>
-              <h2 className="text-3xl font-black text-[#16697A]">US${order.totalPrice}</h2>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total Paid</span>
+              <h2 className="text-xl font-bold text-teal-700 mt-0.5">${order.totalPrice}</h2>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-          <div className="bg-[#16697A]/5 rounded-[32px] p-8 border border-white/50 backdrop-blur-sm">
-            <h4 className="text-[12px] font-black text-[#16697A] uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-[#FFA62B] rounded-full shadow-glow" />
-              Shipping Information
-            </h4>
-            <div className="space-y-2 text-[#16697A]/80 font-bold">
-              <p className="text-lg text-[#16697A] font-black">{order.user?.name}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 border border-gray-100 rounded-xl p-5">
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Shipping Address</h4>
+            <div className="text-sm text-gray-700 space-y-1">
+              <p className="font-semibold text-gray-900">{order.user?.name}</p>
               <p>{order.shippingAddress.address1} {order.shippingAddress.address2}</p>
               <p>{order.shippingAddress.city}, {order.shippingAddress.country}</p>
-              <p className="pt-2 text-[#489FB5]">{order.user?.phoneNumber}</p>
+              <p className="text-teal-700 pt-1 text-xs">{order.user?.phoneNumber}</p>
             </div>
           </div>
 
-          <div className="bg-[#16697A]/5 rounded-[32px] p-8 border border-white/50 backdrop-blur-sm">
-            <h4 className="text-[12px] font-black text-[#16697A] uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-[#FFA62B] rounded-full shadow-glow" />
-              Payment Details
-            </h4>
-            <div className="space-y-4">
+          <div className="bg-gray-50 border border-gray-100 rounded-xl p-5">
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Payment Details</h4>
+            <div className="space-y-3">
               <div>
-                <p className="text-[10px] font-black text-[#16697A]/40 uppercase tracking-widest mb-1">Payment Status</p>
-                <div className={`inline-flex px-4 py-1.5 rounded-full text-[12px] font-black uppercase tracking-widest ${order.paymentInfo?.status === "Succeeded"
-                    ? "bg-green-100 text-green-700 border border-green-200"
-                    : "bg-orange-100 text-orange-700 border border-orange-200"
-                  }`}>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Status</span>
+                <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  order.paymentInfo?.status === "Succeeded"
+                    ? "bg-green-100 text-green-800"
+                    : "bg-yellow-100 text-yellow-800"
+                }`}>
                   {order.paymentInfo?.status || "Pending"}
-                </div>
+                </span>
               </div>
               {order.paymentInfo?.type && (
                 <div>
-                  <p className="text-[10px] font-black text-[#16697A]/40 uppercase tracking-widest mb-1">Method</p>
-                  <p className="text-[14px] font-black text-[#16697A] uppercase">{order.paymentInfo.type}</p>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Method</span>
+                  <span className="text-xs font-semibold text-gray-700 mt-0.5 block uppercase">{order.paymentInfo.type}</span>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        <div className="bg-[#16697A] rounded-[32px] p-8 text-white shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl" />
-          <div className="relative z-10 lg:flex items-center justify-between">
+        {/* Fulfillment Control */}
+        <div className="bg-teal-50 border border-teal-100 rounded-xl p-5 md:p-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h4 className="text-[18px] font-black uppercase tracking-widest mb-2">Order Fulfillment</h4>
-              <p className="text-white/60 text-xs font-bold uppercase tracking-[0.2em]">Update current shipping status</p>
+              <h4 className="text-sm font-semibold text-teal-900">Order Fulfillment</h4>
+              <p className="text-xs text-teal-700 mt-0.5">Select and apply the current shipping status of the order.</p>
             </div>
-            <div className="mt-6 lg:mt-0 flex flex-wrap items-center gap-4">
+            <div className="flex flex-col sm:flex-row gap-3">
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="bg-white/10 border border-white/20 text-white font-black text-[13px] uppercase tracking-wider rounded-2xl px-6 h-[50px] outline-none focus:bg-white/20 transition-all cursor-pointer min-w-[240px]"
+                className={`${ui.select} sm:w-60 !py-2`}
               >
-                <option value="" className="text-gray-800">Select Status</option>
+                <option value="">Select Status</option>
                 {statusOptions.map((option, idx) => (
-                  <option key={idx} value={option} className="text-gray-800">{option}</option>
+                  <option key={idx} value={option}>{option}</option>
                 ))}
               </select>
-
-              <div
-                className="bg-[#FFA62B] text-[#16697A] font-black text-[13px] uppercase tracking-[0.2em] px-10 h-[50px] flex items-center justify-center rounded-2xl cursor-pointer hover:bg-white transition-all duration-500 shadow-xl"
+              <button
                 onClick={order.status === "Processing refund" || order.status === "Refund Success" ? refundOrderUpdateHandler : orderUpdateHandler}
+                className={`${ui.btnPrimary} !py-2 px-6`}
               >
-                Apply Changes
-              </div>
+                Save status
+              </button>
             </div>
           </div>
         </div>

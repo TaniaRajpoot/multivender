@@ -6,7 +6,6 @@ import {
   AiOutlineDelete,
 } from "react-icons/ai";
 import { RxCross1 } from "react-icons/rx";
-import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
 import { MdTrackChanges } from "react-icons/md";
@@ -22,6 +21,7 @@ import axios from "axios";
 import { server } from "../../server";
 import { Country, State, City } from "country-state-city";
 import { getAllOrdersOfUser } from "../../redux/actions/order.js";
+import { ui } from "../../styles/theme";
 
 const ProfileContent = ({ active }) => {
   const { user, error, loading, updateSuccess } = useSelector((state) => state.user);
@@ -105,49 +105,50 @@ const ProfileContent = ({ active }) => {
   return (
     <div className="w-full min-h-[80vh]">
       {active === 1 && (
-        <div className="bg-white/70 backdrop-blur-xl rounded-[32px] md:rounded-[40px] p-4 md:p-12 border border-white shadow-soft animate-in fade-in duration-700">
-          <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-center md:items-start">
+        <div className={`${ui.card} ${ui.cardPadding} animate-in fade-in duration-300`}>
+          <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
             <div className="relative group">
-              <div className="w-28 h-28 md:w-40 md:h-40 rounded-[32px] md:rounded-[56px] overflow-hidden border-4 border-white shadow-2xl relative">
-                <img src={getAvatarUrl()} alt="User" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+              <div className="w-28 h-28 md:w-36 md:h-36 rounded-xl overflow-hidden border border-gray-200 shadow-sm relative">
+                <img src={getAvatarUrl()} alt="User" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                 {avatarLoading && (
                   <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center">
-                    <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   </div>
                 )}
               </div>
-              <label htmlFor="avatar-upload" className="absolute -bottom-2 -right-2 w-12 h-12 bg-teal-700 text-white rounded-2xl flex items-center justify-center cursor-pointer shadow-xl hover:bg-teal-600 transition-all transform hover:rotate-12">
-                <AiOutlineCamera size={20} />
+              <label htmlFor="avatar-upload" className="absolute -bottom-2 -right-2 w-10 h-10 bg-teal-700 text-white rounded-lg flex items-center justify-center cursor-pointer shadow-md hover:bg-teal-800 transition">
+                <AiOutlineCamera size={18} />
                 <input type="file" id="avatar-upload" className="hidden" onChange={handleImage} accept="image/*" disabled={avatarLoading} />
               </label>
             </div>
 
-            <div className="flex-1 w-full space-y-8">
+            <div className="flex-1 w-full space-y-6">
               <div>
-                <h2 className="text-3xl font-[700] text-teal-800 tracking-tighter font-display italic">Profile</h2>
+                <h2 className={ui.titleSm}>Profile Settings</h2>
+                <p className={ui.hint}>Manage your account information and preferences</p>
               </div>
 
-              <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1 font-sans">Full Name</label>
-                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="w-full bg-gray-100/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-teal-800 shadow-inner transition-all outline-none font-sans" />
+              <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className={ui.label}>Full Name</label>
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className={ui.input} />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1 font-sans">Email Address</label>
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-gray-100/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-teal-800 shadow-inner transition-all outline-none font-sans" />
+                <div>
+                  <label className={ui.label}>Email Address</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className={ui.input} />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1 font-sans">Phone Number</label>
-                  <input type="number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="w-full bg-gray-100/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-teal-800 shadow-inner transition-all outline-none font-sans" />
+                <div>
+                  <label className={ui.label}>Phone Number</label>
+                  <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className={ui.input} />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-[#FFA62B] uppercase tracking-[0.2em] ml-1 font-sans">Enter your password</label>
-                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter password to save" required className="w-full bg-gray-100/50 border border-[#FFA62B]/20 focus:border-[#FFA62B] focus:bg-white rounded-2xl px-6 py-4 font-[500] text-teal-800 shadow-inner transition-all outline-none font-sans" />
+                <div>
+                  <label className="block text-sm font-medium text-orange-600 mb-1.5">Enter Password to Save Changes</label>
+                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Confirm current password" required className="w-full rounded-lg border border-orange-300 bg-white px-4 py-2.5 text-gray-900 placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition" />
                 </div>
 
-                <div className="md:col-span-2 pt-4">
-                  <button type="submit" disabled={loading} className="group relative h-16 px-12 bg-teal-700 text-[#EDE7E3] font-[700] rounded-2xl hover:bg-teal-600 transition-all duration-500 shadow-xl disabled:opacity-50 uppercase tracking-[0.1em] text-[13px] font-sans">
-                    {loading ? "Updating..." : "Update"}
+                <div className="md:col-span-2 pt-2">
+                  <button type="submit" disabled={loading} className={ui.btnPrimary}>
+                    {loading ? "Updating..." : "Save Changes"}
                   </button>
                 </div>
               </form>
@@ -181,7 +182,7 @@ const AllOrders = () => {
       minWidth: 150,
       flex: 0.7,
       renderCell: (params) => (
-        <span className="font-mono text-[11px] font-bold text-teal-800/70 italic tracking-tighter">
+        <span className="font-mono text-xs font-semibold text-gray-500">
           #{params.value?.slice(-8).toUpperCase()}
         </span>
       )
@@ -194,9 +195,8 @@ const AllOrders = () => {
       renderCell: (params) => {
         const isDelivered = params.row.status === "Delivered";
         return (
-          <div className="flex items-center gap-2">
-            <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isDelivered ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" : "bg-[#FFA62B] shadow-[0_0_8px_rgba(255,166,43,0.6)]"}`} />
-            <span className={`text-[10px] font-black uppercase tracking-[0.15em] ${isDelivered ? "text-emerald-600" : "text-[#FFA62B]"}`}>
+          <div className="flex items-center gap-1.5 h-full">
+            <span className={`${ui.badge} ${isDelivered ? ui.badgeGreen : ui.badgeYellow}`}>
               {params.row.status}
             </span>
           </div>
@@ -210,7 +210,7 @@ const AllOrders = () => {
       minWidth: 80,
       flex: 0.3,
       renderCell: (params) => (
-        <span className="font-black text-teal-800">{params.value}</span>
+        <span className="font-semibold text-gray-800">{params.value}</span>
       )
     },
     {
@@ -219,7 +219,7 @@ const AllOrders = () => {
       minWidth: 120,
       flex: 0.5,
       renderCell: (params) => (
-        <span className="font-black text-teal-800 tabular-nums">{params.value}</span>
+        <span className="font-semibold text-gray-800 tabular-nums">{params.value}</span>
       )
     },
     {
@@ -229,16 +229,23 @@ const AllOrders = () => {
       minWidth: 80,
       sortable: false,
       renderCell: (params) => (
-        <Link to={`/user/order/${params.id}`}>
-          <div className="w-10 h-10 rounded-xl bg-white shadow-sm border border-[#EDE7E3] flex items-center justify-center text-teal-800 hover:bg-teal-700 hover:text-white transition-all transform hover:rotate-12">
-            <AiOutlineArrowRight size={18} />
+        <Link to={`/user/order/${params.id}`} className="flex items-center h-full">
+          <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center text-teal-700 hover:bg-teal-700 hover:text-white transition">
+            <AiOutlineArrowRight size={16} />
           </div>
         </Link>
       ),
     },
   ];
 
-  const rows = orders?.map(item => ({
+  const sortedOrders = orders ? [...orders].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    if (dateA === dateB) return String(b._id).localeCompare(String(a._id));
+    return dateB - dateA;
+  }) : [];
+
+  const rows = sortedOrders.map(item => ({
     id: item._id,
     itemsQty: item.cart.length,
     total: "US$ " + item.totalPrice.toLocaleString(),
@@ -246,16 +253,13 @@ const AllOrders = () => {
   })) || [];
 
   return (
-    <div className="bg-white/70 backdrop-blur-3xl rounded-[40px] p-6 md:p-10 border border-white shadow-soft animate-in fade-in slide-in-from-bottom-8 duration-1000">
-      <div className="flex items-center justify-between mb-10">
-        <div>
-          <h3 className="text-3xl font-black text-teal-800 tracking-tighter font-display italic leading-none uppercase">Order History</h3>
-          <p className="text-[10px] font-black text-teal-600 uppercase tracking-[0.4em] mt-2 ml-1">Archive of your excellence</p>
-        </div>
-        <div className="w-16 h-1 bg-gradient-to-r from-[#16697A] to-transparent rounded-full hidden md:block" />
+    <div className={`${ui.card} ${ui.cardPadding} animate-in fade-in duration-300`}>
+      <div className="mb-6">
+        <h3 className={ui.titleSm}>Order History</h3>
+        <p className={ui.hint}>Archive of your recent marketplace transactions</p>
       </div>
 
-      <div className="data-grid-container custom-scrollbar overflow-hidden rounded-[24px] border border-white shadow-inner bg-white/30">
+      <div className={ui.tableWrap}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -263,34 +267,29 @@ const AllOrders = () => {
           autoHeight
           disableRowSelectionOnClick
           disableColumnMenu
-          className="border-none! font-sans"
+          className="border-none"
           sx={{
             border: "none",
-            "& .MuiDataGrid-main": { borderRadius: "24px" },
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#16697A",
+              backgroundColor: "#0f766e", // bg-teal-700
               color: "white",
               border: "none",
-              minHeight: "60px!important",
               "& .MuiDataGrid-columnHeaderTitle": {
-                fontWeight: "900",
-                fontSize: "11px",
+                fontWeight: "600",
+                fontSize: "12px",
                 textTransform: "uppercase",
-                letterSpacing: "0.2em"
               },
               "& .MuiDataGrid-iconSeparator": { display: "none" }
             },
             "& .MuiDataGrid-cell": {
-              borderBottom: "1px solid #EDE7E3",
+              borderBottom: "1px solid #f3f4f6",
               fontSize: "13px",
-              padding: "16px!important"
             },
             "& .MuiDataGrid-row:hover": {
-              backgroundColor: "rgba(255, 166, 43, 0.05)!important",
+              backgroundColor: "#f0fdfa!important",
             },
             "& .MuiDataGrid-footerContainer": {
-              borderTop: "none",
-              backgroundColor: "transparent"
+              borderTop: "1px solid #f3f4f6",
             }
           }}
         />
@@ -317,7 +316,7 @@ const AllRefundOrders = () => {
       minWidth: 150,
       flex: 0.7,
       renderCell: (params) => (
-        <span className="font-mono text-[11px] font-bold text-teal-800/70 italic tracking-tighter">
+        <span className="font-mono text-xs font-semibold text-gray-500">
           #{params.value?.slice(-8).toUpperCase()}
         </span>
       )
@@ -328,9 +327,11 @@ const AllRefundOrders = () => {
       minWidth: 130,
       flex: 0.5,
       renderCell: (params) => (
-        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-blue-50 text-blue-500 border border-blue-100 shadow-sm font-sans">
-          {params.row.status}
-        </span>
+        <div className="flex items-center h-full">
+          <span className={`${ui.badge} bg-blue-100 text-blue-800`}>
+            {params.row.status}
+          </span>
+        </div>
       )
     },
     {
@@ -340,7 +341,7 @@ const AllRefundOrders = () => {
       minWidth: 80,
       flex: 0.3,
       renderCell: (params) => (
-        <span className="font-black text-teal-800">{params.value}</span>
+        <span className="font-semibold text-gray-800">{params.value}</span>
       )
     },
     {
@@ -349,7 +350,7 @@ const AllRefundOrders = () => {
       minWidth: 120,
       flex: 0.5,
       renderCell: (params) => (
-        <span className="font-black text-teal-800">{params.value}</span>
+        <span className="font-semibold text-gray-800">{params.value}</span>
       )
     },
     {
@@ -359,16 +360,23 @@ const AllRefundOrders = () => {
       minWidth: 80,
       sortable: false,
       renderCell: (params) => (
-        <Link to={`/user/order/${params.id}`}>
-          <div className="w-10 h-10 rounded-xl bg-white shadow-sm border border-[#EDE7E3] flex items-center justify-center text-teal-800 hover:bg-teal-700 hover:text-white transition-all transform hover:rotate-12">
-            <AiOutlineArrowRight size={18} />
+        <Link to={`/user/order/${params.id}`} className="flex items-center h-full">
+          <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center text-teal-700 hover:bg-teal-700 hover:text-white transition">
+            <AiOutlineArrowRight size={16} />
           </div>
         </Link>
       ),
     },
   ];
 
-  const rows = eligibleOrders?.map(item => ({
+  const sortedRefundOrders = eligibleOrders ? [...eligibleOrders].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    if (dateA === dateB) return String(b._id).localeCompare(String(a._id));
+    return dateB - dateA;
+  }) : [];
+
+  const rows = sortedRefundOrders.map(item => ({
     id: item._id,
     itemsQty: item.cart.length,
     total: "US$ " + item.totalPrice.toLocaleString(),
@@ -376,16 +384,13 @@ const AllRefundOrders = () => {
   })) || [];
 
   return (
-    <div className="bg-white/70 backdrop-blur-3xl rounded-[40px] p-6 md:p-10 border border-white shadow-soft animate-in fade-in slide-in-from-bottom-8 duration-1000">
-      <div className="flex items-center justify-between mb-10">
-        <div>
-          <h3 className="text-3xl font-black text-teal-800 tracking-tighter font-display italic leading-none uppercase text-teal-600">Refund Vault</h3>
-          <p className="text-[10px] font-black text-teal-600 uppercase tracking-[0.4em] mt-2 ml-1">Processed reversals</p>
-        </div>
-        <div className="w-16 h-1 bg-gradient-to-r from-[#489FB5] to-transparent rounded-full hidden md:block" />
+    <div className={`${ui.card} ${ui.cardPadding} animate-in fade-in duration-300`}>
+      <div className="mb-6">
+        <h3 className={ui.titleSm}>Refund Requests</h3>
+        <p className={ui.hint}>Processed reversals and processing refunds</p>
       </div>
 
-      <div className="data-grid-container custom-scrollbar overflow-hidden rounded-[24px] border border-white shadow-inner bg-white/30">
+      <div className={ui.tableWrap}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -393,34 +398,29 @@ const AllRefundOrders = () => {
           autoHeight
           disableRowSelectionOnClick
           disableColumnMenu
-          className="border-none! font-sans"
+          className="border-none"
           sx={{
             border: "none",
-            "& .MuiDataGrid-main": { borderRadius: "24px" },
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#82C0CC",
+              backgroundColor: "#0f766e",
               color: "white",
               border: "none",
-              minHeight: "60px!important",
               "& .MuiDataGrid-columnHeaderTitle": {
-                fontWeight: "900",
-                fontSize: "11px",
+                fontWeight: "600",
+                fontSize: "12px",
                 textTransform: "uppercase",
-                letterSpacing: "0.2em"
               },
               "& .MuiDataGrid-iconSeparator": { display: "none" }
             },
             "& .MuiDataGrid-cell": {
-              borderBottom: "1px solid #EDE7E3",
+              borderBottom: "1px solid #f3f4f6",
               fontSize: "13px",
-              padding: "16px!important"
             },
             "& .MuiDataGrid-row:hover": {
-              backgroundColor: "rgba(130, 192, 204, 0.05)!important",
+              backgroundColor: "#f0fdfa!important",
             },
             "& .MuiDataGrid-footerContainer": {
-              borderTop: "none",
-              backgroundColor: "transparent"
+              borderTop: "1px solid #f3f4f6",
             }
           }}
         />
@@ -431,8 +431,9 @@ const AllRefundOrders = () => {
 
 const Inbox = () => {
   return (
-    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-12 text-center border border-white shadow-soft animate-in fade-in slide-in-from-right duration-700">
-      <h3 className="text-2xl font-[700] text-teal-800 mb-2 tracking-tight font-display italic">Inbox</h3>
+    <div className={`${ui.card} ${ui.cardPadding} text-center animate-in fade-in duration-300`}>
+      <h3 className={ui.titleSm}>Your Inbox</h3>
+      <p className={`${ui.hint} mt-2`}>No messages available at this time.</p>
     </div>
   );
 };
@@ -454,9 +455,11 @@ const TrackOrder = () => {
       minWidth: 150,
       flex: 0.6,
       renderCell: (params) => (
-        <span className="px-3 py-1 rounded-full text-[10px] font-[600] uppercase tracking-widest bg-pacific-blue/10 text-teal-800 font-sans">
-          {params.row.status}
-        </span>
+        <div className="flex items-center h-full">
+          <span className={`${ui.badge} ${ui.badgeYellow}`}>
+            {params.row.status}
+          </span>
+        </div>
       )
     },
     { field: "itemsQty", headerName: "Items Qty", type: "number", minWidth: 120, flex: 0.4 },
@@ -466,37 +469,65 @@ const TrackOrder = () => {
       flex: 0.4,
       minWidth: 120,
       renderCell: (params) => (
-        <Link to={`/user/track/order/${params.id}`}>
-          <div className="w-10 h-10 rounded-xl bg-teal-700 flex items-center justify-center text-white hover:bg-teal-600 transition-all transform hover:rotate-12">
-            <MdTrackChanges size={18} />
+        <Link to={`/user/track/order/${params.id}`} className="flex items-center h-full">
+          <div className="w-8 h-8 rounded-lg bg-teal-700 flex items-center justify-center text-white hover:bg-teal-800 transition">
+            <MdTrackChanges size={16} />
           </div>
         </Link>
       ),
     },
   ];
 
-  const rows = orders?.map(item => ({
+  const sortedTrackOrders = orders ? [...orders].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    if (dateA === dateB) return String(b._id).localeCompare(String(a._id));
+    return dateB - dateA;
+  }) : [];
+
+  const rows = sortedTrackOrders.map(item => ({
     id: item._id,
     itemsQty: item.cart.length,
     status: item.status,
   })) || [];
 
   return (
-    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 border border-white shadow-soft animate-in fade-in slide-in-from-right duration-700">
-      <div className="flex items-center gap-4 mb-8">
-        <h3 className="text-2xl font-[700] text-teal-800 tracking-tight font-display italic">Track Order</h3>
+    <div className={`${ui.card} ${ui.cardPadding} animate-in fade-in duration-300`}>
+      <div className="mb-6">
+        <h3 className={ui.titleSm}>Track Order</h3>
+        <p className={ui.hint}>Follow the shipment progress of your orders</p>
       </div>
-      <div className="data-grid-container custom-scrollbar">
+      <div className={ui.tableWrap}>
         <DataGrid
           rows={rows}
           columns={columns}
           pageSize={10}
           autoHeight
           disableRowSelectionOnClick
-          className="border-none! font-bold text-teal-800!"
+          className="border-none"
           sx={{
-            "& .MuiDataGrid-columnHeaders": { backgroundColor: "#EDE7E3", borderRadius: "16px", border: "none" },
-            "& .MuiDataGrid-cell": { borderBottom: "1px solid #EDE7E3" },
+            border: "none",
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: "#0f766e",
+              color: "white",
+              border: "none",
+              "& .MuiDataGrid-columnHeaderTitle": {
+                fontWeight: "600",
+                fontSize: "12px",
+                textTransform: "uppercase",
+              },
+              "& .MuiDataGrid-iconSeparator": { display: "none" }
+            },
+            "& .MuiDataGrid-cell": {
+              borderBottom: "1px solid #f3f4f6",
+              fontSize: "13px",
+            },
+            "& .MuiDataGrid-row:hover": {
+              backgroundColor: "#f0fdfa!important",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: "1px solid #f3f4f6",
+            }
           }}
         />
       </div>
@@ -529,25 +560,26 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 md:p-12 border border-white shadow-soft animate-in fade-in slide-in-from-right duration-700">
-      <div className="flex items-center gap-4 mb-10">
-        <h3 className="text-2xl font-[700] text-teal-800 tracking-tight font-display italic">Change Password</h3>
+    <div className={`${ui.card} ${ui.cardPadding} animate-in fade-in duration-300`}>
+      <div className="mb-6">
+        <h3 className={ui.titleSm}>Change Password</h3>
+        <p className={ui.hint}>Update your credentials to secure your account</p>
       </div>
-      <form onSubmit={handlePasswordChange} className="max-w-md space-y-6">
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1 font-sans">Enter your old password</label>
-          <input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required className="w-full bg-gray-100/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-teal-800 shadow-inner transition-all outline-none font-sans" />
+      <form onSubmit={handlePasswordChange} className="max-w-md space-y-4">
+        <div>
+          <label className={ui.label}>Current Password</label>
+          <input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} required className={ui.input} />
         </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1 font-sans">Enter your new password</label>
-          <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required className="w-full bg-gray-100/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-teal-800 shadow-inner transition-all outline-none font-sans" />
+        <div>
+          <label className={ui.label}>New Password</label>
+          <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required className={ui.input} />
         </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1 font-sans">Enter your confirm password</label>
-          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="w-full bg-gray-100/50 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-[500] text-teal-800 shadow-inner transition-all outline-none font-sans" />
+        <div>
+          <label className={ui.label}>Confirm New Password</label>
+          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className={ui.input} />
         </div>
-        <button type="submit" disabled={loading} className="w-full h-16 bg-teal-700 text-[#EDE7E3] font-[700] rounded-2xl hover:bg-teal-600 transition-all duration-500 shadow-xl disabled:opacity-50 uppercase tracking-widest text-xs font-sans">
-          Update Password
+        <button type="submit" disabled={loading} className={`${ui.btnPrimary} w-full mt-2`}>
+          {loading ? "Updating..." : "Update Password"}
         </button>
       </form>
     </div>
@@ -559,7 +591,7 @@ const Address = () => {
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
-  const [zipCode, setZipCode] = useState();
+  const [zipCode, setZipCode] = useState("");
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
   const [addressType, setAddressType] = useState("");
@@ -582,35 +614,36 @@ const Address = () => {
       toast.error("Geolocation data incomplete");
     } else {
       dispatch(updateUserAddress({ country, state, city, address1, address2, zipCode, addressType }));
-      setOpen(false); setCountry(""); setState(""); setCity(""); setAddress1(""); setAddress2(""); setZipCode(null); setAddressType("");
+      setOpen(false); setCountry(""); setState(""); setCity(""); setAddress1(""); setAddress2(""); setZipCode(""); setAddressType("");
     }
   };
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <h3 className="text-2xl font-[700] text-teal-800 tracking-tight font-display italic">User Address</h3>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className={ui.titleSm}>Saved Addresses</h3>
+          <p className={ui.hint}>Manage shipping and billing address endpoints</p>
         </div>
-        <button onClick={() => setOpen(true)} className="px-6 py-3 bg-teal-700 text-[#EDE7E3] font-[700] rounded-xl hover:bg-teal-600 transition-all shadow-lg text-xs uppercase tracking-widest font-sans">
+        <button onClick={() => setOpen(true)} className={ui.btnPrimary}>
           Add New Address
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {user && user.addresses.map((item, index) => (
-          <div key={index} className="bg-white/70 backdrop-blur-xl rounded-[32px] p-6 border border-white shadow-soft group relative transition-all hover:bg-white">
-            <div className="flex justify-between items-start">
+          <div key={index} className={`${ui.card} ${ui.cardPadding} hover:shadow-md transition-shadow relative`}>
+            <div className="flex justify-between items-start gap-4">
               <div>
-                <span className="px-2 py-1 bg-[#82C0CC]/10 text-teal-800 text-[10px] font-[600] uppercase tracking-widest rounded-md mb-2 inline-block font-sans">
+                <span className={`${ui.badge} ${ui.badgeGray} mb-2`}>
                   {item.addressType}
                 </span>
-                <h4 className="text-sm font-[700] text-teal-800 mb-1 font-sans">{item.address1}</h4>
-                <p className="text-xs font-[500] text-[#6B7280] font-sans">{item.city}{item.state ? `, ${item.state}` : ""}, {item.country}</p>
-                <p className="text-[10px] font-[600] text-teal-600 mt-2 uppercase tracking-widest font-sans">ZIP: {item.zipCode}</p>
+                <h4 className="text-sm font-semibold text-gray-900 mb-1">{item.address1}</h4>
+                <p className="text-xs text-gray-500">{item.city}{item.state ? `, ${item.state}` : ""}, {item.country}</p>
+                <p className="text-[10px] text-teal-600 font-semibold mt-1">ZIP: {item.zipCode}</p>
               </div>
-              <button onClick={() => handleDelete(item)} className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all transform hover:rotate-12">
-                <AiOutlineDelete size={18} />
+              <button onClick={() => handleDelete(item)} className="w-8 h-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition flex items-center justify-center">
+                <AiOutlineDelete size={16} />
               </button>
             </div>
           </div>
@@ -618,60 +651,62 @@ const Address = () => {
       </div>
 
       {open && (
-        <div className="fixed inset-0 bg-[#0F4D58]/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white/90 backdrop-blur-2xl rounded-[40px] p-8 md:p-12 border border-white shadow-2xl animate-in zoom-in duration-300 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <button onClick={() => setOpen(false)} className="absolute top-8 right-8 text-teal-800 hover:rotate-90 transition-all p-2 bg-gray-100 rounded-xl"><RxCross1 size={18} /></button>
-            <h2 className="text-2xl font-[700] text-teal-800 tracking-tighter mb-8 text-center font-display italic">Add New Address</h2>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-white rounded-xl p-6 sm:p-8 border border-gray-200 shadow-2xl animate-in zoom-in duration-300 relative max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setOpen(false)} className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 p-1.5 hover:bg-gray-100 rounded-lg transition"><RxCross1 size={16} /></button>
+            <h2 className="text-lg font-bold text-gray-900 mb-6">Add New Address</h2>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-[700] text-teal-600 uppercase tracking-widest ml-1 font-sans">Country</label>
-                  <select value={country} onChange={(e) => { setCountry(e.target.value); setState(""); setCity(""); }} required className="w-full bg-gray-100/50 border border-transparent rounded-2xl px-4 py-3 font-[600] text-sm text-teal-800 shadow-inner outline-none font-sans appearance-none">
-                    <option value="">Select Country</option>
+                <div>
+                  <label className={ui.label}>Country</label>
+                  <select value={country} onChange={(e) => { setCountry(e.target.value); setState(""); setCity(""); }} required className={ui.select}>
+                    <option value="">Select</option>
                     {Country.getAllCountries().map((item) => <option key={item.isoCode} value={item.isoCode}>{item.name}</option>)}
                   </select>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-[700] text-teal-600 uppercase tracking-widest ml-1 font-sans">State/Province</label>
-                  <select value={state} onChange={(e) => { setState(e.target.value); setCity(""); }} required className="w-full bg-gray-100/50 border border-transparent rounded-2xl px-4 py-3 font-[600] text-sm text-teal-800 shadow-inner outline-none font-sans appearance-none">
-                    <option value="">Select State</option>
+                <div>
+                  <label className={ui.label}>State</label>
+                  <select value={state} onChange={(e) => { setState(e.target.value); setCity(""); }} required className={ui.select}>
+                    <option value="">Select</option>
                     {State.getStatesOfCountry(country).map((item) => <option key={item.isoCode} value={item.isoCode}>{item.name}</option>)}
                   </select>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-[700] text-teal-600 uppercase tracking-widest ml-1 font-sans">City</label>
-                  <select value={city} onChange={(e) => setCity(e.target.value)} required className="w-full bg-gray-100/50 border border-transparent rounded-2xl px-4 py-3 font-[600] text-sm text-teal-800 shadow-inner outline-none font-sans appearance-none">
-                    <option value="">Select City</option>
+                <div>
+                  <label className={ui.label}>City</label>
+                  <select value={city} onChange={(e) => setCity(e.target.value)} required className={ui.select}>
+                    <option value="">Select</option>
                     {City.getCitiesOfState(country, state).map((item) => <option key={item.name} value={item.name}>{item.name}</option>)}
                   </select>
                 </div>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-[700] text-teal-600 uppercase tracking-widest ml-1 font-sans">Address 1</label>
-                <input type="text" value={address1} onChange={(e) => setAddress1(e.target.value)} required className="w-full bg-gray-100/50 border border-transparent rounded-2xl px-6 py-4 font-[600] text-teal-800 shadow-inner outline-none font-sans" />
+              <div>
+                <label className={ui.label}>Address Line 1</label>
+                <input type="text" value={address1} onChange={(e) => setAddress1(e.target.value)} required className={ui.input} />
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-[700] text-teal-600 uppercase tracking-widest ml-1 font-sans">Address 2</label>
-                <input type="text" value={address2} onChange={(e) => setAddress2(e.target.value)} className="w-full bg-gray-100/50 border border-transparent rounded-2xl px-6 py-4 font-[600] text-teal-800 shadow-inner outline-none font-sans" />
+              <div>
+                <label className={ui.label}>Address Line 2</label>
+                <input type="text" value={address2} onChange={(e) => setAddress2(e.target.value)} className={ui.input} />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-[700] text-teal-600 uppercase tracking-widest ml-1 font-sans">Zip Code</label>
-                  <input type="number" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required className="w-full bg-gray-100/50 border border-transparent rounded-2xl px-4 py-3 font-[600] text-teal-800 shadow-inner outline-none font-sans" />
+                <div>
+                  <label className={ui.label}>Zip Code</label>
+                  <input type="number" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required className={ui.input} />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-[700] text-teal-600 uppercase tracking-widest ml-1 font-sans">Address Type</label>
-                  <select value={addressType} onChange={(e) => setAddressType(e.target.value)} required className="w-full bg-gray-100/50 border border-transparent rounded-2xl px-4 py-3 font-[600] text-teal-800 shadow-inner outline-none font-sans">
+                <div>
+                  <label className={ui.label}>Address Type</label>
+                  <select value={addressType} onChange={(e) => setAddressType(e.target.value)} required className={ui.select}>
                     <option value="">Select Type</option>
                     <option value="Home">Home</option>
                     <option value="Office">Office</option>
                   </select>
                 </div>
               </div>
-              <button type="submit" className="w-full h-16 bg-teal-700 text-[#EDE7E3] font-[700] rounded-2xl hover:bg-teal-600 transition-all duration-500 shadow-xl mt-4 uppercase tracking-[0.1em] text-[13px] font-sans">
-                Submit
-              </button>
+              <div className="pt-2">
+                <button type="submit" className={`${ui.btnPrimary} w-full`}>
+                  Submit Address
+                </button>
+              </div>
             </form>
           </div>
         </div>

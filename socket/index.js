@@ -13,7 +13,7 @@ app.get("/", (req, res) => {
 });
 let users = [];
 const addUser = (userId, socketId) => {
-  !users.some((user) => user.userId) && users.push({ userId, socketId });
+  !users.some((user) => user.userId === userId) && users.push({ userId, socketId });
 };
 const removerUser = (socketId) => {
   users = users.filter((user) => user.socketId !== socketId);
@@ -70,10 +70,11 @@ io.on("connection", (socket) => {
     }
   });
   //Update and get the last message
-  socket.on("updateLastMessage", ({ lastMessage, lastMessageId }) => {
+  socket.on("updateLastMessage", ({ lastMessage, lastMessageId, conversationId }) => {
     io.emit("getLastMessage", {
       lastMessage,
       lastMessageId,
+      conversationId,
     });
   });
   //when socket will disconnected

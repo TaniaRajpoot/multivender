@@ -9,11 +9,14 @@ import {
 import { addToCart } from "../../../redux/actions/cart";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   addToWishList,
   removeFromWishList,
 } from "../../../redux/actions/wishlist";
+import { ui } from "../../../styles/theme";
+import axios from "axios";
+import { server } from "../../../server";
 
 const ProductCardDetails = ({ setOpen, data }) => {
   const dispatch = useDispatch();
@@ -40,8 +43,20 @@ const ProductCardDetails = ({ setOpen, data }) => {
     dispatch(addToWishList(data));
   };
 
-  const handleMessageSubmit = () => {
-    console.log("Done!");
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useSelector((state) => state.user);
+
+  const handleMessageSubmit = async () => {
+    if (isAuthenticated) {
+      const groupTitle = data.shop._id + user._id;
+      const userId = user._id;
+      const sellerId = data.shop._id;
+      axios.post(`${server}/conversation/create-new-converation`, { groupTitle, userId, sellerId })
+        .then((res) => { navigate(`/inbox?/${res.data.conversation._id}`); })
+        .catch((error) => { toast.error(error.response?.data?.message || "Failed to create conversation"); });
+    } else {
+      toast.error("Please Login To Create A Conversation!");
+    }
   };
 
   const incrementCount = () => {
@@ -68,93 +83,49 @@ const ProductCardDetails = ({ setOpen, data }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 md:p-10 font-sans">
-      {/* Ethereal Glass Overlay */}
-      <div
-        className="absolute inset-0 bg-[#0c1a1d]/60 backdrop-blur-2xl transition-opacity duration-700"
-        onClick={() => setOpen(false)}
-      />
-
-      {/* Modal Container */}
-      <div className="relative w-full max-w-6xl max-h-[90vh] bg-white/90 backdrop-blur-3xl rounded-[48px] shadow-[0_50px_100px_-20px_rgba(22,105,122,0.3)] overflow-hidden animate-in fade-in zoom-in-95 duration-700 flex flex-col md:flex-row">
-
-        {/* Close Button: Orbital Design */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl relative overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
         <button
-          className="absolute right-6 top-6 md:right-8 md:top-8 z-[100] w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/50 border border-white hover:bg-white hover:text-[#FFA62B] text-[#16697A] backdrop-blur-md shadow-2xl flex items-center justify-center transition-all duration-500 hover:rotate-90 active:scale-90"
+          className="absolute right-4 top-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition"
           onClick={() => setOpen(false)}
         >
-          <RxCross1 size={20} weight="bold" />
+          <RxCross1 size={16} />
         </button>
 
-        {/* Product Image */}
-        <div className="w-full md:w-[45%] bg-[#EDE7E3]/40 p-8 lg:p-12 flex items-center justify-center relative overflow-hidden min-h-[300px] md:min-h-full">
-          <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-[#16697A]/5 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-80 h-80 bg-[#FFA62B]/10 rounded-full blur-3xl animate-pulse delay-700" />
-
-          <div className="relative group/immersion w-full h-full flex items-center justify-center p-4">
-            <img
-              src={data.images?.[0]?.url || "/placeholder.png"}
-              alt={data.name}
-              className="max-w-full max-h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)] group-hover/immersion:scale-105 transition-transform duration-1000 ease-out"
-            />
-            {/* Feature Badge */}
-            <div className="absolute top-4 left-4 bg-[#16697A] text-white px-4 py-1.5 rounded-xl text-[9px] font-[700] uppercase tracking-[0.2em] shadow-2xl font-sans">
-              New Arrival
-            </div>
-          </div>
+        {/* Image Section */}
+        <div className="w-full md:w-1/2 p-6 flex items-center justify-center bg-gray-50 border-b md:border-b-0 md:border-r border-gray-100">
+          <img
+            src={data.images?.[0]?.url || "/placeholder.png"}
+            alt={data.name}
+            className="max-h-[300px] md:max-h-[400px] object-contain"
+          />
         </div>
 
-        {/* Product Details */}
-        <div className="w-full md:w-[55%] p-8 md:p-12 lg:p-16 flex flex-col bg-white overflow-y-auto custom-scrollbar">
-
-          <div className="flex items-center justify-between mb-8 pb-6 border-b border-[#EDE7E3]">
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.3em] font-sans">
-                Category
-              </span>
-              <p className="text-[13px] font-[700] text-[#16697A] uppercase tracking-tight font-sans italic">
-                {data.category || "Product"}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 bg-[#16697A]/5 px-4 py-2 rounded-2xl border border-[#16697A]/10">
-              <span className="text-[#FFA62B] text-sm">★</span>
-              <span className="text-[#16697A] text-sm font-[700] font-sans tracking-tight">{data.ratings || "4.9"}</span>
-            </div>
+        {/* Details Section */}
+        <div className="w-full md:w-1/2 p-6 md:p-8 overflow-y-auto">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{data.name}</h2>
+            <p className="text-sm text-gray-500 line-clamp-3">{data.description}</p>
           </div>
 
-          <h1 className="text-3xl lg:text-4xl font-[700] text-[#16697A] leading-[1.1] tracking-tighter italic font-display mb-8">
-            {data.name}
-          </h1>
-
-          <p className="text-[#16697A]/80 text-[15px] font-[500] leading-relaxed mb-10 font-sans border-l-2 border-[#FFA62B]/40 pl-6 py-2 max-w-[500px]">
-            {data.description}
-          </p>
-
-          {/* Pricing */}
-          <div className="flex items-baseline gap-6 mb-12">
-            <span className="text-4xl font-[700] text-[#16697A] font-display italic tracking-tighter">
-              ${data.discountPrice}
-            </span>
+          <div className="flex items-center gap-4 mb-6">
+            <span className="text-3xl font-bold text-gray-900">${data.discountPrice}</span>
             {data.originalPrice && (
-              <span className="text-xl text-[#82C0CC] line-through font-[500] font-sans opacity-60">
-                ${data.originalPrice}
-              </span>
+              <span className="text-lg text-gray-400 line-through">${data.originalPrice}</span>
             )}
           </div>
 
-          {/* Interaction Layer */}
-          <div className="flex flex-wrap items-center gap-8 mb-12">
-            <div className="flex items-center bg-[#EDE7E3]/60 rounded-full p-2 border border-white gap-3 shadow-inner">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-4 bg-gray-50 rounded-lg p-1 border border-gray-200">
               <button
-                className="w-12 h-12 flex items-center justify-center text-[#16697A] hover:bg-white rounded-full transition-all text-xl font-[700] active:scale-90"
+                className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-white hover:shadow-sm rounded-md transition font-medium"
                 onClick={decrementCount}
               >
                 -
               </button>
-              <span className="w-10 text-center text-[#16697A] font-[700] text-lg font-sans">{count}</span>
+              <span className="w-8 text-center font-semibold text-gray-900">{count}</span>
               <button
-                className="w-12 h-12 flex items-center justify-center text-[#16697A] hover:bg-white rounded-full transition-all text-xl font-[700] active:scale-90"
+                className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-white hover:shadow-sm rounded-md transition font-medium"
                 onClick={incrementCount}
               >
                 +
@@ -163,54 +134,49 @@ const ProductCardDetails = ({ setOpen, data }) => {
 
             <button
               onClick={() => click ? removeFromWishlistHandler(data) : addToWishlistHandler(data)}
-              className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-700 shadow-xl border ${click
-                ? "bg-[#FFA62B] text-white border-[#FFA62B]"
-                : "bg-white border-[#16697A]/10 text-[#16697A] hover:border-[#16697A] hover:shadow-[#16697A]/10 active:scale-95"
-                }`}
+              className="w-12 h-12 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition"
             >
-              {click ? <AiFillHeart size={28} /> : <AiOutlineHeart size={28} />}
+              {click ? <AiFillHeart size={24} className="text-red-500" /> : <AiOutlineHeart size={24} />}
             </button>
           </div>
 
-          {/* Actions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+          <div className="flex flex-col gap-3 mb-8">
             <button
-              className="group relative h-[72px] bg-[#16697A] text-white overflow-hidden rounded-full font-[700] text-[11px] uppercase tracking-[0.2em] font-sans transition-all duration-700 hover:shadow-[0_20px_40px_-10px_rgba(22,105,122,0.4)]"
+              className={`${ui.btnPrimary} w-full py-3 text-base`}
               onClick={() => AddToCartHandler(data._id)}
             >
-              <div className="absolute inset-0 bg-[#FFA62B] translate-y-full group-hover:translate-y-0 transition-transform duration-700" />
-              <div className="relative flex items-center justify-center gap-3">
-                <AiOutlineShoppingCart size={22} />
-                <span>Add to cart</span>
-              </div>
+              <AiOutlineShoppingCart size={20} />
+              Add to cart
             </button>
-
             <button
-              className="h-[72px] border-2 border-[#16697A]/20 text-[#16697A] rounded-full font-[700] text-[11px] uppercase tracking-[0.2em] font-sans hover:border-[#16697A] hover:bg-[#16697A] hover:text-white transition-all duration-700 flex items-center justify-center gap-3"
+              className={`${ui.btnSecondary} w-full py-3 text-base`}
               onClick={handleMessageSubmit}
             >
-              <AiOutlineMessage size={22} />
-              <span>Send Message</span>
+              <AiOutlineMessage size={20} />
+              Send Message
             </button>
           </div>
 
-          {/* Entity Branding */}
           {data.shop && (
-            <div className="mt-auto pt-10 border-t border-[#EDE7E3] flex items-center justify-between">
-              <div className="flex items-center gap-5 group/shop cursor-pointer">
-                <div className="w-14 h-14 rounded-2xl bg-[#EDE7E3] border border-[#16697A]/10 flex items-center justify-center text-[#16697A] font-[700] text-lg font-display italic group-hover/shop:bg-[#16697A] group-hover:text-white transition-all duration-700">
-                  {data.shop.name.charAt(0)}
+            <div className="flex items-center justify-between pt-6 border-t border-gray-100">
+              <div className="flex items-center gap-3">
+                <img
+                  src={data.shop.avatar?.url || "/placeholder.png"}
+                  alt={data.shop.name}
+                  className="w-12 h-12 rounded-full border border-gray-200 object-cover"
+                />
+                <div>
+                  <h4 className="font-semibold text-gray-900 text-sm">
+                    <Link to={`/shop/preview/${data.shop._id}`} className="hover:text-teal-600 transition">
+                      {data.shop.name}
+                    </Link>
+                  </h4>
+                  <p className="text-xs text-teal-600 font-medium">({data.ratings || 0} Ratings)</p>
                 </div>
-                <Link to={`/shop/preview/${data.shop._id}`}>
-                  <div>
-                    <h5 className="text-[10px] font-[700] text-[#489FB5] uppercase tracking-[0.3em] mb-1 font-sans">Shop</h5>
-                    <p className="text-xl font-[700] text-[#16697A] font-display italic tracking-tight uppercase group-hover/shop:text-[#FFA62B] transition-colors">{data.shop.name}</p>
-                  </div>
-                </Link>
               </div>
               <div className="text-right">
-                <p className="text-[32px] font-[700] text-[#16697A]/10 font-display italic leading-none font-sans">{data.sold_out || "0"}</p>
-                <p className="text-[9px] font-[700] text-[#6B7280] uppercase tracking-[0.2em] mt-1 font-sans">Sold</p>
+                <p className="text-xs text-gray-500">Total Sold</p>
+                <p className="font-semibold text-gray-900">{data.sold_out || 0}</p>
               </div>
             </div>
           )}

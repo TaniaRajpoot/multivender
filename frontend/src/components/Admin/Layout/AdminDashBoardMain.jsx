@@ -7,7 +7,8 @@ import { DataGrid } from "@mui/x-data-grid";
 import { getAllOrdersOfAdmin } from "../../../redux/actions/order";
 import Loader from "../../../components/Layout/Loader";
 import { getAllSellers } from "../../../redux/actions/seller";
-import { FiUsers, FiShoppingBag, FiLayers } from "react-icons/fi";
+import { FiUsers, FiLayers } from "react-icons/fi";
+import { ui } from "../../../styles/theme";
 
 const AdminDashBoardMain = () => {
   const dispatch = useDispatch();
@@ -27,17 +28,24 @@ const AdminDashBoardMain = () => {
       minWidth: 150,
       flex: 0.6,
       renderCell: (params) => (
-        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${params.row.status === "Delivered" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}>
+        <span className={`${ui.badge} ${params.row.status === "Delivered" ? ui.badgeGreen : ui.badgeYellow}`}>
           {params.row.status}
         </span>
-      )
+      ),
     },
-    { field: "itemsQty", headerName: "Items Qty", type: "number", minWidth: 120, flex: 0.4 },
-    { field: "total", headerName: "Total", minWidth: 150, flex: 0.6 },
-    { field: "createdAt", headerName: "Created at", minWidth: 150, flex: 0.6 },
+    { field: "itemsQty", headerName: "Items", type: "number", minWidth: 80, flex: 0.4 },
+    { field: "total", headerName: "Total", minWidth: 120, flex: 0.5 },
+    { field: "createdAt", headerName: "Date", minWidth: 130, flex: 0.5 },
   ];
 
-  const row = adminOrders?.map((item) => ({
+  const sortedAdminOrders = adminOrders ? [...adminOrders].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    if (dateA === dateB) return String(b._id).localeCompare(String(a._id));
+    return dateB - dateA;
+  }) : [];
+
+  const row = sortedAdminOrders.map((item) => ({
     id: item._id,
     itemsQty: item?.cart.reduce((acc, i) => acc + i?.qty, 0),
     total: `$${item.totalPrice}`,
@@ -51,91 +59,88 @@ const AdminDashBoardMain = () => {
   if (adminOrderLoading) return <Loader />;
 
   return (
-    <div className="w-full space-y-6">
-      <div className="mb-6 md:mb-10">
-        <h3 className="text-2xl font-semibold text-gray-900">Admin overview</h3>
-        <p className="text-sm text-gray-600 mt-1">Manage the whole marketplace from here.</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className={ui.title}>Admin overview</h1>
+        <p className={ui.subtitle}>Monitor the marketplace from a single place.</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10 mb-10">
-        {/* Total Earning */}
-        <AdminStatCard
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <StatCard
           icon={AiOutlineMoneyCollect}
-          label="Total Earning"
+          label="Platform earnings"
           value={`$${adminBalance}`}
-          subLabel="10% commission"
-          color="#16697A"
+          hint="10% commission on all orders"
+          color="teal"
         />
-
-        {/* All Sellers */}
-        <AdminStatCard
+        <StatCard
           icon={FiUsers}
-          label="All Sellers"
+          label="Active sellers"
           value={sellers?.length || 0}
           link="/admin-sellers"
-          linkText="View Sellers"
-          color="#FFA62B"
+          linkText="View sellers"
+          color="blue"
         />
-
-        {/* All Orders */}
-        <AdminStatCard
+        <StatCard
           icon={FiLayers}
-          label="All Orders"
+          label="Total orders"
           value={adminOrders?.length || 0}
           link="/admin-orders"
-          linkText="View Orders"
-          color="#489FB5"
+          linkText="View orders"
+          color="orange"
         />
       </div>
 
       {/* Latest Orders Table */}
-      <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-6 md:p-8 border border-white shadow-soft animate-in fade-in duration-700">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-10 h-10 bg-[#16697A] rounded-xl flex items-center justify-center text-white"><MdBorderClear size={22} /></div>
-          <h3 className="text-2xl font-black text-[#16697A] tracking-tight">Latest Orders</h3>
+      <div className={`${ui.card} p-5 sm:p-6`}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-9 h-9 bg-teal-700 rounded-lg flex items-center justify-center text-white shrink-0">
+            <MdBorderClear size={18} />
+          </div>
+          <div>
+            <h2 className="text-base font-semibold text-gray-900">Latest orders</h2>
+            <p className="text-xs text-gray-500">Most recent marketplace transactions</p>
+          </div>
         </div>
-        <div className="data-grid-container custom-scrollbar overflow-hidden">
-          <DataGrid
-            rows={row}
-            columns={columns}
-            pageSize={10}
-            autoHeight
-            disableRowSelectionOnClick
-            className="border-none! font-bold text-[#16697A]!"
-            sx={{
-              "& .MuiDataGrid-columnHeaders": { backgroundColor: "#EDE7E3", borderRadius: "16px", border: "none" },
-              "& .MuiDataGrid-cell": { borderBottom: "1px solid #EDE7E3" },
-              "& .MuiDataGrid-row:hover": { backgroundColor: "#EDE7E3/30" },
-            }}
-          />
-        </div>
+        <DataGrid
+          rows={row}
+          columns={columns}
+          pageSize={10}
+          autoHeight
+          disableRowSelectionOnClick
+        />
       </div>
     </div>
   );
 };
 
-const AdminStatCard = ({ icon: Icon, label, value, subLabel, link, linkText, color }) => (
-  <div className="bg-white/70 backdrop-blur-xl rounded-[40px] p-8 border border-white shadow-soft group hover:shadow-2xl transition-all duration-500 relative overflow-hidden transform hover:-translate-y-2">
-    <div className="absolute top-0 right-0 w-32 h-32 bg-[#16697A]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-    <div className="flex items-center gap-4 mb-6">
-      <div className="p-4 rounded-2xl shadow-lg transition-transform duration-500 group-hover:scale-110" style={{ backgroundColor: color, color: "white" }}>
-        <Icon size={24} />
+const StatCard = ({ icon: Icon, label, value, hint, link, linkText, color }) => {
+  const colorMap = {
+    teal: "bg-teal-50 text-teal-700",
+    blue: "bg-blue-50 text-blue-700",
+    orange: "bg-orange-50 text-orange-600",
+  };
+
+  return (
+    <div className={`${ui.card} p-5`}>
+      <div className="flex items-center gap-3 mb-3">
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${colorMap[color] || colorMap.teal}`}>
+          <Icon size={20} />
+        </div>
+        <div>
+          <p className="text-xs font-medium text-gray-500">{label}</p>
+          {hint && <p className="text-[10px] text-gray-400">{hint}</p>}
+        </div>
       </div>
-      <div>
-        <h4 className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em]">{label}</h4>
-        {subLabel && <p className="text-[8px] font-bold text-[#9CA3AF] uppercase tracking-widest">{subLabel}</p>}
-      </div>
+      <p className="text-2xl font-bold text-gray-900">{value}</p>
+      {link && (
+        <Link to={link} className="inline-block mt-3 text-sm font-semibold text-teal-700 hover:underline">
+          {linkText} →
+        </Link>
+      )}
     </div>
-    <h5 className="text-4xl font-black text-[#16697A] tracking-tighter mb-6">{value}</h5>
-    {link && (
-      <Link to={link}>
-        <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[#489FB5] hover:text-[#16697A] transition-colors group/link">
-          {linkText}
-          <svg className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
-        </span>
-      </Link>
-    )}
-  </div>
-);
+  );
+};
 
 export default AdminDashBoardMain;

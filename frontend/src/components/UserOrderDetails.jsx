@@ -65,13 +65,19 @@ const UserOrderDetails = () => {
     );
   }
 
+  const badgeColor = data.status === "Delivered" 
+    ? ui.badgeGreen 
+    : (data.status === "Cancelled" || data.status?.toLowerCase().includes("refund") 
+      ? "bg-red-50 text-red-700 border border-red-200" 
+      : ui.badgeYellow);
+
   return (
     <div className={`${ui.container} py-10`}>
       <PageHeader
         title="Order details"
         subtitle={`Order #${String(data._id).slice(-8).toUpperCase()} · ${data.createdAt?.slice(0, 10)}`}
       />
-      <span className={`${ui.badge} ${ui.badgeGreen} mb-8 inline-block`}>{data.status}</span>
+      <span className={`${ui.badge} ${badgeColor} mb-8 inline-block`}>{data.status}</span>
 
       <div className="space-y-4 mb-10">
         {data.cart?.map((item, index) => (

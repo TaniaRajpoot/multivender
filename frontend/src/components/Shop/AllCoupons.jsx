@@ -1,8 +1,7 @@
-import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { AiOutlineDelete, AiOutlinePlus, AiOutlineGift } from "react-icons/ai";
+import { AiOutlineDelete, AiOutlinePlus } from "react-icons/ai";
 import { RxCross1 } from "react-icons/rx";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../Layout/Loader";
@@ -10,7 +9,8 @@ import { server } from "../../server";
 import { toast } from "react-toastify";
 import { getAllProductsShop } from "../../redux/actions/product";
 import { getAllEventsShop } from "../../redux/actions/event";
-import { FiX } from "react-icons/fi";
+import ListPage from "../ui/ListPage";
+import { ui } from "../../styles/theme";
 
 const AllCoupons = () => {
   const [open, setOpen] = useState(false);
@@ -118,20 +118,22 @@ const AllCoupons = () => {
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Discount codes</h1>
-              <p className="text-sm text-gray-600 mt-1">Create codes customers can use at checkout.</p>
-            </div>
-            <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-teal-800">
-              <AiOutlinePlus size={18} /> New code
-            </button>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+        <>
+          <ListPage
+            title="Discount codes"
+            subtitle="Create codes customers can use at checkout."
+            action={
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className={ui.btnPrimary}
+              >
+                <AiOutlinePlus size={18} /> New code
+              </button>
+            }
+          >
             <DataGrid rows={rows} columns={columns} pageSize={10} disableRowSelectionOnClick autoHeight />
-          </div>
+          </ListPage>
 
           {open && (
             <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
@@ -139,7 +141,7 @@ const AllCoupons = () => {
                 <button type="button" onClick={() => setOpen(false)} className="absolute top-4 right-4 text-gray-500 hover:text-gray-800" aria-label="Close">
                   <RxCross1 size={22} />
                 </button>
-                <h2 className="text-xl font-semibold text-gray-900 mb-1">Create discount code</h2>
+                <h2 className={ui.titleSm}>Create discount code</h2>
                 <p className="text-sm text-gray-600 mb-6">Customers enter this code on the checkout page.</p>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -150,8 +152,8 @@ const AllCoupons = () => {
                     <FormInput label="Max order ($)" type="number" value={maxAmount} onChange={(e) => setMaxAmount(e.target.value)} placeholder="Optional" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Apply to (optional)</label>
-                    <select value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 outline-none">
+                    <label className={ui.label}>Apply to (optional)</label>
+                    <select value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)} className={ui.select}>
                       <option value="">All products in your shop</option>
                       {products?.length > 0 && (
                         <optgroup label="Products">
@@ -168,16 +170,16 @@ const AllCoupons = () => {
                         </optgroup>
                       )}
                     </select>
-                    <p className="text-xs text-gray-500 mt-1">Leave empty to allow the code on any item from your shop.</p>
+                    <p className={ui.hint}>Leave empty to allow the code on any item from your shop.</p>
                   </div>
-                  <button type="submit" className="w-full rounded-lg bg-teal-700 py-3 text-sm font-semibold text-white hover:bg-teal-800">
+                  <button type="submit" className={`${ui.btnPrimary} w-full`}>
                     Save code
                   </button>
                 </form>
               </div>
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );
@@ -185,8 +187,8 @@ const AllCoupons = () => {
 
 const FormInput = ({ label, ...props }) => (
   <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
-    <input {...props} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 outline-none" />
+    <label className={ui.label}>{label}</label>
+    <input {...props} className={ui.input} />
   </div>
 );
 

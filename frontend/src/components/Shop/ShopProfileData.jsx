@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
 import { getAllEventsShop } from "../../redux/actions/event";
 import Ratings from "../Products/Ratings";
+import { ui } from "../../styles/theme";
 
 const ShopProfileData = ({ isOwner }) => {
   const dispatch = useDispatch();
@@ -42,26 +43,27 @@ const ShopProfileData = ({ isOwner }) => {
   return (
     <div className="w-full">
       {/* Header & Navigation */}
-      <div className="flex flex-col md:flex-row w-full items-start md:items-center justify-between gap-6 mb-8">
-        <div className="flex flex-wrap gap-8 md:gap-12">
+      <div className="flex flex-col sm:flex-row w-full items-start sm:items-center justify-between gap-6 mb-8 border-b border-gray-200">
+        <div className="flex flex-wrap gap-6 md:gap-8">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActive(tab.id)}
-              className={`relative py-4 text-sm md:text-base font-[700] transition-all uppercase tracking-[0.2em] font-sans ${active === tab.id ? "text-[#16697A]" : "text-[#6B7280]/60 hover:text-[#16697A]"
-                }`}
+              className={`relative py-3.5 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                active === tab.id ? "text-teal-700 font-bold" : "text-gray-500 hover:text-teal-700"
+              }`}
             >
               {tab.label}
               {active === tab.id && (
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-[#FFA62B] rounded-full animate-in slide-in-from-left duration-300" />
+                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-teal-700 rounded-full animate-in slide-in-from-left duration-300" />
               )}
             </button>
           ))}
         </div>
 
         {isOwner && (
-          <Link to="/dashboard">
-            <button className="h-14 px-10 bg-[#16697A] text-[#EDE7E3] font-[700] uppercase tracking-[0.1em] text-[13px] rounded-2xl hover:bg-[#FFA62B] transition-all duration-500 shadow-xl font-sans">
+          <Link to="/dashboard" className="pb-2 sm:pb-0">
+            <button className={`${ui.btnPrimary} !py-2 !px-4 text-xs uppercase tracking-wider`}>
               Go to Dashboard
             </button>
           </Link>
@@ -69,15 +71,15 @@ const ShopProfileData = ({ isOwner }) => {
       </div>
 
       {/* Dynamic Content Grid */}
-      <div className="min-h-[60vh]">
+      <div className="min-h-[50vh]">
         {/* Products Grid */}
         {active === 1 && (
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-700">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-700">
             {products?.length > 0 ? (
               products.map((p) => <ProductCard key={p._id} data={p} isShop />)
             ) : (
-              <div className="col-span-full py-16 text-center">
-                <h4 className="text-xl font-[700] text-[#16697A] font-display italic">No products for this shop!</h4>
+              <div className="col-span-full py-16 text-center text-gray-500">
+                <p className="text-sm">No products listed for this shop yet.</p>
               </div>
             )}
           </div>
@@ -85,12 +87,12 @@ const ShopProfileData = ({ isOwner }) => {
 
         {/* Events Grid */}
         {active === 2 && (
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-700">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-700">
             {events?.length > 0 ? (
               events.map((e) => <ProductCard key={e._id} data={e} isShop isEvent />)
             ) : (
-              <div className="col-span-full py-16 text-center">
-                <h4 className="text-xl font-[700] text-[#16697A] font-display italic">No events for this shop!</h4>
+              <div className="col-span-full py-16 text-center text-gray-500">
+                <p className="text-sm">No live events listed for this shop yet.</p>
               </div>
             )}
           </div>
@@ -98,25 +100,25 @@ const ShopProfileData = ({ isOwner }) => {
 
         {/* Reviews Section */}
         {active === 3 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in duration-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-700">
             {allReviews?.length > 0 ? (
               allReviews.map((r, index) => (
-                <div className="bg-white/40 backdrop-blur-md rounded-[40px] p-8 border border-white shadow-soft transition-all" key={index}>
-                  <div className="flex items-center gap-4 mb-6">
-                    <img src={getImageUrl(r.user.avatar)} className="w-14 h-14 rounded-2xl object-cover shadow-md" alt={r.user.name} />
+                <div className={`${ui.card} ${ui.cardPadding} space-y-4`} key={index}>
+                  <div className="flex items-center gap-3">
+                    <img src={getImageUrl(r.user.avatar)} className="w-10 h-10 rounded-lg object-cover border border-gray-200" alt={r.user.name} />
                     <div>
-                      <h4 className="font-[700] text-[#16697A] font-sans">{r.user.name}</h4>
-                      <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-gray-900">{r.user.name}</h4>
+                      <div className="flex items-center gap-1 mt-0.5">
                         <Ratings rating={r.rating} />
                       </div>
                     </div>
                   </div>
-                  <p className="text-[#6B7280] font-[500] leading-relaxed font-sans italic">"{r.comment}"</p>
+                  <p className="text-sm text-gray-600 italic">"{r.comment}"</p>
                 </div>
               ))
             ) : (
-              <div className="col-span-full py-16 text-center">
-                <h4 className="text-xl font-[700] text-[#16697A] font-display italic">No reviews for this shop!</h4>
+              <div className="col-span-full py-16 text-center text-gray-500">
+                <p className="text-sm">No reviews found for this shop yet.</p>
               </div>
             )}
           </div>

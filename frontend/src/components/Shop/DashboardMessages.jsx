@@ -2,12 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { AiOutlineArrowRight, AiOutlineSend, AiOutlinePaperClip } from "react-icons/ai";
+import { AiOutlineSend } from "react-icons/ai";
 import { TfiGallery } from "react-icons/tfi";
 import { format } from "timeago.js";
 import socketIO from "socket.io-client";
 import { server, socket_server } from "../../server";
 import { BsArrowLeft } from "react-icons/bs";
+import { ui } from "../../styles/theme";
 
 const ENDPOINT = socket_server;
 const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
@@ -77,6 +78,20 @@ const DashboardMessages = () => {
   };
 
   useEffect(() => {
+    if (currentChat) {
+      setActiveStatus(onlineCheck(currentChat));
+      const fetchUserData = async () => {
+        const userId = currentChat.members.find((m) => m !== seller?._id);
+        try {
+          const res = await axios.get(`${server}/user/user-info/${userId}`);
+          setUserData(res.data.user);
+        } catch (error) { console.log(error); }
+      };
+      fetchUserData();
+    }
+  }, [onlineUsers, currentChat, seller]);
+
+  useEffect(() => {
     const getMessages = async () => {
       if (!currentChat?._id) return;
       try {
@@ -137,16 +152,16 @@ const DashboardMessages = () => {
   }, [messages]);
 
   return (
-    <div className="flex-1 h-[85vh] bg-white/40 backdrop-blur-2xl rounded-[48px] shadow-3xl border border-white overflow-hidden flex relative animate-in fade-in duration-700">
+    <div className={`${ui.card} h-[80vh] overflow-hidden flex relative animate-in fade-in duration-700`}>
 
       {/* Sidebar: Conversation List */}
       <div className={`
-         w-full md:w-[400px] flex flex-col border-r border-white bg-white/20 transition-all duration-500
+         w-full md:w-[320px] flex flex-col border-r border-gray-200 bg-gray-50/50 transition-all duration-500 shrink-0
          ${open ? "hidden md:flex" : "flex"}
       `}>
-        <div className="p-8 border-b border-white">
-          <h2 className="text-2xl font-black text-[#16697A] tracking-tighter italic uppercase">Shop Inbox</h2>
-          <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.4em] mt-1">Manage your messages</p>
+        <div className="p-4 border-b border-gray-200 bg-gray-50">
+          <h2 className="text-lg font-semibold text-gray-900">Shop Inbox</h2>
+          <p className="text-xs text-gray-500 mt-0.5">Manage conversations with customers</p>
         </div>
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           {conversations.map((conv, idx) => (
@@ -168,47 +183,47 @@ const DashboardMessages = () => {
 
       {/* Main Message View */}
       <div className={`
-         flex-1 flex flex-col bg-white/10 transition-all duration-500
+         flex-1 flex flex-col bg-white transition-all duration-500
          ${open ? "flex" : "hidden md:flex"}
       `}>
         {currentChat && userData ? (
           <>
-            <div className="h-24 px-8 border-b border-white flex items-center justify-between backdrop-blur-md">
-              <div className="flex items-center gap-4">
-                <button onClick={() => setOpen(false)} className="md:hidden w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center text-[#16697A]">
+            <div className="h-16 px-6 border-b border-gray-200 flex items-center justify-between bg-gray-50">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setOpen(false)} className="md:hidden text-gray-500 hover:text-gray-900 mr-1">
                   <BsArrowLeft size={20} />
                 </button>
                 <div className="relative">
-                  <img src={userData?.avatar?.url} alt="" className="w-12 h-12 rounded-[18px] object-cover ring-2 ring-white shadow-md" />
-                  {activeStatus && <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 border-2 border-white rounded-full" />}
+                  <img src={userData?.avatar?.url} alt="" className="w-10 h-10 rounded-lg object-cover border border-gray-200" />
+                  <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${activeStatus ? 'bg-green-500' : 'bg-gray-300'}`} />
                 </div>
                 <div>
-                  <h3 className="font-black text-[#16697A] tracking-tight truncate max-w-[200px] uppercase">{userData?.name}</h3>
-                  <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-widest leading-none">{activeStatus ? "Active Now" : "Offline"}</p>
+                  <h3 className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">{userData?.name}</h3>
+                  <p className="text-[10px] text-gray-500">{activeStatus ? "Online" : "Offline"}</p>
                 </div>
               </div>
             </div>
 
             <div
               ref={scrollRef}
-              className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar"
+              className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar"
             >
               {messages.map((msg, idx) => (
                 <MessageBubble key={idx} msg={msg} sellerId={seller._id} userData={userData} me={seller._id} />
               ))}
             </div>
 
-            <div className="p-8 relative">
+            <div className="p-4 border-t border-gray-200 relative">
               {images && (
-                <div className="absolute bottom-full left-8 mb-4 animate-in slide-in-from-bottom-2 duration-300">
-                  <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white w-32 aspect-square">
+                <div className="absolute bottom-full left-4 mb-3 animate-in slide-in-from-bottom-2 duration-300">
+                  <div className="relative rounded-lg overflow-hidden border border-gray-200 w-24 aspect-square shadow-md">
                     <img src={images} alt="Preview" className="w-full h-full object-cover" />
-                    <button onClick={() => setImages(null)} className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full">×</button>
+                    <button onClick={() => setImages(null)} className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">×</button>
                   </div>
                 </div>
               )}
-              <form onSubmit={sendMessageHandler} className="bg-white/80 backdrop-blur-xl rounded-[32px] border border-white p-2 flex items-center shadow-xl">
-                <label className="w-12 h-12 flex items-center justify-center text-[#16697A] hover:bg-[#EDE7E3] rounded-2xl cursor-pointer transition-colors">
+              <form onSubmit={sendMessageHandler} className="flex items-center gap-2">
+                <label className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-teal-700 rounded-lg cursor-pointer hover:bg-gray-100 transition shrink-0">
                   <TfiGallery size={18} />
                   <input type="file" className="hidden" onChange={handleImageUpload} />
                 </label>
@@ -217,21 +232,21 @@ const DashboardMessages = () => {
                   placeholder="Enter your message..."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  className="flex-1 px-4 py-2 font-bold text-[#16697A] placeholder:text-[#16697A]/20 outline-none bg-transparent"
+                  className={ui.input}
                 />
-                <button type="submit" className={`p-3 rounded-2xl transition-all duration-300 ${newMessage.trim() || images ? 'bg-[#16697A] text-white shadow-lg' : 'text-[#6B7280] bg-transparent opacity-20'}`}>
-                  <AiOutlineSend size={22} />
+                <button type="submit" disabled={!newMessage.trim() && !images} className={`${ui.btnPrimary} shrink-0 !py-2.5`}>
+                  <AiOutlineSend size={18} />
                 </button>
               </form>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-12">
-            <div className="w-24 h-24 bg-[#EDE7E3] rounded-[40px] flex items-center justify-center text-[#16697A]/20 mb-8 transform -rotate-12">
-              <AiOutlineSend size={48} />
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-12 bg-gray-50">
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 mb-4">
+              <AiOutlineSend size={28} />
             </div>
-            <h2 className="text-xl font-black text-[#16697A] tracking-tighter italic">Shop Inbox</h2>
-            <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.4em] mt-2">Select a chat to start messaging</p>
+            <h2 className="text-base font-semibold text-gray-900">No conversation selected</h2>
+            <p className="text-xs text-gray-500 mt-1">Select a customer from the inbox list to start messaging.</p>
           </div>
         )}
       </div>
@@ -265,17 +280,17 @@ const MessageList = ({ data, setOpen, setCurrentChat, me, setUserData, online, s
   return (
     <div
       onClick={handleClick}
-      className={`px-8 py-6 flex items-center gap-4 cursor-pointer transition-all duration-500 relative group ${active ? "bg-white/60 shadow-inner" : "hover:bg-white/30"}`}
+      className={`px-5 py-4 flex items-center gap-3 cursor-pointer transition relative ${active ? "bg-teal-50/60" : "hover:bg-gray-50"}`}
     >
-      {active && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-12 bg-[#FFA62B] rounded-r-full" />}
-      <div className="relative">
-        <img src={user?.avatar?.url || user?.avatar} alt="" className="w-14 h-14 rounded-[20px] object-cover ring-2 ring-white shadow-md transform group-hover:scale-105 transition-transform" />
-        <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-4 border-white ${online ? 'bg-green-400' : 'bg-[#c7b9b9]'}`} />
+      {active && <div className="absolute left-0 top-0 bottom-0 w-1 bg-teal-700" />}
+      <div className="relative shrink-0">
+        <img src={user?.avatar?.url || user?.avatar} alt="" className="w-11 h-11 rounded-lg object-cover border border-gray-200" />
+        <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-white ${online ? 'bg-green-500' : 'bg-gray-300'}`} />
       </div>
       <div className="flex-1 min-w-0">
-        <h4 className="font-black text-[#16697A] tracking-tight truncate uppercase italic">{user?.name}</h4>
-        <p className="text-xs font-bold text-[#6B7280] truncate mt-0.5 opacity-60">
-          {!isLoading && data?.lastMessageId === me ? "Merchant: " : ""}
+        <h4 className="text-sm font-semibold text-gray-900 truncate">{user?.name}</h4>
+        <p className="text-xs text-gray-500 truncate mt-0.5">
+          {!isLoading && data?.lastMessageId === me ? "You: " : ""}
           {data?.lastMessage}
         </p>
       </div>
@@ -288,20 +303,20 @@ const MessageBubble = ({ msg, sellerId, userData, me }) => {
   return (
     <div className={`flex w-full mb-4 animate-in fade-in slide-in-from-bottom-2 duration-500 ${isMe ? 'justify-end' : 'justify-start'}`}>
       {!isMe && (
-        <img src={userData?.avatar?.url} className="w-8 h-8 rounded-xl object-cover mr-3 shadow-md border-2 border-white self-end" alt="" />
+        <img src={userData?.avatar?.url} className="w-8 h-8 rounded-lg object-cover mr-2.5 self-end" alt="" />
       )}
       <div className="max-w-[70%] space-y-1">
         {msg.images && (
-          <div className="rounded-[24px] overflow-hidden border-4 border-white shadow-2xl mb-2">
-            <img src={msg.images?.url || msg.images} alt="" className="w-full max-h-80 object-cover" />
+          <div className="rounded-lg overflow-hidden border border-gray-200 shadow-sm mb-1 max-w-xs">
+            <img src={msg.images?.url || msg.images} alt="" className="w-full max-h-60 object-cover" />
           </div>
         )}
         {msg.text && (
-          <div className={`p-5 rounded-[24px] shadow-sm transform transition-all ${isMe ? 'bg-[#16697A] text-white rounded-tr-none translate-x-1' : 'bg-white text-[#16697A] rounded-tl-none border border-white'}`}>
-            <p className="text-sm font-bold leading-relaxed">{msg.text}</p>
+          <div className={`p-3 rounded-xl text-sm ${isMe ? 'bg-teal-700 text-white rounded-br-none' : 'bg-gray-100 text-gray-800 rounded-bl-none'}`}>
+            <p className="leading-relaxed">{msg.text}</p>
           </div>
         )}
-        <p className={`text-[9px] font-black text-[#6B7280] uppercase tracking-[0.3em] px-2 ${isMe ? 'text-right' : 'text-left'}`}>
+        <p className={`text-[9px] text-gray-400 mt-0.5 ${isMe ? 'text-right' : 'text-left'}`}>
           {format(msg.createdAt)}
         </p>
       </div>

@@ -40,7 +40,7 @@ const Hero = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-16">
         <div className="grid md:grid-cols-2 gap-10 items-center">
           <div>
-            <p className="text-sm font-medium text-teal-700 mb-2">Welcome to MultiVendor</p>
+            <p className="text-sm font-medium text-teal-700 mb-2">Welcome to Crown Market</p>
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-4">
               {slide.title}
             </h1>

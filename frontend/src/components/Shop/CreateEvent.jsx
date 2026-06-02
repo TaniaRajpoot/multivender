@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { AiOutlinePlusCircle, AiOutlineCloudUpload } from "react-icons/ai";
+import { AiOutlineCloudUpload } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { categoriesData } from "../../static/data";
 import { toast } from "react-toastify";
 import { createEvent } from "../../redux/actions/event";
-import { FiX, FiCalendar } from "react-icons/fi";
+import { FiX } from "react-icons/fi";
+import { ui } from "../../styles/theme";
 
 const CreateEvent = () => {
   const { seller } = useSelector((state) => state.seller);
@@ -100,104 +101,99 @@ const CreateEvent = () => {
   };
 
   return (
-    <div className="w-full px-4 md:px-12 py-10 font-Inter bg-[#EDE7E3]/30 min-h-screen">
-      <div className="max-w-5xl mx-auto space-y-12">
+    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6">
+      <div className="mb-8">
+        <h1 className={ui.title}>Create event</h1>
+        <p className={ui.subtitle}>Initialize a new time-limited promotional event.</p>
+      </div>
 
-        <div className="text-center md:text-left">
-          <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
-            <span className="w-12 h-1.5 bg-[#FFA62B] rounded-full" />
-            <p className="text-[10px] font-black text-[#489FB5] uppercase tracking-[0.5em]">Campaign Deployment</p>
+      <form onSubmit={handleSubmit} className={`${ui.card} ${ui.cardPadding} space-y-6`}>
+        {/* Identity */}
+        <div className="space-y-4">
+          <h3 className={ui.sectionTitle}>Event identity</h3>
+          <div className="grid grid-cols-1 gap-4">
+            <FormInput label="Event name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. Midnight Cyber Sale" />
+            <div>
+              <label className={ui.label}>Description</label>
+              <textarea value={description} required onChange={(e) => setDescription(e.target.value)} rows={4} className={ui.textarea} placeholder="Describe the details and rules of this campaign..." />
+            </div>
           </div>
-          <h2 className="text-3xl font-black text-[#16697A] tracking-tighter leading-none italic uppercase">Create Event</h2>
-          <p className="text-lg font-medium text-[#6B7280] mt-4 opacity-70">Initialize a strategic time-limited marketplace event</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white/70 backdrop-blur-2xl rounded-[56px] border border-white shadow-3xl p-10 md:p-16 space-y-10">
-
-          <div className="space-y-6">
-            <h3 className="text-sm font-black text-[#16697A] uppercase tracking-[0.4em] border-b border-[#16697A]/5 pb-4">Event Identity</h3>
-            <div className="grid grid-cols-1 gap-8">
-              <FormInput label="Event Designation" value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. Midnight Cyber Sale" />
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1">Event Narrative</label>
-                <textarea value={description} required onChange={(e) => setDescription(e.target.value)} rows={6} className="w-full bg-[#EDE7E3]/60 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-[32px] px-8 py-6 font-bold text-[#16697A] outline-none shadow-inner resize-none transition-all" placeholder="Detail the strategic objectives of this campaign..." />
-              </div>
+        {/* Classification & Pricing */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <h3 className={ui.sectionTitle}>Classification</h3>
+            <div>
+              <label className={ui.label}>Category</label>
+              <select value={category} required onChange={(e) => setCategory(e.target.value)} className={ui.select}>
+                <option value="">Select Category</option>
+                {categoriesData && categoriesData.map((i) => <option key={i.title} value={i.title}>{i.title}</option>)}
+              </select>
             </div>
+            <FormInput label="Tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="e.g. clearance, seasonal" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <h3 className="text-sm font-black text-[#16697A] uppercase tracking-[0.4em] border-b border-[#16697A]/5 pb-4">Classification</h3>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1">Protocol Type</label>
-                <select value={category} required onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#EDE7E3]/60 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-bold text-[#16697A] outline-none shadow-inner transition-all appearance-none">
-                  <option value="">Select Category</option>
-                  {categoriesData && categoriesData.map((i) => <option key={i.title} value={i.title}>{i.title}</option>)}
-                </select>
-              </div>
-              <FormInput label="Event Keywords" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="e.g. clearance, seasonal" />
+          <div className="space-y-4">
+            <h3 className={ui.sectionTitle}>Pricing & Stock</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <FormInput label="Original price ($)" type="number" value={originalPrice} onChange={(e) => setOriginalPrice(e.target.value)} placeholder="0.00" />
+              <FormInput label="Sale price ($)" type="number" value={discountPrice} required onChange={(e) => setDiscountPrice(e.target.value)} placeholder="0.00" />
             </div>
-
-            <div className="space-y-6">
-              <h3 className="text-sm font-black text-[#16697A] uppercase tracking-[0.4em] border-b border-[#16697A]/5 pb-4">Liquidation & Stock</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <FormInput label="Base Valuation ($)" type="number" value={originalPrice} onChange={(e) => setOriginalPrice(e.target.value)} placeholder="0.00" />
-                <FormInput label="Campaign Price ($)" type="number" value={discountPrice} required onChange={(e) => setDiscountPrice(e.target.value)} placeholder="0.00" />
-              </div>
-              <FormInput label="Event Units" type="number" value={stock} required onChange={(e) => setStock(e.target.value)} placeholder="Available quantity" />
-            </div>
+            <FormInput label="Stock units" type="number" value={stock} required onChange={(e) => setStock(e.target.value)} placeholder="Available quantity" />
           </div>
+        </div>
 
-          {/* Temporal Section */}
-          <div className="space-y-6">
-            <h3 className="text-sm font-black text-[#16697A] uppercase tracking-[0.4em] border-b border-[#16697A]/5 pb-4">Temporal Window (Schedule)</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1">Initialization Date</label>
-                <input type="date" value={startDate ? startDate.toISOString().slice(0, 10) : ""} onChange={handleStartDateChange} min={today} className="w-full bg-[#EDE7E3]/60 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-bold text-[#16697A] outline-none shadow-inner transition-all" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1">Termination Date</label>
-                <input type="date" value={endDate ? endDate.toISOString().slice(0, 10) : ""} onChange={handleEndDateChange} min={minEndDate} className="w-full bg-[#EDE7E3]/60 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-bold text-[#16697A] outline-none shadow-inner transition-all" />
-              </div>
+        {/* Temporal Window */}
+        <div className="space-y-4">
+          <h3 className={ui.sectionTitle}>Campaign duration</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className={ui.label}>Start date</label>
+              <input type="date" value={startDate ? startDate.toISOString().slice(0, 10) : ""} onChange={handleStartDateChange} min={today} className={ui.input} />
+            </div>
+            <div>
+              <label className={ui.label}>End date</label>
+              <input type="date" value={endDate ? endDate.toISOString().slice(0, 10) : ""} onChange={handleEndDateChange} min={minEndDate} className={ui.input} />
             </div>
           </div>
+        </div>
 
-          <div className="space-y-6">
-            <h3 className="text-sm font-black text-[#16697A] uppercase tracking-[0.4em] border-b border-[#16697A]/5 pb-4">Campaign Optics</h3>
-            <div className="flex flex-wrap gap-4">
-              <label className="w-32 h-32 rounded-[32px] bg-[#16697A] text-white flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-[#FFA62B] transition-all shadow-xl group border-4 border-white">
-                <AiOutlineCloudUpload size={24} className="group-hover:translate-y-[-4px] transition-transform" />
-                <span className="text-[9px] font-black uppercase tracking-widest text-center px-2 leading-none">Add Optics</span>
-                <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageChange} />
-              </label>
-              {images.map((img, idx) => (
-                <div key={idx} className="relative w-32 h-32 group animate-in zoom-in duration-300">
-                  <img src={img} alt="Preview" className="w-full h-full object-cover rounded-[32px] border-4 border-white shadow-lg" />
-                  <button type="button" onClick={() => removeImage(idx)} className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
-                    <FiX size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
+        {/* Images */}
+        <div className="space-y-4">
+          <label className={ui.label}>Event Images</label>
+          <div className="flex flex-wrap gap-4">
+            <label className="w-28 h-28 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:border-teal-700 transition bg-gray-50 text-gray-500">
+              <AiOutlineCloudUpload size={22} />
+              <span className="text-[11px] font-semibold">Upload images</span>
+              <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageChange} />
+            </label>
+            {images.map((img, idx) => (
+              <div key={idx} className="relative w-28 h-28 group">
+                <img src={img} alt="Preview" className="w-full h-full object-cover rounded-xl border border-gray-200 shadow-sm" />
+                <button type="button" onClick={() => removeImage(idx)} className="absolute -top-2 -right-2 w-7 h-7 bg-red-600 text-white rounded-full flex items-center justify-center shadow-md hover:bg-red-700 transition">
+                  <FiX size={14} />
+                </button>
+              </div>
+            ))}
           </div>
+        </div>
 
-          <div className="pt-8 text-center">
-            <button type="submit" disabled={isLoading} className="w-full md:w-auto px-20 py-6 bg-[#16697A] text-white font-black rounded-[32px] hover:bg-[#FFA62B] transition-all transform hover:scale-105 shadow-2xl uppercase tracking-[0.3em] text-sm disabled:opacity-50">
-              {isLoading ? "Broadcasting..." : "Authorize Campaign"}
-            </button>
-            <p className="text-[10px] font-bold text-[#6B7280] mt-6 uppercase tracking-widest italic opacity-40">* Events are synchronized across all regional relay nodes</p>
-          </div>
-        </form>
-      </div>
+        {/* Submit */}
+        <div className="pt-4 border-t border-gray-200">
+          <button type="submit" disabled={isLoading} className={`${ui.btnPrimary} w-full sm:w-auto`}>
+            {isLoading ? "Creating event..." : "Create event"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
 
 const FormInput = ({ label, ...props }) => (
-  <div className="space-y-2">
-    <label className="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.2em] ml-1">{label}</label>
-    <input {...props} className="w-full bg-[#EDE7E3]/60 border border-transparent focus:border-[#16697A]/20 focus:bg-white rounded-2xl px-6 py-4 font-bold text-[#16697A] outline-none shadow-inner transition-all placeholder:text-[#16697A]/20" />
+  <div>
+    <label className={ui.label}>{label}</label>
+    <input {...props} className={ui.input} />
   </div>
 );
 
