@@ -1,13 +1,14 @@
 import React from "react";
+import { SiSony, SiDell, SiLenovo, SiApple, SiSamsung } from "react-icons/si";
 import SectionTitle from "../../ui/SectionTitle";
 import { ui } from "../../../styles/theme";
 
 const brands = [
-  { name: "Sony", src: "https://cdn.worldvectorlogo.com/logos/sony.svg" },
-  { name: "Dell", src: "https://cdn.worldvectorlogo.com/logos/dell.svg" },
-  { name: "Lenovo", src: "https://cdn.worldvectorlogo.com/logos/lenovo.svg" },
-  { name: "Apple", src: "https://cdn.worldvectorlogo.com/logos/apple.svg" },
-  { name: "Samsung", src: "https://cdn.worldvectorlogo.com/logos/samsung.svg" },
+  { name: "Sony", Icon: SiSony },
+  { name: "Dell", Icon: SiDell },
+  { name: "Lenovo", Icon: SiLenovo },
+  { name: "Apple", Icon: SiApple },
+  { name: "Samsung", Icon: SiSamsung },
 ];
 
 const Sponsered = () => (
@@ -15,15 +16,15 @@ const Sponsered = () => (
     <div className={ui.container}>
       <SectionTitle title="Trusted brands" subtitle="We work with well-known partners." />
       <div className={`${ui.card} ${ui.cardPadding}`}>
-        <div className="flex flex-wrap items-center justify-center gap-10 md:gap-16">
-          {brands.map((b) => (
-            <img
-              key={b.name}
-              src={b.src}
-              alt={b.name}
-              className="h-10 md:h-12 object-contain grayscale hover:grayscale-0 transition"
-              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/logo.png"; }}
-            />
+        <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+          {brands.map(({ name, Icon }) => (
+            <div
+              key={name}
+              className="flex h-16 w-28 items-center justify-center rounded-3xl bg-white p-3 shadow-sm transition hover:shadow-md"
+              aria-label={name}
+            >
+              <Icon className="h-10 w-auto text-slate-800" />
+            </div>
           ))}
         </div>
       </div>
