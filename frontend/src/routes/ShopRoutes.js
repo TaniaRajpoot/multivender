@@ -3,14 +3,14 @@ import ShopDashboardPage from "../pages/Shop/ShopDashboardPage"
 import ShopPreviewPage from "../pages/Shop/ShopPreviewPage"
 import ShopCreateProduct from "../pages/Shop/ShopCreateProduct"
 import ShopAllProducts from "../pages/Shop/ShopAllProducts"
-import ShopCreateEvent from "../pages/Shop/ShopCreateEvents"
+import ShopCreateEvent from "../pages/Shop/ShopCreateEvents"; // ✅ with s
 import ShopAllEvents from "../pages/Shop/ShopAllEvents"
 import ShopAllCoupons from "../pages/Shop/ShopAllCoupons"
 import ShopAllOrders from "../pages/Shop/ShopAllOrders"
 import OrderDetails from "../pages/Shop/ShopOrderDetailsPage"
 import ShopAllRefunds from "../pages/Shop/ShopAllRefunds"
 import ShopSettingsPage from "../pages/Shop/ShopSettingsPage"
-import ShopWithdrawMoneyPage from "../pages/Shop/ShopWithDrawMoneyPage"
+import ShopWithdrawMoneyPage from "../pages/Shop/ShopWithDrawMoneyPage"; // ✅ capital D
 import ShopInboxPage from "../pages/Shop/ShopInboxPage"
 
 export {
