@@ -1,5 +1,5 @@
 import React from "react";
-import TrackOrder from "../components/profile/TrackOrder.jsx";
+import TrackOrder from "../components/Profile/TrackOrder.jsx";
 import StoreLayout from "../components/ui/StoreLayout";
 
 const TrackOrderPage = () => (

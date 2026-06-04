@@ -10,7 +10,7 @@ import ShopAllOrders from "../pages/Shop/ShopAllOrders"
 import OrderDetails from "../pages/Shop/ShopOrderDetailsPage"
 import ShopAllRefunds from "../pages/Shop/ShopAllRefunds"
 import ShopSettingsPage from "../pages/Shop/ShopSettingsPage"
-import ShopWithdrawMoneyPage from "../pages/Shop/ShopWithDrawMoneyPage"
+import ShopWithdrawMoneyPage from "../pages/Shop/ShopWithDrawMoneyPage.jsx"
 import ShopInboxPage from "../pages/Shop/ShopInboxPage"
 
 export {
