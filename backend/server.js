@@ -1,6 +1,3 @@
-
-
-// Must be FIRST — before anything else
 if (process.env.NODE_ENV != "PRODUCTION") {
   require("dotenv").config({
     path: "config/.env",
@@ -19,17 +16,19 @@ process.on("uncaughtException", (err) => {
 // Connect DB
 connectDatabase();
 
-// Create server
-const server = app.listen(process.env.PORT, () => {
-  console.log(`Server is running on http://localhost:${process.env.PORT}`);
-});
-
-// Unhandled promise rejection
-process.on("unhandledRejection", (err) => {
-  console.log(`Shutting down the server for ${err.message}`);
-  console.log(`Shutting down the server for uncaught promise rejection`);
-
-  server.close(() => {
-    process.exit(1);
+// ✅ Only listen locally, not on Vercel
+if (process.env.NODE_ENV !== "PRODUCTION") {
+  const server = app.listen(process.env.PORT, () => {
+    console.log(`Server is running on http://localhost:${process.env.PORT}`);
   });
-});
+
+  process.on("unhandledRejection", (err) => {
+    console.log(`Shutting down the server for ${err.message}`);
+    server.close(() => {
+      process.exit(1);
+    });
+  });
+}
+
+// ✅ This is what Vercel needs
+module.exports = app;
