@@ -52,7 +52,7 @@ router.post("/create-user", async (req, res, next) => {
       expiresIn: "5m",
     });
 
-    const activationUrl = `http://localhost:5173/activation/${activationToken}`;
+    const activationUrl = `${process.env.FRONTEND_URL}/activation/${activationToken}`;
 
     // Send activation email
     await sendMail({
