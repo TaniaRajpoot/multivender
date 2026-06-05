@@ -1,26 +1,29 @@
 const mongoose = require("mongoose");
 
-const connectDatabase = () => {
+let isConnected = false;
+
+const connectDatabase = async () => {
+  if (isConnected) {
+    console.log("Using existing MongoDB connection");
+    return;
+  }
+
   if (!process.env.DB_URL) {
     console.error("ERROR: DB_URL is not defined!");
     return;
   }
 
-  // Prevent multiple connections
-  if (mongoose.connections[0].readyState) {
-    console.log("Already connected to MongoDB");
-    return;
-  }
-
-  mongoose
-    .connect(process.env.DB_URL)
-    .then((data) => {
-      console.log(`MongoDB connected: ${data.connection.host}`);
-    })
-    .catch((err) => {
-      console.error("MongoDB connection error:", err.message);
-      // ❌ removed process.exit(1) — it kills Vercel functions!
+  try {
+    const db = await mongoose.connect(process.env.DB_URL, {
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
     });
+    isConnected = true;
+    console.log(`MongoDB connected: ${db.connection.host}`);
+  } catch (err) {
+    console.error("MongoDB connection error:", err.message);
+    isConnected = false;
+  }
 };
 
 module.exports = connectDatabase;
