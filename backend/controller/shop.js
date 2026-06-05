@@ -36,7 +36,7 @@ router.post("/create-shop", async (req, res, next) => {
       },
     };
     const activationToken = createActivationToken(seller);
-    const activationUrl = `http://localhost:5173/seller/activation/${activationToken}`; // ✅ Fixed: localhost
+    const activationUrl = `${process.env.FRONTEND_URL}/seller/activation/${activationToken}`; // ✅ Fixed: localhost
     try {
       await sendMail({
         email: seller.email,
