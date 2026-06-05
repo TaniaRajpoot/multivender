@@ -14,13 +14,11 @@ const connectDatabase = async () => {
   }
 
   try {
-    const db = await mongoose.connect(process.env.DB_URL, {
+    const connected=await mongoose.connect(${dbURl}, {
       serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 45000,
       retryWrites: true,
       maxPoolSize: 10,
-      useNewUrlParser: true,
-    useUnifiedTopology: true,
     });
     isConnected = true;
     console.log(`MongoDB connected: ${db.connection.host}`);
