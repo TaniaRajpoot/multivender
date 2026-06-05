@@ -7,16 +7,19 @@ if (process.env.NODE_ENV != "PRODUCTION") {
 const app = require("./app");
 const connectDatabase = require("./db/Database");
 
-// Handling uncaught Exception
+// ✅ Debug logs
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("DB_URL exists:", !!process.env.DB_URL);
+console.log("JWT_SECRET exists:", !!process.env.JWT_SECRET_KEY);
+console.log("CLOUDINARY exists:", !!process.env.CLOUDINARY_CLOUD_NAME);
+
 process.on("uncaughtException", (err) => {
-  console.log(`Error : ${err.message}`);
-  console.log(`Shutting down the server for handling uncaught exception`);
+  console.error("UNCAUGHT EXCEPTION:", err.message);
+  console.error(err.stack);
 });
 
-// Connect DB
 connectDatabase();
 
-// ✅ Only listen locally, not on Vercel
 if (process.env.NODE_ENV !== "PRODUCTION") {
   const server = app.listen(process.env.PORT, () => {
     console.log(`Server is running on http://localhost:${process.env.PORT}`);
@@ -30,5 +33,4 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
   });
 }
 
-// ✅ This is what Vercel needs
 module.exports = app;
