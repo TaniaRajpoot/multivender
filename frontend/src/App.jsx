@@ -348,6 +348,9 @@ const App = () => {
     Store.dispatch(getAllProducts());
   }, []);
 
+  console.log(isAuthenticated, "app.jsx");
+  console.log(isSeller, "app.jsx");
+
   return (
     <BrowserRouter>
       <ScrollToTop />
