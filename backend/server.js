@@ -1,4 +1,4 @@
-if (process.env.NODE_ENV != "PRODUCTION") {
+if (process.env.NODE_ENV !== "PRODUCTION") {
   require("dotenv").config({
     path: "config/.env",
   });
@@ -8,22 +8,37 @@ const app = require("./app");
 const connectDatabase = require("./db/Database");
 
 process.on("uncaughtException", (err) => {
-  console.error("UNCAUGHT EXCEPTION:", err.message);
-  console.error(err.stack);
+  console.error("UNCAUGHT EXCEPTION:", err);
+  process.exit(1);
 });
 
-// Connect DB immediately on cold start
-connectDatabase();
+const startServer = async () => {
+  try {
+    const data = await connectDatabase();
 
-if (process.env.NODE_ENV !== "PRODUCTION") {
-  const server = app.listen(process.env.PORT, () => {
-    console.log(`Server running on http://localhost:${process.env.PORT}`);
-  });
+    console.log(
+      `MongoDB connected: ${data.connection.host}`
+    );
 
-  process.on("unhandledRejection", (err) => {
-    console.log(`Shutting down: ${err.message}`);
-    server.close(() => process.exit(1));
-  });
-}
+    const server = app.listen(process.env.PORT, () => {
+      console.log(
+        `Server running on http://localhost:${process.env.PORT}`
+      );
+    });
+
+    process.on("unhandledRejection", (err) => {
+      console.error("UNHANDLED REJECTION:", err);
+
+      server.close(() => {
+        process.exit(1);
+      });
+    });
+  } catch (err) {
+    console.error("DATABASE CONNECTION FAILED:", err);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 module.exports = app;
