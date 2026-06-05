@@ -346,12 +346,14 @@ const App = () => {
 
   const { isAuthenticated } = useSelector((state) => state.user);
   const { isSeller } = useSelector((state) => state.seller);
-  
+
   useEffect(() => {
     Store.dispatch(loadUser());
     Store.dispatch(loadSeller());
     Store.dispatch(getAllProducts());
   }, []);
+
+  
 
   console.log(isAuthenticated, "app.jsx");
   console.log(isSeller, "app.jsx");
