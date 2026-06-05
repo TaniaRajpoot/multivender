@@ -62,7 +62,7 @@ import {
 import { useSelector } from "react-redux";
 import { BsShopWindow } from "react-icons/bs";
 import ProtectedAdminRoute from "./routes/ProtectedAdminRoute.jsx";
-
+import ScrollToTop from "./components/Layout/ScrollToTop.jsx";
 const AppRoutes = () => {
 
   return (
@@ -353,7 +353,7 @@ const App = () => {
     Store.dispatch(getAllProducts());
   }, []);
 
-  
+
 
   console.log(isAuthenticated, "app.jsx");
   console.log(isSeller, "app.jsx");
