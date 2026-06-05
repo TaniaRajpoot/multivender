@@ -64,6 +64,7 @@ import { BsShopWindow } from "react-icons/bs";
 import ProtectedAdminRoute from "./routes/ProtectedAdminRoute.jsx";
 
 const AppRoutes = () => {
+
   return (
     <>
       <Routes>
@@ -339,9 +340,13 @@ const AppRoutes = () => {
   );
 };
 
-import ScrollToTop from "./components/Layout/ScrollToTop.jsx";
+
 
 const App = () => {
+
+  const { isAuthenticated } = useSelector((state) => state.user);
+  const { isSeller } = useSelector((state) => state.seller);
+  
   useEffect(() => {
     Store.dispatch(loadUser());
     Store.dispatch(loadSeller());
