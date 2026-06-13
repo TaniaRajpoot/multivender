@@ -28,7 +28,7 @@ const Success = () => {
       <p className={`${ui.subtitle} mb-8`}>Thank you. We sent a confirmation to your email.</p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Link to="/" className={ui.btnPrimary}>Continue shopping</Link>
-        <Link to="/profile" className={ui.btnSecondary}>View my orders</Link>
+        <Link to="/orders" className={ui.btnSecondary}>View my orders</Link>
       </div>
     </div>
   );
