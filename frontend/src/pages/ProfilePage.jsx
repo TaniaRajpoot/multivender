@@ -1,11 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import StoreLayout from "../components/ui/StoreLayout";
 import ProfileSideBar from "../components/Profile/ProfileSideBar";
 import ProfileContent from "../components/Profile/ProfileContent";
 import { ui } from "../styles/theme";
 
 const ProfilePage = () => {
+  const [searchParams] = useSearchParams();
   const [active, setActive] = useState(1);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+
+    if (tab === "track-order") {
+      setActive(5);
+      return;
+    }
+
+    setActive(1);
+  }, [searchParams]);
 
   return (
     <StoreLayout showFooter={false}>
