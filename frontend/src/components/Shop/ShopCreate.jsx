@@ -39,10 +39,10 @@ const ShopCreate = () => {
     }
     const shopData = { name, email, password, phoneNumber, address, zipCode, avatar };
     try {
-      await axios.post(`${server}/shop/create-shop`, shopData, {
+      const { data } = await axios.post(`${server}/shop/create-shop`, shopData, {
         headers: { "Content-Type": "application/json" },
       });
-      toast.success("Shop created successfully!");
+      toast.success(data.message);
       navigate("/shop-login");
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");
