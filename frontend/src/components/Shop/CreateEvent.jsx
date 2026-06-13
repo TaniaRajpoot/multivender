@@ -49,9 +49,8 @@ const CreateEvent = () => {
       dispatch({ type: "clearErrors" });
     }
     if (success) {
-      toast.success("Campaign sequence initialized. Event broadcasted.");
-      navigate("/dashboard-events");
-      window.location.reload();
+      toast.success("Event created successfully.");
+      navigate("/dashboard-events", { replace: true });
     }
   }, [dispatch, error, success, navigate]);
 
