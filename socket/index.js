@@ -3,8 +3,13 @@ const app = require("express")();
 const http = require("http");
 const cors = require("cors");
 const server = http.createServer(app);
-const io = socketIO(server);
-app.use(cors({ origin: "https://client-eight-coral.vercel.app" }));
+const io = socketIO(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+app.use(cors({ origin: "*" }));
 require("dotenv").config({
   path: "./.env",
 });
@@ -36,7 +41,7 @@ io.on("connection", (socket) => {
   //take user and socket id for the User
   socket.on("addUser", (userId) => {
     addUser(userId, socket.id);
-    io.emit("getUser", users);
+    io.emit("getUsers", users);
   });
   //send and get Message
   const messages = []; //object to track messages sent to each other

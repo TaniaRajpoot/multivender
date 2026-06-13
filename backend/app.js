@@ -24,8 +24,10 @@ app.use(
       if (isDev && /^http:\/\/localhost(:\d+)?$/.test(origin)) {
         return callback(null, true);
       }
-      const allowed = process.env.FRONTEND_URL || "http://localhost:5173";
-      if (origin === allowed) return callback(null, true);
+      const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:5173")
+        .split(",")
+        .map((url) => url.trim());
+      if (allowedOrigins.includes(origin)) return callback(null, true);
       callback(new Error("Not allowed by CORS"));
     },
     credentials: true,

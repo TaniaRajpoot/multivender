@@ -12,7 +12,7 @@ const HomePage = () => (
     <Hero />
     <Categories />
     <BestDeals />
-    <Events />
+    <Events isOnlyOne={true} />
     <FeatureProduct />
     <Sponsered />
   </StoreLayout>
