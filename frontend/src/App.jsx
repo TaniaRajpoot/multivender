@@ -18,7 +18,10 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import Store from "./redux/store.js";
-import { loadSeller, loadUser } from "./redux/actions/user.js";
+import { loadSeller } from "./redux/actions/seller.js";
+import { loadUser } from "./redux/actions/user.js";
+
+// ...existing code...
 import { useSelector } from "react-redux";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import {ShopHomePage} from "./ShopRoutes.js"
@@ -69,7 +72,7 @@ const AppRoutes = () => {
         <Route path="/shop-login" element={<ShopLoginPage />} />
         <Route path="/shop/:id" element={
           <SellerProtectedRoute
-          isSeller={isSeller}>
+          isSeller={isAuthenticated}>
             <ShopHomePage />
           </SellerProtectedRoute>
         } />

@@ -1,21 +1,21 @@
+
 import axios from 'axios';
 import { server } from '../../server';
 
-//loading user 
-export const loadUser = ( ) =>async(dispatch) =>{
+export const loadSeller = ( ) =>async(dispatch) =>{
     try {
         dispatch({
-            type:"LoadUserRequest"
+            type:"LoadSellerRequest"
         });
-        const {data} = await axios.get(`${server}/user/getuser`,{withCredentials:true});
+        const {data} = await axios.get(`${server}/shop/getSeller`,{withCredentials:true});
         console.log(data);
         dispatch({
-            type:"LoadUserSuccess",
+            type:"LoadSellerSuccess",
             payload: data.user,
         });
     } catch (error) {
         dispatch({
-            type:"LoadUserFail",
+            type:"LoadSellerFail",
             payload:error.response.data.message
         })
     }

@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { isAuthenticated } from "../../backend/middlware/auth";
+
 
 const SellerProtectedRoute = ({ isSeller,seller,children }) => {
     if(!isSeller){
@@ -10,4 +10,3 @@ const SellerProtectedRoute = ({ isSeller,seller,children }) => {
 };
 export default SellerProtectedRoute;
 
-    
