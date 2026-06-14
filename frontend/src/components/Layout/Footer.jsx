@@ -1,119 +1,78 @@
 import React from "react";
-import {
-  AiFillFacebook,
-  AiOutlineFacebook,
-  AiOutlineInstagram,
-  AiOutlineTwitter,
-  AiOutlineYoutube,
-} from "react-icons/ai";
-import {
-  footercompanyLinks,
-  footerProductLinks,
-  footerSupportLinks,
-} from "../../static/data";
+import { AiFillFacebook, AiOutlineInstagram, AiOutlineTwitter, AiOutlineYoutube } from "react-icons/ai";
+import { footercompanyLinks, footerProductLinks, footerSupportLinks } from "../../static/data";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <div className="bg-[#000] text-white ">
-      <div className="md:flex md:justify-between md:items-center sm:px-12 px-4 bg-[#342ac8] py-7">
-        <h1 className="lg:text-4xl text-3xl md:mb-0 mb-6 lg:leading-normal font-semibold md:w-2/5">
-          <span className="text-[#56d879]"> Subscribe</span> us for getting new{" "}
-          <br /> events and offers
-        </h1>
+    <footer className="bg-white border-t border-gray-200 text-gray-600">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:flex md:items-center md:justify-between gap-8">
         <div>
+          <h2 className="text-xl font-semibold text-gray-900">Get updates by email</h2>
+          <p className="text-sm mt-1">New products, sales, and shop news.</p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-0">
           <input
-            type="text"
-            required
-            placeholder="Enter your email..."
-            className=" bg-white text-gray-800 sm:w-72 sm:mr-5 mr-1 lg:mb-0 mb-4 py-2.5 rounded px-2 focus:outline-none "
+            type="email"
+            placeholder="Your email address"
+            className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm min-w-[220px] focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 outline-none"
           />
-          <button className="bg-[#56d879] hover:bg-teal-500 duration-300 px-5 py-2.5 rounded-md text-white md:w-auto w-full ">
-            Submit
+          <button type="button" className="rounded-lg bg-teal-700 px-6 py-2.5 text-sm font-semibold text-white hover:bg-teal-800">
+            Subscribe
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:px-8 px-5 py-16 sm:text-center">
-        <ul className="px-5 text-center sm:text-start flex sm:block flex-col items-center">
-          <img
-            src="https://shopo.quomodothemes.website/assets/images/logo.svg?utm_source=chatgpt.com"
-            alt=""
-            style={{ filter: "brightness(0) invert(1)" }}
-          />
-          <br />
-          <p>The home and elements to create breautifull products </p>
-          <div className="flex items-center mt-[15px]">
-            <AiFillFacebook size={25} className="cursor-pointer" />
-            <AiOutlineTwitter
-              size={25}
-              style={{ marginLeft: "15px", cursor: "cursor-pointer" }}
-            />
-            <AiOutlineInstagram
-              size={25}
-              style={{ marginLeft: "15px", cursor: "cursor-pointer" }}
-            />
-            <AiOutlineYoutube
-              size={25}
-              style={{ marginLeft: "15px", cursor: "cursor-pointer" }}
-            />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 border-t border-gray-100">
+        <div>
+          <img src="/logo.png" alt="Crown Market" className="w-28 mb-4" />
+          <p className="text-sm leading-relaxed">A simple marketplace to buy from many sellers in one place.</p>
+          <div className="flex gap-4 mt-4 text-gray-500">
+            <AiFillFacebook size={22} className="hover:text-teal-700 cursor-pointer" />
+            <AiOutlineTwitter size={22} className="hover:text-teal-700 cursor-pointer" />
+            <AiOutlineInstagram size={22} className="hover:text-teal-700 cursor-pointer" />
+            <AiOutlineYoutube size={22} className="hover:text-teal-700 cursor-pointer" />
           </div>
-        </ul>
-        <ul className="text-center sm:text-start">
-          <h1 className="mb-1 font-semibold">Company</h1>
-          {footerProductLinks.map((link) => (
-            <li key={link.name}>
-              <Link
-                to={link.link}
-                className="text-gray-400 hover:text-teal-400 duration-300 text-sm cursor-pointer leading-6"
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        </div>
 
-        <ul className="text-center sm:text-start">
-          <h1 className="mb-1 font-semibold">Shop</h1>
-          {footercompanyLinks.map((link) => (
-            <li key={link.name}>
-              <Link
-                to={link.link}
-                className="text-gray-400 hover:text-teal-400 duration-300 text-sm cursor-pointer leading-6"
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div>
+          <h4 className="text-sm font-semibold text-gray-900 mb-4">Shop</h4>
+          <ul className="space-y-2 text-sm">
+            {footerProductLinks.map((link) => (
+              <li key={link.name}>
+                <Link to={link.link} className="hover:text-teal-700">{link.name}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        <ul className="text-center sm:text-start">
-          <h1 className="mb-1 font-semibold">Support</h1>
-          {footerSupportLinks.map((link) => (
-            <li key={link.name}>
-              <Link
-                to={link.link}
-                className="text-gray-400 hover:text-teal-400 duration-300 text-sm cursor-pointer leading-6"
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+        <div>
+          <h4 className="text-sm font-semibold text-gray-900 mb-4">Company</h4>
+          <ul className="space-y-2 text-sm">
+            {footercompanyLinks.map((link) => (
+              <li key={link.name}>
+                <Link to={link.link} className="hover:text-teal-700">{link.name}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 text-center pt-2 text-gray-400 text-sm pb-8">
-        <span> @ 2025 TaniaAshraf. All rights reserved.</span>
-        <span>Terms . Privacy Policy</span>
-        <div className="sm:block flex items-center justify-center w-full">
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtwZGS06LQiYrucl4l1fkLG6QIPHVMJktWbA&s"
-            alt="payment methods"
-            className="mx-auto sm:mx-0 w-40 h-auto object-fit opacity-80 hover:opacity-100 transition duration-300"
-          />
+        <div>
+          <h4 className="text-sm font-semibold text-gray-900 mb-4">Help</h4>
+          <ul className="space-y-2 text-sm">
+            {footerSupportLinks.map((link) => (
+              <li key={link.name}>
+                <Link to={link.link} className="hover:text-teal-700">{link.name}</Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
-    </div>
+
+      <div className="border-t border-gray-100 py-6 text-center text-xs text-gray-500">
+        © {new Date().getFullYear()} Crown Market. All rights reserved.
+      </div>
+    </footer>
   );
 };
 

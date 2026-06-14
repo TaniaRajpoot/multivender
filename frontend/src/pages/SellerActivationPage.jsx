@@ -1,255 +1,95 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import AuthLayout from "../components/ui/AuthLayout";
+import { ui } from "../styles/theme";
 import { server } from "../server";
 
 const SellerActivationPage = () => {
   const { activationToken } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    if (activationToken) {
-      console.log("Activation token from URL:", activationToken.substring(0, 30) + "...");
-      
-      const activateShop = async () => {
-        try {
-          setLoading(true);
-          console.log("Sending activation request to:", `${server}/shop/activation`);
-          
-          const res = await axios.post(`${server}/shop/activation`, {
-            activationToken,
-          });
-
-          console.log("Activation response:", res.data);
-
-          if (res.data.success) {
-            setLoading(false);
-            setError(false);
-            // Redirect to dashboard or login after 2 seconds
-            setTimeout(() => {
-              navigate("/dashboard");
-            }, 2000);
-          }
-        } catch (err) {
-          console.error("Activation failed:");
-          console.error("Error response:", err.response?.data);
-          console.error("Error message:", err.response?.data?.message);
-          
-          setError(true);
-          setLoading(false);
-          
-          const message = err.response?.data?.message || "Activation failed";
-          setErrorMessage(message);
-          
-          // Auto redirect based on error type
-          if (message.includes("already exists")) {
-            setTimeout(() => {
-              navigate("/shop-login");
-            }, 3000);
-          }
+    if (!activationToken) return;
+    const activateShop = async () => {
+      try {
+        const res = await axios.post(
+          `${server}/shop/activation`,
+          { activation_token: activationToken },
+          { withCredentials: true }
+        );
+        if (res.data.success) {
+          dispatch({ type: "LoadSellerSuccess", payload: res.data.user });
+          setError(false);
+          setTimeout(() => navigate("/dashboard"), 2000);
         }
-      };
-      
-      activateShop();
-    }
-  }, [activationToken, navigate]);
+      } catch (err) {
+        setError(true);
+        const message = err.response?.data?.message || "Activation failed";
+        setErrorMessage(message);
+        if (message.includes("already exists")) {
+          setTimeout(() => navigate("/shop-login"), 3000);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    activateShop();
+  }, [activationToken, navigate, dispatch]);
+
+  const title = loading ? "Activating your shop…" : error ? "Activation failed" : "Shop activated";
+  const subtitle = loading
+    ? "Please wait."
+    : error
+      ? errorMessage
+      : "Redirecting to your dashboard…";
 
   return (
-    <div
-      style={{
-        width: "100%",
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#f3f4f6",
-      }}
+    <AuthLayout
+      title={title}
+      subtitle={subtitle}
+      footer={
+        !loading && (
+          <>
+            {error && errorMessage.includes("expired") && (
+              <Link to="/shop-create" className="text-teal-700 font-medium hover:underline">
+                Register again
+              </Link>
+            )}
+            {error && errorMessage.includes("already exists") && (
+              <Link to="/shop-login" className="text-teal-700 font-medium hover:underline">
+                Go to seller login
+              </Link>
+            )}
+            {!error && (
+              <Link to="/dashboard" className="text-teal-700 font-medium hover:underline">
+                Open dashboard
+              </Link>
+            )}
+          </>
+        )
+      }
     >
-      <div
-        style={{
-          maxWidth: "500px",
-          width: "90%",
-          backgroundColor: "white",
-          borderRadius: "12px",
-          padding: "40px",
-          textAlign: "center",
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        {loading && !error ? (
-          <>
-            <div
-              style={{
-                width: "60px",
-                height: "60px",
-                border: "4px solid #e5e7eb",
-                borderTopColor: "#3b82f6",
-                borderRadius: "50%",
-                margin: "0 auto 20px",
-                animation: "spin 1s linear infinite",
-              }}
-            />
-            <h2
-              style={{
-                fontSize: "24px",
-                fontWeight: "600",
-                color: "#1f2937",
-                marginBottom: "10px",
-              }}
-            >
-              Activating Your Shop...
-            </h2>
-            <p style={{ color: "#6b7280", fontSize: "16px" }}>
-              Please wait while we activate your shop account.
-            </p>
-          </>
+      <div className="flex justify-center py-8">
+        {loading ? (
+          <div className="w-10 h-10 border-4 border-gray-200 border-t-teal-700 rounded-full animate-spin" />
         ) : error ? (
-          <>
-            <div
-              style={{
-                width: "60px",
-                height: "60px",
-                backgroundColor: "#fee2e2",
-                borderRadius: "50%",
-                margin: "0 auto 20px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <svg
-                style={{
-                  width: "30px",
-                  height: "30px",
-                  color: "#dc2626",
-                }}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </div>
-            <h2
-              style={{
-                fontSize: "24px",
-                fontWeight: "600",
-                color: "#1f2937",
-                marginBottom: "10px",
-              }}
-            >
-              Activation Failed
-            </h2>
-            <p
-              style={{
-                color: "#6b7280",
-                fontSize: "16px",
-                marginBottom: "20px",
-              }}
-            >
-              {errorMessage || "The activation link may have expired or is invalid."}
-            </p>
-            {errorMessage.includes("expired") && (
-              <button
-                onClick={() => navigate("/shop-create")}
-                style={{
-                  backgroundColor: "#3b82f6",
-                  color: "white",
-                  padding: "12px 24px",
-                  borderRadius: "6px",
-                  border: "none",
-                  fontSize: "16px",
-                  fontWeight: "500",
-                  cursor: "pointer",
-                }}
-              >
-                Register Again
-              </button>
-            )}
-            {errorMessage.includes("already exists") && (
-              <button
-                onClick={() => navigate("/shop-login")}
-                style={{
-                  backgroundColor: "#3b82f6",
-                  color: "white",
-                  padding: "12px 24px",
-                  borderRadius: "6px",
-                  border: "none",
-                  fontSize: "16px",
-                  fontWeight: "500",
-                  cursor: "pointer",
-                }}
-              >
-                Go to Login
-              </button>
-            )}
-          </>
+          <span className="text-4xl">⚠️</span>
         ) : (
-          <>
-            <div
-              style={{
-                width: "60px",
-                height: "60px",
-                backgroundColor: "#d1fae5",
-                borderRadius: "50%",
-                margin: "0 auto 20px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <svg
-                style={{
-                  width: "30px",
-                  height: "30px",
-                  color: "#059669",
-                }}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-            <h2
-              style={{
-                fontSize: "24px",
-                fontWeight: "600",
-                color: "#1f2937",
-                marginBottom: "10px",
-              }}
-            >
-              Shop Activated Successfully!
-            </h2>
-            <p style={{ color: "#6b7280", fontSize: "16px" }}>
-              Redirecting to dashboard...
-            </p>
-          </>
+          <span className="text-4xl text-green-600">✓</span>
         )}
       </div>
-
-      <style>
-        {`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-      </style>
-    </div>
+      {!loading && !error && (
+        <Link to="/dashboard" className={`${ui.btnPrimary} w-full block text-center`}>
+          Go to dashboard
+        </Link>
+      )}
+    </AuthLayout>
   );
 };
 

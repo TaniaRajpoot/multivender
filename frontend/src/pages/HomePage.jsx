@@ -1,28 +1,21 @@
-import React from 'react'
-import Header from "../components/Layout/Header";
+import React from "react";
+import StoreLayout from "../components/ui/StoreLayout";
 import Hero from "../components/Route/Hero/Hero";
-import Categories from "../components/Route/Categories/Categories"
-import BestDeals from "../components/Route/BestDeals/BestDeals"
-import FeatureProduct from "../components/Route/FeatureProduct/FeatureProduct"
-import Events from "../components/Events/Events"
-import Sponsered from "../components/Route/Sponsered/Sponsered"
-import Footer from "../components/Layout/Footer"
-const HomePage = () => {
-  return (
-    <div>
-        <Header activeHeading= {1} />
-        <Hero />
-        <Categories />
-        <BestDeals />
-        <Events />
-        <FeatureProduct />
-        <Sponsered />
-        <Footer />
-        
+import Categories from "../components/Route/Categories/Categories";
+import BestDeals from "../components/Route/BestDeals/BestDeals";
+import Events from "../components/Events/Events";
+import FeatureProduct from "../components/Route/FeatureProduct/FeatureProduct";
+import Sponsered from "../components/Route/Sponsered/Sponsered";
 
-    </div>
+const HomePage = () => (
+  <StoreLayout activeHeading={1}>
+    <Hero />
+    <Categories />
+    <BestDeals />
+    <Events isOnlyOne={true} />
+    <FeatureProduct />
+    <Sponsered />
+  </StoreLayout>
+);
 
-  )
-}
-
-export default HomePage
+export default HomePage;

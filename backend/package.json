@@ -1,0 +1,32 @@
+{
+  "name": "e-shop",
+  "version": "1.0.0",
+  "main": "backend/server.js",
+ "scripts": {
+  "dev": "nodemon server.js",
+  "start": "node server.js"
+},
+  "author": "tania",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/x-data-grid": "^5.17.26",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.9.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.17.1",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.5",
+    "nodemon": "^3.1.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "stripe": "^20.2.0"
+  }
+}

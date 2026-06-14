@@ -1,0 +1,40 @@
+[33m5aeea08[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m refactor: Remove unused static file serving line and clean up database connection code
+[33m804087e[m feat: Implement initial multi-vendor platform structure with dedicated admin, shop, and user dashboards and core features.
+[33m30fe41a[m feat: Enhance Order Success Page with improved layout and navigation links
+[33md5bdcfe[m feat: Update product creation logic, enhance Header component, and fix HTML structure
+[33mab067b2[m feat: Enhance DropDown and Header components with improved image handling and styling
+[33m13b1263[m fix: Update cloudinary import, adjust activation URL, and correct activation token handling
+[33m5d0d609[m Refactor and update various components for consistency and improved styling
+[33md137f77[m Add package.json for backend setup with dependencies and scripts
+[33me50f93f[m fix: Update API endpoint for fetching seller data and clean up code
+[33m53e4925[m feat: Add admin functionalities for user and product management
+[33m5ed1b9d[m Implement ProtectedAdminRoute and enhance admin dashboard components
+[33ma580c72[m Add package.json for socket module with dependencies and scripts added payment features checkout pages
+[33m4e21851[m Refactor product and shop components for improved functionality and performance
+[33mad39ffa[m make the data dynamic
+[33m742df23[m baclend controllers complete
+[33m0e14adc[m backend
+[33mbeddf4e[m profile of shop complete
+[33m8d46398[m Seller Dashboard
+[33mdb4e7e0[m Merge pull request #4 from im-Toqeer-506/main
+[33m82b6187[m Refactor SellerProtectedRoute to include loading state and improve navigation logic
+[33md359981[m Merge pull request #3 from im-Toqeer-506/main
+[33m21cc546[m Implement seller dashboard and loader component-refactor routes and header for seller navigation
+[33m73a3608[m seller login
+[33m70fe5b7[m protected route
+[33mc816821[m profile content
+[33maa87283[m material ui
+[33m0312c96[m profile page
+[33m1b9a9da[m add active in profile
+[33m77560f9[m fix the header profile image
+[33m4ee28a3[m fix
+[33m5eec89d[m landing page complete
+[33m3ca4ed4[m completed login
+[33m4c0e679[m login functionality
+[33ma27c557[m Merge pull request #2 from ahadalireach/main
+[33m869768e[m fix(activation): resolve user activation issue of token
+[33m8a05a20[m Update README.md
+[33m20bc29f[m creatiing isign up and activation page
+[33m66f9842[m Remove node_modules and env from Git tracking
+[33mb7eb9e1[m first commit
+[33m0b73414[m first commit

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import styles from "../../styles/styles";
 import { Link, useNavigate } from "react-router-dom";
-import { RxAvatar } from "react-icons/rx";
+import { RxAvatar, RxCamera } from "react-icons/rx";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
+import AuthLayout from "../ui/AuthLayout";
+import FormField from "../ui/FormField";
+import { ui } from "../../styles/theme";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -13,205 +15,89 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const file = e.target.files[0];
-    setAvatar(file);
+    if (!file) return;
+    setAvatarPreview(URL.createObjectURL(file));
+    const reader = new FileReader();
+    reader.onloadend = () => setAvatar(reader.result);
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const config = {
-      headers: { "Content-Type": "multipart/form-data" },
-    };
-
-    const formData = new FormData();
-    formData.append("file", avatar);
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("password", password);
-    await axios
-      .post(`${server}/user/create-user`, formData, config)
-      .then((res) => {
-        toast.success(res.data.message);
-        setName("");
-        setEmail("");
-        setPassword("");
-        setAvatar();
-        navigate("/login");
-      })
-      .catch((error) => {
-        toast.error(error.response?.data?.message);
+    if (!avatar) {
+      toast.error("Please add a profile photo");
+      return;
+    }
+    try {
+      const res = await axios.post(`${server}/user/create-user`, { name, email, password, avatar }, {
+        headers: { "Content-Type": "application/json" },
       });
+      toast.success(res.data.message || "Check your email to activate your account");
+      navigate("/login");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Registration failed");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Register as a new user
-        </h2>
-      </div>
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Full Name
-              </label>
-              <div className="mt-1">
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  autoComplete="name"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email Address
-              </label>
-              <div className="mt-1">
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  type={visible ? "text" : "password"}
-                  name="password"
-                  id="password"
-                  autoComplete="new-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                  {visible ? (
-                    <AiOutlineEye
-                      className="cursor-pointer text-gray-400 hover:text-gray-600"
-                      size={20}
-                      onClick={() => setVisible(false)}
-                    />
-                  ) : (
-                    <AiOutlineEyeInvisible
-                      className="cursor-pointer text-gray-400 hover:text-gray-600"
-                      size={20}
-                      onClick={() => setVisible(true)}
-                    />
-                  )}
+    <AuthLayout
+      title="Create account"
+      subtitle="Join us to shop and track your orders."
+      footer={
+        <>
+          Already have an account?{" "}
+          <Link to="/login" className="font-semibold text-teal-700 hover:underline">Sign in</Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit}>
+        <div className="flex flex-col items-center mb-6">
+          <div className="relative">
+            <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
+              {avatarPreview ? (
+                <img src={avatarPreview} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-300">
+                  <RxAvatar size={48} />
                 </div>
-              </div>
+              )}
             </div>
-
-            <div>
-              <label
-                htmlFor="avatar"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Profile Picture
-              </label>
-              <div className="mt-2 flex items-center">
-                <span className="inline-block h-8 w-8 rounded-full overflow-hidden">
-                  {avatar ? (
-                    <img
-                      src={URL.createObjectURL(avatar)}
-                      alt="avatar"
-                      className="h-full w-full object-cover rounded-full"
-                    />
-                  ) : (
-                    <RxAvatar className="h-8 w-8" />
-                  )}
-                </span>
-                <label
-                  htmlFor="file-input"
-                  className="ml-5 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
-                >
-                  <span>Upload a file</span>
-                </label>
-                <input
-                  type="file"
-                  name="avatar"
-                  id="file-input"
-                  accept=".jpg,.jpeg,.png"
-                  onChange={handleInputChange}
-                  className="sr-only"
-                />
-              </div>
-            </div>
-
-            <div className={`${styles.noramlFlex}`}>
-              <input
-                type="checkbox"
-                name="agree-terms"
-                id="agree-terms"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                required
-              />
-              <label
-                htmlFor="agree-terms"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                I agree to the
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-500 ml-1"
-                >
-                  Terms and Conditions
-                </a>
-              </label>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="group relative w-full h-[40px] flex justify-center items-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Create Account
-              </button>
-            </div>
-
-            <div className={`${styles.noramlFlex} w-full`}>
-              <h4>Already have an account?</h4>
-              <Link to="/login" className="text-blue-600 pl-2">
-                Sign In
-              </Link>
-            </div>
-          </form>
+            <label htmlFor="file-input" className="absolute bottom-0 right-0 w-8 h-8 bg-teal-700 text-white rounded-full flex items-center justify-center cursor-pointer">
+              <RxCamera size={16} />
+            </label>
+            <input type="file" id="file-input" accept=".jpg,.jpeg,.png" onChange={handleInputChange} className="sr-only" required />
+          </div>
+          <p className="text-xs text-gray-500 mt-2">Profile photo required</p>
         </div>
-      </div>
-    </div>
+
+        <FormField label="Full name" htmlFor="name">
+          <input id="name" type="text" required value={name} onChange={(e) => setName(e.target.value)} className={ui.input} placeholder="Your name" />
+        </FormField>
+        <FormField label="Email" htmlFor="email">
+          <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={ui.input} placeholder="you@example.com" />
+        </FormField>
+        <FormField label="Password" htmlFor="password">
+          <div className="relative">
+            <input id="password" type={visible ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)} className={ui.input} placeholder="Choose a password" />
+            <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" onClick={() => setVisible(!visible)}>
+              {visible ? <AiOutlineEye size={20} /> : <AiOutlineEyeInvisible size={20} />}
+            </button>
+          </div>
+        </FormField>
+
+        <label className="flex items-start gap-2 mb-6 text-sm text-gray-600">
+          <input type="checkbox" required className="mt-1 rounded border-gray-300" />
+          I agree to the terms and conditions
+        </label>
+
+        <button type="submit" className={`${ui.btnPrimary} w-full py-3`}>Create account</button>
+      </form>
+    </AuthLayout>
   );
 };
 

@@ -1,34 +1,31 @@
-import React, { useEffect, useState } from 'react'
-import Header from '../components/Layout/Header'
-import styles from '../styles/styles'
-import { productData } from '../static/data'
-import ProductCard from '../components/Route/ProductCard/ProductCard'
+import React, { useEffect, useState } from "react";
+import ProductCard from "../components/Route/ProductCard/ProductCard";
+import { useSelector } from "react-redux";
+import StoreLayout from "../components/ui/StoreLayout";
+import SectionTitle from "../components/ui/SectionTitle";
+import { ui } from "../styles/theme";
 
 const BestSellingPage = () => {
-   
-    const [data,setData] = useState([])
+  const [data, setData] = useState([]);
+  const { allProducts } = useSelector((state) => state.product);
 
-    useEffect(()=>{
-      const d = productData && productData.sort((a,b) => b.total_sell - a.total_sell);
-      setData(d)
-        window.scrollTo(0,0)
-    }, [])
-
+  useEffect(() => {
+    const d = allProducts ? [...allProducts].sort((a, b) => (b.sold_out ?? b.soldOut ?? 0) - (a.sold_out ?? a.soldOut ?? 0)) : [];
+    setData(d);
+  }, [allProducts]);
 
   return (
-    <div> 
-    <Header activeHeading= {2} />
-    <br />
-    <br />
-    <div className={`${styles.section}`}>
-        <div className='grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-4 lg:gap-[25px] xl:grid-cols-5 xl:gap-[30px] mb-12 '>
-            {
-                data && data.map((i,index) => <ProductCard data={i} key={index} />)
-            } 
+    <StoreLayout activeHeading={2}>
+      <div className={`${ui.container} ${ui.section}`}>
+        <SectionTitle title="Best sellers" subtitle="Our most popular products." />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {data.map((i, index) => (
+            <ProductCard data={i} key={i._id || index} />
+          ))}
         </div>
-    </div>
-    </div>
-  )
-}
+      </div>
+    </StoreLayout>
+  );
+};
 
-export default BestSellingPage
+export default BestSellingPage;

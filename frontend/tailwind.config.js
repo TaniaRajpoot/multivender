@@ -1,19 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     fontFamily: {
-      roboto: ["Roboto", "sans-serif"],
-      poppins: ["Poppins", "sans-serif"],
+      sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
     },
     extend: {
       colors: {
-        primary: "#3b82f6", // your custom primary
+        brand: "#16697A",
+        accent: "#FFA62B",
       },
       screens: {
+        "800px": "800px",
         "sm-custom": "800px",
         "md-custom": "1050px",
         "lg-custom": "1110px",

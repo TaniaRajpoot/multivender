@@ -1,24 +1,38 @@
-import React from 'react'
-import styles from '../../../styles/styles'
-import { productData } from '../../../static/data'
-import ProductCard from '../ProductCard/ProductCard'
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import ProductCard from "../ProductCard/ProductCard";
+import { getAllProducts } from "../../../redux/actions/product";
+import SectionTitle from "../../ui/SectionTitle";
+import { ui } from "../../../styles/theme";
 
 const FeatureProduct = () => {
+  const dispatch = useDispatch();
+  const { allProducts, isLoading } = useSelector((state) => state.product);
+
+  useEffect(() => {
+    dispatch(getAllProducts());
+  }, [dispatch]);
+
   return (
-    <div>
-        <div className={`${styles.section} `}>
-            <div className={`${styles.heading}`}>
-                <h1>Featured Products</h1>
-            </div>
-            <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-4 lg:gap-[25px] xl:grid-cols-5xl xl:gap-[30px] mb-12 border-0 ">
-                {
-                    productData && productData.map((i,index) => <ProductCard data={i} key={index} />)
-                }
-            </div>
+    <section className={`${ui.section} bg-white`}>
+      <div className={ui.container}>
+        <SectionTitle title="All products" subtitle="Everything available in our marketplace right now." />
+        {isLoading ? (
+          <p className={ui.empty}>Loading products...</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {allProducts?.length ? (
+              allProducts.map((product, index) => (
+                <ProductCard data={product} key={product._id || index} />
+              ))
+            ) : (
+              <p className={`${ui.empty} col-span-full`}>No products found.</p>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
 
-        </div>
-    </div>
-  )
-}
-
-export default FeatureProduct
+export default FeatureProduct;

@@ -1,478 +1,357 @@
-// import React, { useState } from 'react'
-// import { useNavigate } from 'react-router-dom';
-// import { AiFillHeart, AiOutlineHeart, AiOutlineMessage, AiOutlineShoppingCart } from 'react-icons/ai';
-// import styles from '../../styles/styles';
-
-// const ProductDetails = ({ data }) => {
-//   const [count, setCount] = useState(1);
-//   const [click, setClick] = useState(false);
-//   const [select, setSelect] = useState(0);
-//   const navigate = useNavigate();
-
-//   const incrementCount = () => setCount(count + 1);
-//   const decrementCount = () => {
-//     if (count > 1) setCount(count - 1);
-//   };
-
-//   const handleMessageSubmit = () => {
-//     navigate("/inbox?conversation=507ebjver884ehfdjeriv84");
-//   };
-
-//   return (
-//     <div className="bg-white">
-//       {data ? (
-//         <div className={`${styles.section} w-[90%] md:w-[80%] mx-auto`}>
-//           <div className="w-full py-5">
-            
-//             {/* MAIN FLEX CONTAINER */}
-//             <div className="w-full flex flex-col md:flex-row items-start gap-8">
-              
-//               {/* LEFT SIDE - IMAGES */}
-//               <div className="w-full md:w-1/2">
-//                 <img
-//                   src={data.image_Url[select].url}
-//                   alt={data.name}
-//                   className="w-full max-h-[500px] object-contain rounded-md"
-//                 />
-
-//                 <div className="w-full flex gap-2 mt-3">
-//                   {data.image_Url.map((img, i) => (
-//                     <div
-//                       key={i}
-//                       className={`${
-//                         select === i ? 'border border-black' : ''
-//                       } cursor-pointer p-1`}
-//                       onClick={() => setSelect(i)}
-//                     >
-//                       <img
-//                         src={img.url}
-//                         alt=""
-//                         className="h-[120px] w-[120px] object-contain rounded-md"
-//                       />
-//                     </div>
-//                   ))}
-//                 </div>
-//               </div>
-
-//               {/* RIGHT SIDE - DETAILS */}
-//               <div className="w-full md:w-1/2 pt-5">
-//                 <h1 className={`${styles.productTitle} text-[22px] md:text-[26px]`}>
-//                   {data.name}
-//                 </h1>
-//                 <p className="text-gray-700 leading-6">{data.description}</p>
-
-//                 {/* PRICE SECTION */}
-//                 <div className="flex pt-3 items-center gap-3">
-//                   <h4 className={`${styles.productDiscountPrice} text-[22px]`}>
-//                     {data.discount_price}$
-//                   </h4>
-//                   {data.price && (
-//                     <h3 className={`${styles.price} line-through text-gray-500`}>
-//                       {data.price}$
-//                     </h3>
-//                   )}
-//                 </div>
-
-//                 {/* QUANTITY & WISHLIST */}
-//                 <div className="flex items-center mt-10 justify-between pr-3">
-//                   <div>
-//                     <button
-//                       onClick={decrementCount}
-//                       className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-l px-4 py-2 shadow hover:opacity-75 transition"
-//                     >
-//                       -
-//                     </button>
-//                     <span className="bg-gray-200 text-gray-800 font-medium px-4 py-[11px]">
-//                       {count}
-//                     </span>
-//                     <button
-//                       onClick={incrementCount}
-//                       className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-r px-4 py-2 shadow hover:opacity-75 transition"
-//                     >
-//                       +
-//                     </button>
-//                   </div>
-
-//                   <div>
-//                     {click ? (
-//                       <AiFillHeart
-//                         size={30}
-//                         className="cursor-pointer"
-//                         onClick={() => setClick(!click)}
-//                         color="red"
-//                         title="Remove from wishlist"
-//                       />
-//                     ) : (
-//                       <AiOutlineHeart
-//                         size={30}
-//                         className="cursor-pointer"
-//                         onClick={() => setClick(!click)}
-//                         color="#333"
-//                         title="Add to wishlist"
-//                       />
-//                     )}
-//                   </div>
-//                 </div>
-
-//                 {/* ADD TO CART BUTTON */}
-//                 <div
-//                   className={`${styles.button} !mt-6 !rounded !h-11 flex items-center justify-center cursor-pointer`}
-//                 >
-//                   <span className="text-white flex items-center gap-2">
-//                     Add to Cart <AiOutlineShoppingCart />
-//                   </span>
-//                 </div>
-
-//                 {/* SHOP INFO */}
-//                 <div className="flex items-center pt-8">
-//                   <img
-//                     src={data.shop.shop_avatar.url}
-//                     className="w-[50px] h-[50px] rounded-full mr-2"
-//                     alt={data.shop.name}
-//                   />
-//                   <div>
-//                     <h3 className={`${styles.shop_name} pb-1`}>
-//                       {data.shop.name}
-//                     </h3>
-//                     <h5 className="text-[15px] text-gray-500">
-//                       ({data.shop.ratings}) Ratings
-//                     </h5>
-//                   </div>
-              
-
-//                 {/* MESSAGE BUTTON */}
-//                 <div
-//                   className={`${styles.button} !bg-[#6443d1] mt-6 !rounded !h-11 flex   items-center justify-center cursor-pointer`}
-//                   onClick={handleMessageSubmit}
-//                 >
-//                   <span className="text-white flex items-center ">
-//                     Send Message <AiOutlineMessage />
-//                   </span>
-//                 </div>
-//                   </div>
-//               </div>
-//             </div>
-//           </div>
-//            <ProductDetailsInfo data={data} />
-//         <br />
-//         <br />
-//         </div>
-//       ) : null}
-//     </div>
-//   );
-// };
-
-
-
-
-// const ProductDetailsInfo = () =>{
-//   const [active, setActive] = useState(1);
-
-//   return (
-//     <div className='bg-[#f5f6fb] px-3 800px:px-10 py-2 rounded h-[40vh] '>
-//       <div className="w-full justify-between border-b pt-10 pb-2">
-//         <div className='relative'>
-//           <h5 className={"text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"} onClick={()=>setActive(1) }>Product Details</h5>
-//         {
-//           active === 1 ? (
-//             <div className={`${styles.active_indicator}`}/>
-//           ) : null
-//         }
-//         </div>
-//         <div className='relative'>
-//           <h5 className={"text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"} onClick={()=>setActive(2) }>Product Review</h5>
-//         {
-//           active === 2 ? (
-//             <div className={`${styles.active_indicator}`}/>
-//           ) : null
-//         }
-//         </div>
-//         <div className='relative'>
-//           <h5 className={"text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"} onClick={()=>setActive(3) }>Seller information</h5>
-//         {
-//           active === 3 ? (
-//             <div className={`${styles.active_indicator}`}/>
-//           ) : null
-//         }
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
-
-// export default ProductDetails;
-
-
-
-
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   AiFillHeart,
   AiOutlineHeart,
   AiOutlineMessage,
   AiOutlineShoppingCart,
-} from 'react-icons/ai';
-import styles from '../../styles/styles';
+} from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProductsShop } from "../../redux/actions/product";
+import { toast } from "react-toastify";
+import { addToCart } from "../../redux/actions/cart";
+import {
+  addToWishList,
+  removeFromWishList,
+} from "../../redux/actions/wishlist";
+import Ratings from "./Ratings";
+import axios from "axios";
+import { server } from "../../server";
+import CountDown from "../Events/CountDown";
+import { useSearchParams } from "react-router-dom";
+import { ui } from "../../styles/theme";
 
 const ProductDetails = ({ data }) => {
+  const [searchParams] = useSearchParams();
+  const isEvent = searchParams.get("isEvent");
+  const navigate = useNavigate();
+  const { cart } = useSelector((state) => state.cart);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
+  const { wishlist } = useSelector((state) => state.wishlist);
+  const { products } = useSelector((state) => state.product);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const incrementCount = () => setCount(count + 1);
-  const decrementCount = () => {
-    if (count > 1) setCount(count - 1);
+  const getImageUrl = (image) => {
+    if (!image) return "/placeholder.png";
+    if (typeof image === "object" && image.url) return image.url;
+    if (typeof image === "string" && image.startsWith("http")) return image;
+    return image;
   };
 
-  const handleMessageSubmit = () => {
-    navigate('/inbox?conversation=507ebjver884ehfdjeriv84');
+  useEffect(() => {
+    dispatch(getAllProductsShop(data && data?.shop._id));
+    if (wishlist && wishlist.find((i) => i._id === data?._id)) {
+      setClick(true);
+    } else {
+      setClick(false);
+    }
+    window.scrollTo(0, 0);
+  }, [dispatch, wishlist, data]);
+
+  const incrementCount = () => setCount(count + 1);
+  const decrementCount = () => { if (count > 1) setCount(count - 1); };
+
+  const removeFromWishlistHandler = (data) => {
+    setClick(!click);
+    dispatch(removeFromWishList(data));
+  };
+
+  const addToWishlistHandler = (data) => {
+    setClick(!click);
+    dispatch(addToWishList(data));
+  };
+
+  const addToCartHandler = (id) => {
+    const isItemExists = cart && cart.find((i) => i._id === id);
+    if (isItemExists) {
+      toast.error("Item is already in the cart!");
+    } else {
+      if (data.stock < count) {
+        toast.error("Product stock limited!");
+      } else {
+        const cartData = { ...data, qty: count };
+        dispatch(addToCart(cartData));
+        toast.success("Item added to cart successfully!");
+      }
+    }
+  };
+
+  const totalReviewsLength = products?.length > 0 ? products.reduce((acc, product) => acc + (product?.reviews?.length || 0), 0) : 0;
+  const totalRatings = products?.length > 0 ? products.reduce((acc, product) => acc + (product.reviews?.length > 0 ? product.reviews.reduce((sum, review) => sum + (review.rating || 0), 0) : 0), 0) : 0;
+  const averageRating = totalReviewsLength > 0 ? totalRatings / totalReviewsLength : 0;
+
+  const handleMessageSubmit = async () => {
+    if (isAuthenticated) {
+      const groupTitle = data.shop._id + user._id;
+      const userId = user._id;
+      const sellerId = data.shop._id;
+      axios.post(`${server}/conversation/create-new-converation`, { groupTitle, userId, sellerId })
+        .then((res) => { navigate(`/inbox?/${res.data.conversation._id}`); })
+        .catch((error) => { toast.error(error.response?.data?.message || "Failed to create conversation"); });
+    } else {
+      toast.error("Please Login To Create A Conversation!");
+    }
   };
 
   return (
-    <div className="bg-white w-full py-10">
+    <div className="bg-gray-50 min-h-screen pb-10">
       {data ? (
-        <div className={`${styles.section} w-[90%] md:w-[80%] mx-auto`}>
-          {/* MAIN FLEX CONTAINER */}
-          <div className="flex flex-col md:flex-row items-start gap-10">
-            {/* LEFT SIDE - IMAGES */}
-            <div className="w-full md:w-1/2">
-              <img
-                src={data.image_Url[select].url}
-                alt={data.name}
-                className="w-full max-h-[450px] object-contain rounded-md shadow-sm"
-              />
-              <div className="flex gap-3 mt-4 justify-center md:justify-start">
-                {data.image_Url.map((img, i) => (
-                  <div
-                    key={i}
-                    onClick={() => setSelect(i)}
-                    className={`cursor-pointer border-2 rounded-md p-1 transition ${
-                      select === i ? 'border-[#6443d1]' : 'border-transparent'
-                    }`}
-                  >
+        <div className={ui.containerWide}>
+          <div className="w-full py-8 md:py-12">
+            <div className="flex flex-col lg:flex-row gap-8 xl:gap-12">
+              {/* Left Side: Product Images */}
+              <div className="w-full lg:w-1/2">
+                <div className="sticky top-24">
+                  <div className={`${ui.card} relative aspect-square overflow-hidden mb-4 group`}>
                     <img
-                      src={img.url}
-                      alt=""
-                      className="h-[100px] w-[100px] object-contain rounded-md"
+                      src={getImageUrl(data.images?.[select])}
+                      alt={data.name}
+                      className="w-full h-full object-contain p-8 group-hover:scale-105 transition-transform duration-500"
                     />
+                    <div className="absolute top-4 left-4 bg-teal-600 text-white px-3 py-1 rounded-md text-xs font-semibold shadow-sm uppercase tracking-wide">
+                      New Arrival
+                    </div>
                   </div>
-                ))}
+
+                  <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                    {data.images.map((i, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelect(index)}
+                        className={`relative h-20 w-20 min-w-[80px] rounded-lg overflow-hidden transition-all duration-300 border-2 ${select === index
+                          ? "border-teal-600"
+                          : "border-gray-200 hover:border-gray-300"
+                          }`}
+                      >
+                        <img src={getImageUrl(i)} alt="" className="h-full w-full object-contain p-2" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* RIGHT SIDE - DETAILS */}
-            <div className="w-full md:w-1/2">
-              <h1 className="text-[26px] font-semibold text-gray-800 mb-2">
-                {data.name}
-              </h1>
-              <p className="text-gray-700 leading-6">{data.description}</p>
+              {/* Right Side: Information */}
+              <div className="w-full lg:w-1/2 flex flex-col">
+                <div className="flex items-center gap-2 mb-4 text-sm font-semibold text-teal-600 uppercase tracking-wider">
+                  <span>Shop</span>
+                  <span className="w-1.5 h-1.5 bg-teal-600 rounded-full" />
+                  <span>{data.category}</span>
+                </div>
 
-              {/* PRICE SECTION */}
-              <div className="flex items-center gap-3 pt-3">
-                <h4 className="text-[24px] font-bold text-[#333]">
-                  {data.discount_price}$
-                </h4>
-                {data.price && (
-                  <h3 className="line-through text-gray-500 text-[18px]">
-                    {data.price}$
-                  </h3>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight mb-4">
+                  {data.name}
+                </h1>
+
+                <div className="flex items-center gap-6 mb-6">
+                  <div className="flex items-end gap-3">
+                    <span className="text-3xl font-bold text-gray-900">${data.discountPrice}</span>
+                    {data.originalPrice && (
+                      <span className="text-lg text-gray-400 line-through font-medium pb-1">${data.originalPrice}</span>
+                    )}
+                  </div>
+                  <div className="w-px h-8 bg-gray-200" />
+                  <div className="flex items-center gap-2">
+                    <Ratings rating={data.ratings || 4.5} />
+                    <span className="text-gray-600 font-medium text-sm">({data.reviews?.length || 0} Reviews)</span>
+                  </div>
+                </div>
+
+                <p className="text-gray-600 leading-relaxed mb-8">
+                  {data.description}
+                </p>
+
+                {isEvent && (
+                  <div className="mb-8 p-5 bg-red-50 border border-red-100 rounded-xl relative overflow-hidden">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="flex h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                      <p className="text-xs font-bold text-red-600 uppercase tracking-wider">Limited Time Event</p>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-red-100 pb-4 mb-4">
+                      <div>
+                        <p className="text-xs font-semibold text-red-500 uppercase">Starts</p>
+                        <p className="text-sm font-bold text-gray-900">{data.start_Date ? new Date(data.start_Date).toLocaleDateString() : '01/01/2025'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-red-500 uppercase">Ends</p>
+                        <p className="text-sm font-bold text-gray-900">{data.Finish_Date ? new Date(data.Finish_Date).toLocaleDateString() : '31/12/2025'}</p>
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <p className="text-xs font-bold text-red-500 uppercase mb-2">Time Remaining</p>
+                      <CountDown data={data} isDeadline={true} />
+                    </div>
+                  </div>
                 )}
-              </div>
 
-              {/* QUANTITY & WISHLIST */}
-              <div className="flex items-center justify-between mt-6">
-                <div className="flex items-center">
-                  <button
-                    onClick={decrementCount}
-                    className="bg-[#38b2ac] text-white font-bold px-4 py-2 rounded-l shadow hover:opacity-80"
-                  >
-                    -
-                  </button>
-                  <span className="bg-gray-100 text-gray-800 font-medium px-5 py-[11px]">
-                    {count}
-                  </span>
-                  <button
-                    onClick={incrementCount}
-                    className="bg-[#38b2ac] text-white font-bold px-4 py-2 rounded-r shadow hover:opacity-80"
-                  >
-                    +
-                  </button>
-                </div>
+                {/* Interaction Section */}
+                <div className={`${ui.card} ${ui.cardPadding} mb-8`}>
+                  <div className="flex flex-wrap items-center gap-6 mb-6">
+                    <div className="flex items-center bg-gray-50 border border-gray-200 rounded-lg p-1">
+                      <button
+                        className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-white hover:shadow-sm rounded-md transition font-medium"
+                        onClick={decrementCount}
+                      > - </button>
+                      <span className="w-12 text-center text-gray-900 font-semibold">{count}</span>
+                      <button
+                        className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-white hover:shadow-sm rounded-md transition font-medium"
+                        onClick={incrementCount}
+                      > + </button>
+                    </div>
+                    <p className="text-gray-500 text-sm font-medium">Only <span className="text-teal-600 font-semibold">{data.stock} units</span> left in stock</p>
+                  </div>
 
-                {/* HEART ICON */}
-                <div>
-                  {click ? (
-                    <AiFillHeart
-                      size={30}
-                      onClick={() => setClick(!click)}
-                      className="cursor-pointer"
-                      color="red"
-                      title="Remove from wishlist"
-                    />
-                  ) : (
-                    <AiOutlineHeart
-                      size={30}
-                      onClick={() => setClick(!click)}
-                      className="cursor-pointer"
-                      color="#333"
-                      title="Add to wishlist"
-                    />
-                  )}
-                </div>
-              </div>
-
-              {/* ADD TO CART BUTTON */}
-              <button
-                className="mt-6 w-full bg-black text-white py-3 rounded-md font-medium flex items-center justify-center gap-2 hover:opacity-80 transition"
-              >
-                Add to Cart <AiOutlineShoppingCart size={20} />
-              </button>
-
-              {/* SHOP INFO */}
-              <div className="flex items-center justify-between mt-8">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={data.shop.shop_avatar.url}
-                    alt={data.shop.name}
-                    className="w-[50px] h-[50px] rounded-full object-cover"
-                  />
-                  <div>
-                    <h3 className="text-[17px] font-semibold text-gray-800">
-                      {data.shop.name}
-                    </h3>
-                    <h5 className="text-[14px] text-gray-500">
-                      ({data.shop.ratings}) Ratings
-                    </h5>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <button
+                      className={`${ui.btnPrimary} flex-1 py-3 text-base`}
+                      onClick={() => addToCartHandler(data._id)}
+                    >
+                      <AiOutlineShoppingCart size={20} />
+                      Add to cart
+                    </button>
+                    <button
+                      onClick={() => click ? removeFromWishlistHandler(data) : addToWishlistHandler(data)}
+                      className="h-[46px] w-[46px] flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition sm:flex-none"
+                    >
+                      {click ? <AiFillHeart size={24} className="text-red-500" /> : <AiOutlineHeart size={24} className="text-gray-600" />}
+                    </button>
                   </div>
                 </div>
 
-                {/* MESSAGE BUTTON */}
-                <button
-                  onClick={handleMessageSubmit}
-                  className="bg-[#6443d1] text-white px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-85 transition"
-                >
-                  Send Message <AiOutlineMessage size={20} />
-                </button>
+                {/* Seller Mini Card */}
+                <div className={`${ui.card} flex items-center justify-between p-4 hover:border-teal-200 transition-colors`}>
+                  <Link to={`/shop/preview/${data.shop?._id}`} className="flex items-center gap-4">
+                    <img
+                      className="w-14 h-14 rounded-full object-cover border border-gray-200"
+                      src={getImageUrl(data?.shop?.avatar)}
+                      alt={data?.shop?.name}
+                    />
+                    <div>
+                      <h4 className="font-semibold text-gray-900 text-base group-hover:text-teal-600">{data?.shop?.name}</h4>
+                      <p className="text-xs font-medium text-gray-500">Store • {averageRating.toFixed(1)}/5 Stars</p>
+                    </div>
+                  </Link>
+                  <button
+                    onClick={handleMessageSubmit}
+                    className="w-10 h-10 bg-teal-50 text-teal-700 rounded-full flex items-center justify-center hover:bg-teal-100 transition-colors"
+                  >
+                    <AiOutlineMessage size={20} />
+                  </button>
+                </div>
               </div>
             </div>
+
+            {/* Detailed Info Tabs */}
+            <ProductsDetailsInfo
+              data={data}
+              products={products}
+              totalReviewsLength={totalReviewsLength}
+              averageRating={averageRating}
+              getImageUrl={getImageUrl}
+            />
           </div>
-        <ProductDetailsInfo data={data} />
-        <br />
-        <br />
         </div>
-        
       ) : null}
     </div>
   );
 };
 
-const ProductDetailsInfo = ({data}) =>{
+const ProductsDetailsInfo = ({ data, products, totalReviewsLength, averageRating, getImageUrl }) => {
   const [active, setActive] = useState(1);
 
+  const tabs = [
+    { id: 1, label: "Product Details" },
+    { id: 2, label: "Product Reviews" },
+    { id: 3, label: "Seller Information" },
+  ];
+
   return (
-    <div className='bg-[#f5f6fb] px-3 800px:px-10 py-2 rounded  '>
-      <div className="w-full  flex justify-between border-b border-gray-200 pt-10 pb-2">
-        <div className='relative'>
-          <h5 className={"text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"} onClick={()=>setActive(1) }>Product Details</h5>
-        {
-          active === 1 ? (
-            <div className={`${styles.active_indicator}`}/>
-          ) : null
-        }
-        </div>
-        <div className='relative'>
-          <h5 className={"text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"} onClick={()=>setActive(2) }>Product Review</h5>
-        {
-          active === 2 ? (
-            <div className={`${styles.active_indicator}`}/>
-          ) : null
-        }
-        </div>
-        <div className='relative'>
-          <h5 className={"text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"} onClick={()=>setActive(3) }>Seller information</h5>
-        {
-          active === 3 ? (
-            <div className={`${styles.active_indicator}`}/>
-          ) : null
-        }
-        </div>
+    <div className="mt-16">
+      <div className="flex border-b border-gray-200 mb-8 overflow-x-auto scrollbar-hide">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActive(tab.id)}
+            className={`whitespace-nowrap py-4 px-6 text-sm font-semibold border-b-2 transition-colors ${active === tab.id
+                ? "border-teal-600 text-teal-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
-      {
-        active === 1 ?(
-          <>
-          <p className=' py-2 text-[18px leading-8 pb-10  whitespace-pre-line '>
-            This product combines powerful performance with sleek design, making it perfect for both professional and everyday use. Built with premium materials, it offers exceptional durability and style. Featuring a high-resolution display for vibrant visuals, fast processing speed for seamless multitasking, and long battery life to keep you productive throughout the day. Whether you're working, studying, or streaming, this product delivers outstanding efficiency and comfort. Designed to meet modern lifestyle needs, it ensures smooth performance, reliable connectivity, and a superior user experience.
-          </p>
-          <p className=' py-2 text-[18px leading-8 pb-10  whitespace-pre-line '>
-            This product combines powerful performance with sleek design, making it perfect for both professional and everyday use. Built with premium materials, it offers exceptional durability and style. Featuring a high-resolution display for vibrant visuals, fast processing speed for seamless multitasking, and long battery life to keep you productive throughout the day. Whether you're working, studying, or streaming, this product delivers outstanding efficiency and comfort. Designed to meet modern lifestyle needs, it ensures smooth performance, reliable connectivity, and a superior user experience.
-          </p>
-          <p className=' py-2 text-[18px leading-8 pb-10  whitespace-pre-line '>
-            This product combines powerful performance with sleek design, making it perfect for both professional and everyday use. Built with premium materials, it offers exceptional durability and style. Featuring a high-resolution display for vibrant visuals, fast processing speed for seamless multitasking, and long battery life to keep you productive throughout the day. Whether you're working, studying, or streaming, this product delivers outstanding efficiency and comfort. Designed to meet modern lifestyle needs, it ensures smooth performance, reliable connectivity, and a superior user experience.
-          </p>
-          </>
-        ) : null 
-      }
 
-      {
-        active === 2 ? (
-          <div className='w-full justify-center min-h-[40vh] flex items-center'> 
-            <p>No Reviews yet!</p>
+      <div className="min-h-[300px]">
+        {active === 1 && (
+          <div className={`${ui.card} ${ui.cardPadding} animate-in fade-in duration-300`}>
+            <p className="text-gray-600 leading-relaxed whitespace-pre-line text-sm sm:text-base">
+              {data.description}
+            </p>
           </div>
-        ): null
-      }
+        )}
 
-      {
-        active === 3 ?(
-          <div className='w-full block 800px:flex p-5'>
-            <div className="w-full 800px:2-[50%]">
-              <div className='flex items-center'>
-                <img src={data.shop.shop_avatar.url} className='w-[50px] h-[50px] rounded-full' alt="" />
-                <div>
-                    <h3 className={`${styles.shop_name}`}>{data.shop.name}</h3>
-                    <h5 className="pb-3 text-[15px]">
-                      ({data.shop.ratings}) Ratings
-                    </h5>
-               
+        {active === 2 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-300">
+            {data && data.reviews && data.reviews.length > 0 ? (
+              data.reviews.map((item, index) => (
+                <div className={`${ui.card} ${ui.cardPadding}`} key={index}>
+                  <div className="flex items-center gap-4 mb-4">
+                    <img src={getImageUrl(item.user.avatar)} alt="" className="w-12 h-12 rounded-full object-cover border border-gray-200" />
+                    <div>
+                      <h4 className="font-semibold text-gray-900 text-sm">{item.user?.name}</h4>
+                      <Ratings rating={item?.rating} />
+                    </div>
                   </div>
-              </div>
-                   <p className="pt-2">
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vero, consequatur laborum impedit minima explicabo eum eaque repudiandae facere possimus molestiae, laudantium cupiditate, officia aut corporis? Excepturi et veniam temporibus aliquam?
-                    </p>
-            </div> 
-            <div className='w-full 800px:w-[50%] mt-5 800px:mt-0 800px:flex flex-col items-end'>
-              <div className='text-left'>
-                <h5 className='font-[600]'>
-                  Joined on: <span className='font-[500]'> 14 March,2025</span>
-                </h5>
-                <h5 className='font-[600]'>
-                  Total Products: <span className='font-[500]'> 1,223</span>
-                </h5>
-                <h5 className='font-[600]'>
-                  Total Reviews: <span className='font-[500]'> 324</span>
-                </h5>
-                <Link to = "/" >
-                <div className={`${styles.button} !rounded-[4px] !h-[39.5px] mt-3`}>
-                  <h4 className='text-white'>
-                    Visit Shop
-                  </h4>
-
+                  <p className="text-gray-600 text-sm italic">"{item.comment}"</p>
                 </div>
-                </Link>
+              ))
+            ) : (
+              <div className="col-span-full py-16 text-center text-gray-500">
+                No Reviews for this product yet.
+              </div>
+            )}
+          </div>
+        )}
+
+        {active === 3 && (
+          <div className="flex flex-col lg:flex-row gap-6 animate-in fade-in duration-300">
+            <div className={`${ui.card} w-full lg:w-1/3 p-6 flex flex-col items-center text-center`}>
+              <img src={getImageUrl(data?.shop?.avatar)} alt="" className="w-24 h-24 rounded-full object-cover mb-4 border border-gray-200" />
+              <h2 className="text-xl font-bold text-gray-900 mb-1">{data.shop.name}</h2>
+              <p className="text-teal-600 text-sm font-medium mb-6">Verified Partner</p>
+              <div className="w-full flex justify-between text-left text-sm mb-6 pb-6 border-b border-gray-100">
+                <div className="text-gray-500">Joined On</div>
+                <div className="font-semibold text-gray-900">{data.shop?.createdAt?.slice(0, 4)}</div>
+              </div>
+              <div className="w-full flex justify-between text-left text-sm mb-6 pb-6 border-b border-gray-100">
+                <div className="text-gray-500">Products</div>
+                <div className="font-semibold text-gray-900">{products?.length || 0}</div>
+              </div>
+              <div className="w-full flex justify-between text-left text-sm mb-6">
+                <div className="text-gray-500">Avg Rating</div>
+                <div className="font-semibold text-gray-900">{averageRating.toFixed(1)}/5</div>
               </div>
             </div>
 
+            <div className={`${ui.card} w-full lg:w-2/3 p-6 lg:p-8 flex flex-col justify-center`}>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">About the Shop</h3>
+              <p className="text-gray-600 text-sm leading-relaxed mb-8">
+                {data?.shop?.description || "This seller has not provided a description yet."}
+              </p>
+              <Link to={`/shop/preview/${data?.shop._id}`} className={ui.btnPrimary}>
+                Visit Shop Profile
+              </Link>
+            </div>
           </div>
-
-        ) : null
-      }
+        )}
+      </div>
     </div>
-  )
-}
-
-
-
+  );
+};
 
 export default ProductDetails;
-
