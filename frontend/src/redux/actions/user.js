@@ -22,9 +22,6 @@ export const loadUser = () => async (dispatch) => {
 
 
 }
-
-<<<<<<< HEAD
-=======
 //Update User info
 export const updateUserInfo = ({
   name,
@@ -147,5 +144,3 @@ export const getAllUsers = () => async (dispatch) => {
   }
 };
 
-
->>>>>>> ae41d90a519fe657bef96d7050b7b90af2b328bd

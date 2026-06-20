@@ -22,12 +22,6 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import Store from "./redux/store.js";
-<<<<<<< HEAD
-import { loadSeller } from "./redux/actions/seller.js";
-import { loadUser } from "./redux/actions/user.js";
-
-// ...existing code...
-=======
 import { loadUser } from "./redux/actions/user.js";
 import { loadSeller } from "./redux/actions/seller.js";
 import { getAllProducts } from "./redux/actions/product.js";
@@ -65,7 +59,6 @@ import {
   AdminDashboardWithdrawPage,
   AdminDashboardSettingsPage
 } from "./routes/AdminRoute.js";
->>>>>>> ae41d90a519fe657bef96d7050b7b90af2b328bd
 import { useSelector } from "react-redux";
 import { BsShopWindow } from "react-icons/bs";
 import ProtectedAdminRoute from "./routes/ProtectedAdminRoute.jsx";
@@ -147,14 +140,6 @@ const AppRoutes = () => {
 
         {/* Shop Routes */}
         <Route path="/shop-login" element={<ShopLoginPage />} />
-<<<<<<< HEAD
-        <Route path="/shop/:id" element={
-          <SellerProtectedRoute
-          isSeller={isAuthenticated}>
-            <ShopHomePage />
-          </SellerProtectedRoute>
-        } />
-=======
         <Route path="/shop-create" element={<ShopCreatePage />} />
         <Route path="/shop" element={<ShopHomePage isOwner={true} />} />
         <Route path="/shop/:id" element={<ShopHomePage isOwner={false} />} />
@@ -336,7 +321,6 @@ const AppRoutes = () => {
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
->>>>>>> ae41d90a519fe657bef96d7050b7b90af2b328bd
       </Routes>
 
 
