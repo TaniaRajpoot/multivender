@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { RxCross1 } from "react-icons/rx";
 import {
   AiFillHeart,
@@ -82,9 +83,15 @@ const ProductCardDetails = ({ setOpen, data }) => {
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl relative overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-300"
+      onClick={() => setOpen(false)}
+    >
+      <div
+        className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl relative overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           className="absolute right-4 top-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition"
           onClick={() => setOpen(false)}
@@ -182,7 +189,8 @@ const ProductCardDetails = ({ setOpen, data }) => {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
