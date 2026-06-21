@@ -21,6 +21,8 @@ const ProductCard = ({ data, isEvent }) => {
   const { cart } = useSelector((state) => state.cart);
   const { wishlist } = useSelector((state) => state.wishlist);
 
+  const isEventConcluded = isEvent && (data?.Finish_Date || data?.FinishDate) && (new Date(data.Finish_Date || data.FinishDate) - new Date() <= 0);
+
   useEffect(() => {
     if (wishlist && wishlist.find((item) => item._id === data._id)) {
       setClick(true);
@@ -49,6 +51,10 @@ const ProductCard = ({ data, isEvent }) => {
   };
 
   const addToCartHandler = () => {
+    if (isEventConcluded) {
+      toast.error("This event has ended and is no longer available.");
+      return;
+    }
     const isItemExist = cart.find((i) => i._id === data._id);
     if (isItemExist) {
       toast.error("Item already in cart");
@@ -136,13 +142,15 @@ const ProductCard = ({ data, isEvent }) => {
             >
               <AiOutlineEye size={18} />
             </button>
-            <button
-              onClick={addToCartHandler}
-              title="Add to cart"
-              className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-teal-700 hover:bg-teal-700 hover:text-white shadow-lg transition-all duration-200 hover:scale-105"
-            >
-              <AiOutlineShoppingCart size={18} />
-            </button>
+            {!isEventConcluded && (
+              <button
+                onClick={addToCartHandler}
+                title="Add to cart"
+                className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-teal-700 hover:bg-teal-700 hover:text-white shadow-lg transition-all duration-200 hover:scale-105"
+              >
+                <AiOutlineShoppingCart size={18} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -182,7 +190,7 @@ const ProductCard = ({ data, isEvent }) => {
           </div>
         </div>
 
-        {open && <ProductCardDetails setOpen={setOpen} data={data} />}
+        {open && <ProductCardDetails setOpen={setOpen} data={data} isEvent={isEvent} />}
       </div>
     </>
   );

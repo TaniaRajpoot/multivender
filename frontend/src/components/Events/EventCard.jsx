@@ -10,7 +10,13 @@ const EventCard = ({ data }) => {
   const dispatch = useDispatch();
   const { cart } = useSelector((state) => state.cart);
 
+  const isEventConcluded = (data?.Finish_Date || data?.FinishDate) && (new Date(data.Finish_Date || data.FinishDate) - new Date() <= 0);
+
   const addToCartHandler = (product) => {
+    if (isEventConcluded) {
+      toast.error("This event has ended and is no longer available.");
+      return;
+    }
     if (cart?.find((i) => i._id === product._id)) {
       toast.error("Already in your cart");
       return;
@@ -51,9 +57,15 @@ const EventCard = ({ data }) => {
           <Link to={`/product/${data._id}?isEvent=true`} className={ui.btnSecondary}>
             View details
           </Link>
-          <button type="button" onClick={() => addToCartHandler(data)} className={ui.btnPrimary}>
-            Add to cart
-          </button>
+          {isEventConcluded ? (
+            <button type="button" className={`${ui.btnPrimary} !bg-gray-400 !border-gray-400 opacity-50 cursor-not-allowed`} disabled>
+              Event Ended / Not Available
+            </button>
+          ) : (
+            <button type="button" onClick={() => addToCartHandler(data)} className={ui.btnPrimary}>
+              Add to cart
+            </button>
+          )}
         </div>
       </div>
     </div>

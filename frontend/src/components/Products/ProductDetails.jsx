@@ -34,6 +34,8 @@ const ProductDetails = ({ data }) => {
   const [select, setSelect] = useState(0);
   const dispatch = useDispatch();
 
+  const isEventConcluded = isEvent && (data?.Finish_Date || data?.FinishDate) && (new Date(data.Finish_Date || data.FinishDate) - new Date() <= 0);
+
   const getImageUrl = (image) => {
     if (!image) return "/placeholder.png";
     if (typeof image === "object" && image.url) return image.url;
@@ -65,6 +67,10 @@ const ProductDetails = ({ data }) => {
   };
 
   const addToCartHandler = (id) => {
+    if (isEventConcluded) {
+      toast.error("This event has ended and is no longer available.");
+      return;
+    }
     const isItemExists = cart && cart.find((i) => i._id === id);
     if (isItemExists) {
       toast.error("Item is already in the cart!");
@@ -206,13 +212,22 @@ const ProductDetails = ({ data }) => {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <button
-                      className={`${ui.btnPrimary} flex-1 py-3 text-base`}
-                      onClick={() => addToCartHandler(data._id)}
-                    >
-                      <AiOutlineShoppingCart size={20} />
-                      Add to cart
-                    </button>
+                    {isEventConcluded ? (
+                      <button
+                        className={`${ui.btnPrimary} !bg-gray-400 !border-gray-400 opacity-50 cursor-not-allowed flex-1 py-3 text-base`}
+                        disabled
+                      >
+                        Event Ended / Not Available
+                      </button>
+                    ) : (
+                      <button
+                        className={`${ui.btnPrimary} flex-1 py-3 text-base`}
+                        onClick={() => addToCartHandler(data._id)}
+                      >
+                        <AiOutlineShoppingCart size={20} />
+                        Add to cart
+                      </button>
+                    )}
                     <button
                       onClick={() => click ? removeFromWishlistHandler(data) : addToWishlistHandler(data)}
                       className="h-[46px] w-[46px] flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition sm:flex-none"

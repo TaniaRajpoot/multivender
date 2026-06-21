@@ -19,12 +19,14 @@ import { ui } from "../../../styles/theme";
 import axios from "axios";
 import { server } from "../../../server";
 
-const ProductCardDetails = ({ setOpen, data }) => {
+const ProductCardDetails = ({ setOpen, data, isEvent }) => {
   const dispatch = useDispatch();
   const { cart } = useSelector((state) => state.cart);
   const { wishlist } = useSelector((state) => state.wishlist);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
+
+  const isEventConcluded = isEvent && (data?.Finish_Date || data?.FinishDate) && (new Date(data.Finish_Date || data.FinishDate) - new Date() <= 0);
 
   useEffect(() => {
     if (wishlist && wishlist.find((i) => i._id === data._id)) {
@@ -69,6 +71,10 @@ const ProductCardDetails = ({ setOpen, data }) => {
   };
 
   const AddToCartHandler = (id) => {
+    if (isEventConcluded) {
+      toast.error("This event has ended and is no longer available.");
+      return;
+    }
     const isItemExist = cart.find((i) => i._id === id);
     if (isItemExist) {
       toast.error("Item already in cart");
@@ -148,13 +154,22 @@ const ProductCardDetails = ({ setOpen, data }) => {
           </div>
 
           <div className="flex flex-col gap-3 mb-8">
-            <button
-              className={`${ui.btnPrimary} w-full py-3 text-base`}
-              onClick={() => AddToCartHandler(data._id)}
-            >
-              <AiOutlineShoppingCart size={20} />
-              Add to cart
-            </button>
+            {isEventConcluded ? (
+              <button
+                className={`${ui.btnPrimary} !bg-gray-400 !border-gray-400 opacity-50 cursor-not-allowed w-full py-3 text-base`}
+                disabled
+              >
+                Event Ended / Not Available
+              </button>
+            ) : (
+              <button
+                className={`${ui.btnPrimary} w-full py-3 text-base`}
+                onClick={() => AddToCartHandler(data._id)}
+              >
+                <AiOutlineShoppingCart size={20} />
+                Add to cart
+              </button>
+            )}
             <button
               className={`${ui.btnSecondary} w-full py-3 text-base`}
               onClick={handleMessageSubmit}
