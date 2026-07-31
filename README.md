@@ -1,5 +1,3 @@
-﻿# MultiVender 
-
 # 🛒 MultiVender - Full-Stack Multi-Vendor E-Commerce Platform
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-brightgreen?style=for-the-badge&logo=vercel)](https://multivender-pt6u.vercel.app/)
